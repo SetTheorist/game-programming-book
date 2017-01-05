@@ -1,0 +1,51 @@
+- board:
+  + gen moves
+  + make/unmake moves
+  + show move
+  + show board
+
+- evaluator:
+  + material evaluator
+  - piece-square evaluator
+  - TD(lambda)
+  - positional evaluation
+
++ search:
+  - minimax
+  + negamax
+  + alphabeta
+    + tt
+    + id
+    + mm
+    + hh
+    + nmp
+    + iid
+    + asp
+    + mws/pvs
+    + qs
+    - mtd(f)
+  - monte-carlo naive
+  - monte-carlo uct / rave / ...
+  - conspiracy number search
+  - proof number search
+
+- endgame table-base:
+
+- opening-book:
+
+- time-control:
+
++ util:
+  + bit / bitboard
+  + ansi
+  + random
+
++ main:
+  - random movement (sample game)
+  - 2-bot match
+  - n-bot RR match
+  - bot vs user
+  - search depth chart
+  - TD(lambda) framework
+  
+

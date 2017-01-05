@@ -1,0 +1,414 @@
+<ui version="4.0" >
+ <class>settingsDialog</class>
+ <widget class="QDialog" name="settingsDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Dialog</string>
+  </property>
+  <widget class="QCheckBox" name="humanCheck" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>201</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Human (or equivalent) player</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="compFrame" >
+   <property name="geometry" >
+    <rect>
+     <x>9</x>
+     <y>40</y>
+     <width>339</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="frameShape" >
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow" >
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>319</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QFrame" name="frame" >
+       <property name="frameShape" >
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QCheckBox" name="nmpCheck" >
+        <property name="geometry" >
+         <rect>
+          <x>20</x>
+          <y>10</y>
+          <width>51</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>NMP</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QWidget" name="layoutWidget" >
+        <property name="geometry" >
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>93</width>
+          <height>104</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" >
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="nmpr1Label" >
+             <property name="text" >
+              <string>R1</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="nmpr1Spin" />
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="nmpr2Label" >
+             <property name="text" >
+              <string>R2</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="nmpr2Spin" />
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" >
+           <item>
+            <widget class="QLabel" name="nmpcutoffLabel" >
+             <property name="text" >
+              <string>Cutoff</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="nmpcutoffSpin" />
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" >
+       <item>
+        <layout class="QHBoxLayout" >
+         <item>
+          <widget class="QLabel" name="label_4" >
+           <property name="text" >
+            <string>Depth</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_4" />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" >
+         <item>
+          <widget class="QCheckBox" name="checkBox_3" >
+           <property name="text" >
+            <string>TT</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_4" >
+           <property name="text" >
+            <string>ID</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QFrame" name="frame_2" >
+         <property name="frameShape" >
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow" >
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QWidget" name="layoutWidget" >
+          <property name="geometry" >
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>94</width>
+            <height>62</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" >
+           <item>
+            <widget class="QCheckBox" name="quiescenceCheck" >
+             <property name="text" >
+              <string>Quiescence</string>
+             </property>
+             <property name="checked" >
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" >
+             <item>
+              <widget class="QLabel" name="qdepthLabel" >
+               <property name="text" >
+                <string>Depth</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="qdepthSpin" />
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>settingsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>261</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>settingsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>humanCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>compFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>110</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>184</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>quiescenceCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>qdepthLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>239</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>211</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>quiescenceCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>qdepthSpin</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>239</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>259</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpr1Label</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>47</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpr1Spin</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>95</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpr2Label</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>47</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpr2Spin</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>95</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpcutoffLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>47</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nmpCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nmpcutoffSpin</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>65</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>95</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

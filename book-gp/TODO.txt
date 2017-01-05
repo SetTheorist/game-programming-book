@@ -1,0 +1,39 @@
+ - convert congo, mancala, dragon-chess, tafl, jungle, alapo,
+   minichess, minishogi, phutball, one-dimensional-chess
+   to generic searcher
+ - convert tic-tac-toe to generic searcher & compare timing
+ - move bit-utils to generic
+ - make generic "main" functionality
+ - fen/sgf utils
+ - generic:
+   - stalemate handling (both simple & when no valid moves)
+   - tt bounds
+   - TD(lambda)-leaf!
+   - singular extensions / other ...
+   - "trappy" minimax
+   - futility pruning (consider zog --- heavy pruning...)
+ - time-handling
+ - periodic output / checking if cancelled, etc. every N nodes searched...
+ - opening book
+ - endgame tablebase
+ - communication protocol (UCI/etc.) between player & UI/etc.
+ - PN/CN
+ - build chess player and hook up to FICS...
+ - ideas from crafty:
+   - at root level of search, order moves by
+     _quiescence_ search values to get a better ordering, taking
+     into account captures...  (could also use SEE/SOMA/etc.)
+   - in quiescensce search, value moves by MVV/LVA ordering via:
+       128*captured_piece_value-capturing_piece_value
+   - crafty's annotate methodology:
+      - "This basic type of annotation works by first using the normal tree search
+         algorithm to find the best move.  If this move was the move played, no
+         output is produced.  If a different move is considered best, then the
+         actual move played is searched to the same depth and if the best move and
+         actual move scores are within <margin> of each other, no comment is produced,
+         otherwise Crafty inserts the evaluation for the move played, followed by the
+         eval and PV for the best continuation it found."
+   - when checking for 3-time repetitions, we don't have to search back past captures or
+     other irrevocable types of moves; also keep WTM/BTM moves separate to decrease the
+     time spent scanning the lists; (also 50-move count...)
+
