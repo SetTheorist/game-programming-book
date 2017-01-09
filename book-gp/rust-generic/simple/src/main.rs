@@ -3,8 +3,6 @@ use std::ops::{Neg, Not};
 
 ////////////////////////////////////////////////////////////
 
-type Hash = u64;
-
 #[derive(Clone,Copy,Debug,Eq,PartialEq)]
 enum MoveResult {
     Error, OtherSide, SameSide
@@ -26,26 +24,28 @@ trait Board : Debug {
     fn make_move(&mut self, m: Self::Move) -> MoveResult;
     fn unmake_move(&mut self, m: Self::Move) -> MoveResult;
     fn hash(&self) -> Hash;
-    fn moves(&self, &mut [Self::Move]) -> usize;
+    fn moves(&self, ml: &mut [Self::Move]) -> usize;
     fn evaluate(&self, ply:usize) -> Self::Eval;
     fn state(&self) -> GameState;
 }
 
 ////////////////////////////////////////////////////////////
 
+type Hash = u64;
+
 const TT_VALID : i32 = 1;
 const TT_EXACT : i32 = 2;
 const TT_UPPER : i32 = 4;
 const TT_LOWER : i32 = 8;
-const TTABLE_ENTRIES : usize = 1024 * 256;
+const TTABLE_ENTRIES : usize = 1024 * 1024;
 
 #[derive(Clone,Copy,Debug,Default)]
 struct TTEntry<E:Clone+Copy+Debug+Default,M:Clone+Copy+Debug+Default> {
     hash: u32,
     depth: i32,
+    flags: i32,
     score: E,
     best_move: M,
-    flags: i32,
 }
 
 struct TTable<B:Board> {
@@ -210,7 +210,7 @@ impl Neg for Eval {
     fn neg(self) -> Eval { Eval(-self.0) }
 }
 #[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
-pub enum Side { X, O }
+pub enum Side { X=1, O }
 impl Not for Side {
     type Output = Side;
     fn not(self) -> Side {
@@ -339,15 +339,264 @@ impl super::Board for Board {
 ////////////////////////////////////////////////////////////
 
 mod MicroShogi {
+use std::mem;
+use std::ops::{Neg,Not};
+extern crate rand;
 
+const NPIECE : usize = 10;
+#[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
 pub enum Piece {
     Pawn=1, Gold, Silver, Bishop, Rook, King,
     Tokin, PromotedSilver, Horse, Dragon,
 }
+impl Piece {
+    pub fn to_char(self) -> char {
+        match self {
+            Piece::Pawn => 'P',
+            Piece::Gold => 'G',
+            Piece::Silver => 'S',
+            Piece::Bishop => 'B',
+            Piece::Rook => 'R',
+            Piece::King => 'K',
+            Piece::Tokin => 'T',
+            Piece::PromotedSilver => 'N',
+            Piece::Horse => 'H',
+            Piece::Dragon => 'D',
+        }
+    }
+}
+
+static PROMOTES : [Option<Piece>; NPIECE+1] = [ None,
+    Some(Piece::Tokin), None, Some(Piece::PromotedSilver), Some(Piece::Horse),
+    Some(Piece::Dragon), None, None, None, None, None,
+];
+
+static UNPROMOTES : [Piece; NPIECE+1] = [ Piece::Pawn,
+    Piece::Pawn, Piece::Gold, Piece::Silver, Piece::Bishop, Piece::Rook, Piece::King,
+    Piece::Pawn, Piece::Silver, Piece::Bishop, Piece::Rook,
+];
+    
+#[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
+pub enum Color {
+    White=1, Black,
+}
+impl Not for Color {
+    type Output = Color;
+    fn not(self) -> Color {
+        match self { Color::White=>Color::Black, Color::Black=>Color::White }
+    }
+}
+
+#[derive(Clone,Copy,Debug,Default,Eq,Ord,PartialEq,PartialOrd)]
+pub struct Eval(pub i32);
+impl Neg for Eval {
+    type Output = Eval;
+    fn neg(self) -> Eval { Eval(-self.0) }
+}
+
+const B_HAND       : usize = 25;
+const W_HAND       : usize = 26;
+const MF_CAP       : u8 = 0b00001;
+const MF_PRO       : u8 = 0b00010;
+const MF_NONPRO    : u8 = 0b00100;
+const MF_DROP      : u8 = 0b01000;
+const MF_WHITEMOVE : u8 = 0b10000;
+#[derive(Clone,Copy,Debug,Default,Eq,PartialEq)]
+pub struct Move(u32);
+impl Move {
+    pub fn new(f: usize, t: usize, p: usize, m: usize, flag: u8) -> Move {
+        Move(
+            ((f    as u32&0x3F)<<26)|
+            ((t    as u32&0x3F)<<20)|
+            ((p    as u32&0x3F)<<14)|
+            ((m    as u32&0x3F)<< 8)|
+            ((flag as u32&0xFF)<< 0))
+    }
+    pub fn get_f(self)    -> usize { ((self.0 & 0xFC000000) >> 26) as usize }
+    pub fn get_t(self)    -> usize { ((self.0 & 0x03F00000) >> 20) as usize }
+    pub fn get_p(self)    -> usize { ((self.0 & 0x000FC000) >> 14) as usize }
+    pub fn get_m(self)    -> usize { ((self.0 & 0x00003F00) >>  8) as usize }
+    pub fn get_flag(self) -> u8    { ((self.0 & 0x000000FF) >>  0) as u8 }
+}
+
+#[derive(Clone,Copy,Debug)]
+pub struct Hasher {
+    side : super::Hash,
+    piece : [[[super::Hash; 25]; 10]; 2],
+    hand : [[[super::Hash; 3]; 5]; 2],
+}
+impl Hasher {
+    pub fn new<R:rand::Rng>(rng: &mut R) -> Self {
+        let mut hasher : Hasher = unsafe { mem::uninitialized() };
+
+        hasher.side = rng.gen::<super::Hash>();
+        for x in &mut hasher.piece.iter_mut() {
+            for x in &mut x.iter_mut() {
+                for x in &mut x.iter_mut() {
+                    *x = rng.gen::<super::Hash>(); } } }
+        for x in &mut hasher.hand.iter_mut() {
+            for x in &mut x.iter_mut() {
+                for x in &mut x.iter_mut() {
+                    *x = rng.gen::<super::Hash>(); } } }
+        hasher
+    }
+}
+
+static INITIAL_BOARD : [Option<(Piece,Color)>; 27] = [
+    Some((Piece::King,Color::Black)), Some((Piece::Gold,Color::Black)), Some((Piece::Silver,Color::Black)), Some((Piece::Bishop,Color::Black)), Some((Piece::Rook,Color::Black)),
+    Some((Piece::Pawn,Color::Black)), None, None, None, None,
+    None, None, None, None, None,
+    None, None, None, None, Some((Piece::Pawn,Color::White)),
+    Some((Piece::Rook,Color::White)), Some((Piece::Bishop,Color::White)), Some((Piece::Silver,Color::White)), Some((Piece::Gold,Color::White)), Some((Piece::King,Color::White)),
+    Some((Piece::King,Color::Black)), Some((Piece::King,Color::White)),
+];
+
+static board_to_box : [usize; 25] = [
+   8,  9, 10, 11, 12,
+  15, 16, 17, 18, 19,
+  22, 23, 24, 25, 26,
+  29, 30, 31, 32, 33,
+  36, 37, 38, 39, 40,
+];
+
+static box_to_board : [isize; 49] = [
+  -1, -1, -1, -1, -1, -1, -1,
+  -1,  0,  1,  2,  3,  4, -1,
+  -1,  5,  6,  7,  8,  9, -1,
+  -1, 10, 11, 12, 13, 14, -1,
+  -1, 15, 16, 17, 18, 19, -1,
+  -1, 20, 21, 22, 23, 24, -1,
+  -1, -1, -1, -1, -1, -1, -1,
+];
+
+/*pawn, gold, silver, bishop, rook, king, tokin, promoted_silver, horse, dragon*/
+static move_step_num : [isize; 10] = [1, 6, 5, 0, 0, 8, 6, 6, 4, 4];
+static move_step_offset : [[isize; 8]; 10] = [
+  [  7,  0,  0,  0,  0,  0,  0,  0], /* pawn */
+  [  6,  7,  8,  1, -7, -1,  0,  0], /* gold */
+  [  6,  7,  8, -6, -8,  0,  0,  0], /* silver */
+  [  0,  0,  0,  0,  0,  0,  0,  0], /* bishop */
+  [  0,  0,  0,  0,  0,  0,  0,  0], /* rook */
+  [  6,  7,  8,  1, -6, -7, -8, -1], /* king */
+  [  6,  7,  8,  1, -7, -1,  0,  0], /* tokin */
+  [  6,  7,  8,  1, -7, -1,  0,  0], /* promoted_silver */
+  [  7,  1, -7, -1,  0,  0,  0,  0], /* horse */
+  [  6,  8, -8, -6,  0,  0,  0,  0], /* dragon */
+];
+static move_slide_offset : [[isize; 5]; 10] = [
+  [  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0],
+  [  6,  8, -6, -8,  0], /* bishop */
+  [  7,  1, -7, -1,  0], /* rook */
+  [  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0],
+  [  6,  8, -6, -8,  0], /* horse */
+  [  7,  1, -7, -1,  0], /* dragon */
+];
+
+static promotion : [Option<Color>; 25] = [
+  Some(Color::White), Some(Color::White), Some(Color::White), Some(Color::White), Some(Color::White),
+  None, None, None, None, None,
+  None, None, None, None, None,
+  None, None, None, None, None,
+  Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black),
+];
+
+
+#[derive(Clone,Copy,Debug)]
+pub struct Board {
+    square : [Option<(Piece,Color)>; 5*5],
+    side : Color,
+    xside : Color,
+    hand : [[Piece; 5]; 2],
+    nhand : [usize; 2],
+    ply : i32,
+    hash : super::Hash,
+    play : super::GameState,
+    hasher : Hasher,
+}
+
+impl super::Board for Board {
+    type Move = Move;
+    type Eval = Eval;
+    fn new() -> Self {
+        let mut b = Board {
+            square : {let mut x=[None; 25]; x.clone_from_slice(&INITIAL_BOARD[0..25]); x},
+            side : Color::Black,
+            xside : Color::White,
+            hand : [[Piece::Pawn; 5]; 2],
+            nhand : [0; 2],
+            ply : 0,
+            hash : 0,
+            play : super::GameState::Playing,
+            hasher : Hasher::new(&mut rand::thread_rng()),
+        };
+        b.hash = b.hash();
+        b
+    }
+    fn from_fen(s: &str) -> Self {
+        Board::new()
+    }
+    fn to_fen(&self) -> String {
+        "".to_string()
+    }
+    fn init(&mut self) {
+        *self = Self::new();
+    }
+    fn make_move(&mut self, m: Self::Move) -> super::MoveResult {
+        let flag = m.get_flag();
+        if flag & MF_DROP != 0 {
+        } else {
+            if flag & MF_CAP != 0 {
+            }
+            self.square.swap(m.get_f(), m.get_t());
+            if flag & MF_PRO != 0 {
+            }
+        }
+
+        self.side = !self.side;
+        self.xside = !self.xside;
+
+        self.hash = self.hash();
+        super::MoveResult::SameSide
+    }
+    fn unmake_move(&mut self, m: Self::Move) -> super::MoveResult {
+        self.hash = self.hash();
+        super::MoveResult::SameSide
+    }
+    fn hash(&self) -> super::Hash {
+        let mut h = if self.side==Color::White {self.hasher.side} else {0};
+        for i in 0..25 {
+            if let Some((p,c)) = self.square[i] {
+                h ^= self.hasher.piece[c as usize - 1][p as usize - 1][i];
+            }
+        }
+        for i in 0..2 {
+            for j in 0..5 {
+                h ^= self.hasher.hand[i][j][self.hand[i][j] as usize];
+            }
+        }
+        h
+    }
+    fn moves(&self, ml: &mut [Self::Move]) -> usize {
+        0
+    }
+    fn evaluate(&self, ply:usize) -> Self::Eval {
+        Self::Eval::default()
+    }
+    fn state(&self) -> super::GameState {
+        super::GameState::Playing
+    }
+}
 
 }
 
+
 ////////////////////////////////////////////////////////////
+extern crate rand;
+use rand::Rng;
 
 fn main() {
     let mut ab = AlphaBetaSearcher::<TTT::Board>::new();
@@ -377,9 +626,10 @@ fn main() {
         ab.ttable.tt_used);
 
 
-    println!("{} {}", std::mem::size_of::<TTT::Move>(), std::mem::size_of::<TTT::Eval>());
-    println!("{} {}", std::mem::size_of::<TTT::Side>(), std::mem::size_of::<Option<TTT::Side>>());
-    println!("{} {}", std::mem::size_of::<MicroShogi::Piece>(), std::mem::size_of::<Option<MicroShogi::Piece>>());
-    println!("{} {}", MicroShogi::Piece::Pawn as i32, MicroShogi::Piece::Dragon as i32);
+    println!("{}", std::mem::size_of::<TTEntry<TTT::Move,TTT::Eval>>());
+    println!("{}", std::mem::size_of::<TTable<TTT::Board>>());
+    println!("{}", std::mem::size_of::<Option<(MicroShogi::Piece,MicroShogi::Color)>>());
+    let mut rng = rand::thread_rng();
+    println!("{}", rng.gen::<Hash>());
 }
 
