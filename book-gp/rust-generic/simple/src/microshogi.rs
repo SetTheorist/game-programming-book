@@ -8,13 +8,14 @@ use search;
 
 const NPIECE : usize = 10;
 #[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
-pub enum Piece {
+pub enum Piece { Empty=0,
     Pawn=1, Gold, Silver, Bishop, Rook, King,
     Tokin, PromotedSilver, Horse, Dragon,
 }
 impl Piece {
     pub fn to_char(self) -> char {
         match self {
+            Piece::Empty => '?',
             Piece::Pawn => 'P',
             Piece::Gold => 'G',
             Piece::Silver => 'S',
@@ -27,17 +28,42 @@ impl Piece {
             Piece::Dragon => 'D',
         }
     }
+    pub fn promotes(self) -> Piece {
+        match self {
+            Piece::Empty => Piece::Empty,
+            Piece::Pawn => Piece::Tokin,
+            Piece::Gold => Piece::Empty,
+            Piece::Silver => Piece::PromotedSilver,
+            Piece::Bishop => Piece::Horse,
+            Piece::Rook => Piece::Dragon,
+            Piece::King => Piece::Empty,
+            Piece::Tokin => Piece::Empty,
+            Piece::PromotedSilver => Piece::Empty,
+            Piece::Horse => Piece::Empty,
+            Piece::Dragon => Piece::Empty,
+        }
+    }
+    pub fn unpromotes(self) -> Piece {
+        match self {
+            Piece::Empty => Piece::Empty,
+            Piece::Pawn => Piece::Pawn,
+            Piece::Gold => Piece::Gold,
+            Piece::Silver => Piece::Silver,
+            Piece::Bishop => Piece::Bishop,
+            Piece::Rook => Piece::Rook,
+            Piece::King => Piece::King,
+            Piece::Tokin => Piece::Pawn,
+            Piece::PromotedSilver => Piece::Silver,
+            Piece::Horse => Piece::Bishop,
+            Piece::Dragon => Piece::Rook,
+        }
+    }
 }
-
-static PROMOTES : [Option<Piece>; NPIECE+1] = [ None,
-    Some(Piece::Tokin), None, Some(Piece::PromotedSilver), Some(Piece::Horse),
-    Some(Piece::Dragon), None, None, None, None, None,
-];
-
-static UNPROMOTES : [Piece; NPIECE+1] = [ Piece::Pawn,
-    Piece::Pawn, Piece::Gold, Piece::Silver, Piece::Bishop, Piece::Rook, Piece::King,
-    Piece::Pawn, Piece::Silver, Piece::Bishop, Piece::Rook,
-];
+impl fmt::Display for Piece {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.to_char())
+    }
+}
     
 #[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
 pub enum Color {
@@ -67,7 +93,7 @@ const MF_WHITEMOVE : u8 = 0b10000;
 #[derive(Clone,Copy,Default,Eq,PartialEq)]
 pub struct Move(u32);
 impl Move {
-    pub fn new(f: usize, t: usize, p: usize, m: usize, flag: u8) -> Move {
+    pub fn new(f: usize, t: usize, p: Piece, m: Piece, flag: u8) -> Move {
         Move(
             ((f    as u32&0x3F)<<26)|
             ((t    as u32&0x3F)<<20)|
@@ -77,8 +103,8 @@ impl Move {
     }
     pub fn get_f(self)    -> u8 { ((self.0 & 0xFC000000) >> 26) as u8 }
     pub fn get_t(self)    -> u8 { ((self.0 & 0x03F00000) >> 20) as u8 }
-    pub fn get_p(self)    -> u8 { ((self.0 & 0x000FC000) >> 14) as u8 }
-    pub fn get_m(self)    -> u8 { ((self.0 & 0x00003F00) >>  8) as u8 }
+    pub fn get_p(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x000FC000) >> 14) as u8) } }
+    pub fn get_m(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x00003F00) >>  8) as u8) } }
     pub fn get_flag(self) -> u8 { ((self.0 & 0x000000FF) >>  0) as u8 }
 }
 impl fmt::Debug for Move {
@@ -89,8 +115,17 @@ impl fmt::Debug for Move {
 }
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "M[{:8x}|{}|{}|{}|{}|{}]", self.0,
-            self.get_f(), self.get_t(), self.get_p(), self.get_m(), self.get_flag())
+        fn sq(x: u8) -> (char,char) {
+            ((('a' as u32) + ((x % 5) as u32)) as u8 as char,
+             (('1' as u32) + ((x / 5) as u32)) as u8 as char)
+        }
+        write!(f, "{}", self.get_m())?;
+        if self.get_flag()&MF_DROP==0{ let(a,b)=sq(self.get_f()); write!(f, "{}{}", a, b)?; }
+        write!(f, "{}",
+            (if self.get_flag()&MF_DROP!=0{"*"}else if self.get_flag()&MF_CAP!=0{":"}else{"-"}))?;
+        if self.get_flag()&MF_DROP==0{ let(a,b)=sq(self.get_t()); write!(f, "{}{}", a, b)?; }
+        write!(f, "{}",
+            (if self.get_flag()&MF_PRO!=0{"+"}else if self.get_flag()&MF_NONPRO!=0{"="}else{""}))
     }
 }
 
@@ -145,33 +180,36 @@ static box_to_board : [isize; 49] = [
 ];
 
 /*dummy, pawn, gold, silver, bishop, rook, king, tokin, promoted_silver, horse, dragon*/
-static move_step_num : [isize; NPIECE+1] = [0, 1, 6, 5, 0, 0, 8, 6, 6, 4, 4];
-static move_step_offset : [[isize; 8]; NPIECE+1] = [
-  [  0,  0,  0,  0,  0,  0,  0,  0], /* dummy */
-  [  7,  0,  0,  0,  0,  0,  0,  0], /* pawn */
-  [  6,  7,  8,  1, -7, -1,  0,  0], /* gold */
-  [  6,  7,  8, -6, -8,  0,  0,  0], /* silver */
-  [  0,  0,  0,  0,  0,  0,  0,  0], /* bishop */
-  [  0,  0,  0,  0,  0,  0,  0,  0], /* rook */
-  [  6,  7,  8,  1, -6, -7, -8, -1], /* king */
-  [  6,  7,  8,  1, -7, -1,  0,  0], /* tokin */
-  [  6,  7,  8,  1, -7, -1,  0,  0], /* promoted_silver */
-  [  7,  1, -7, -1,  0,  0,  0,  0], /* horse */
-  [  6,  8, -8, -6,  0,  0,  0,  0], /* dragon */
-];
-static move_slide_offset : [[isize; 5]; NPIECE+1] = [
-  [  0,  0,  0,  0,  0], /* dummy */
-  [  0,  0,  0,  0,  0],
-  [  0,  0,  0,  0,  0],
-  [  0,  0,  0,  0,  0],
-  [  6,  8, -6, -8,  0], /* bishop */
-  [  7,  1, -7, -1,  0], /* rook */
-  [  0,  0,  0,  0,  0],
-  [  0,  0,  0,  0,  0],
-  [  0,  0,  0,  0,  0],
-  [  6,  8, -6, -8,  0], /* horse */
-  [  7,  1, -7, -1,  0], /* dragon */
-];
+fn move_step_offset(p: Piece) -> &'static [isize; 8] {
+    match p {
+        Piece::Empty =>           { static v : [isize; 8] = [0,0,0,0,0,0,0,0]; &v }
+        Piece::Pawn =>            { static v : [isize; 8] = [7,0,0,0,0,0,0,0]; &v }
+        Piece::Gold =>            { static v : [isize; 8] = [6,7,8,1,-7,-1,0,0]; &v }
+        Piece::Silver =>          { static v : [isize; 8] = [6,7,8,-6,-8,0,0,0]; &v }
+        Piece::Bishop =>          { static v : [isize; 8] = [0,0,0,0,0,0,0,0]; &v }
+        Piece::Rook =>            { static v : [isize; 8] = [0,0,0,0,0,0,0,0]; &v }
+        Piece::King =>            { static v : [isize; 8] = [6,7,8,1,-6,-7,-8,-1]; &v }
+        Piece::Tokin =>           { static v : [isize; 8] = [6,7,8,1,-7,-1,0,0]; &v }
+        Piece::PromotedSilver =>  { static v : [isize; 8] = [6,7,8,1,-7,-1,0,0]; &v }
+        Piece::Horse =>           { static v : [isize; 8] = [7,1,-7,-1,0,0,0,0]; &v }
+        Piece::Dragon =>          { static v : [isize; 8] = [6,8,-6,-8,0,0,0,0]; &v }
+    }
+}
+fn move_slide_offset(p: Piece) -> &'static [isize; 4] {
+    match p {
+        Piece::Empty =>           { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Pawn =>            { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Gold =>            { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Silver =>          { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Bishop =>          { static v : [isize; 4] = [6,8,-6,-8]; &v }
+        Piece::Rook =>            { static v : [isize; 4] = [7,1,-7,-1]; &v }
+        Piece::King =>            { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Tokin =>           { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::PromotedSilver =>  { static v : [isize; 4] = [0,0,0,0]; &v }
+        Piece::Horse =>           { static v : [isize; 4] = [6,8,-6,-8]; &v }
+        Piece::Dragon =>          { static v : [isize; 4] = [7,1,-7,-1]; &v }
+    }
+}
 
 static promotion : [Option<Color>; 25] = [
   Some(Color::White), Some(Color::White), Some(Color::White), Some(Color::White), Some(Color::White),
@@ -193,6 +231,28 @@ pub struct Board {
     hash : search::Hash,
     play : search::GameState,
     hasher : Hasher,
+}
+
+impl Board {
+    pub fn show(&self) {
+        for y in (0..5).rev() {
+            print!("{}|", ('1' as u32 + y as u32) as u8 as char);
+            for x in 0..5 {
+                let x = self.square[x + y*5];
+                match x {
+                    None => { print!("."); }
+                    Some((p,c)) => {
+                        print!("{}", 
+                            if c==Color::Black { p.to_char() }
+                            else { p.to_char().to_lowercase().nth(0).unwrap() }
+                        );
+                    }
+                }
+            }
+            print!("\n");
+        }
+        print!(" +-----\n  abcde\n");
+    }
 }
 
 impl search::Board for Board {
@@ -246,20 +306,19 @@ impl search::Board for Board {
     fn make_move(&mut self, m: Self::Move) -> search::MoveResult {
         let flag = m.get_flag();
         if flag & MF_DROP != 0 {
-            self.square[m.get_t() as usize] = Some((
-                unsafe{mem::transmute(m.get_p())},
-                unsafe{mem::transmute(self.side)}));
+            self.square[m.get_t() as usize] =
+                Some((m.get_p(), unsafe{mem::transmute(self.side)}));
             self.nhand[self.side as usize - 1] -= 1;
             self.hand[self.side as usize - 1][m.get_p() as usize] -= 1;
         } else {
             if flag & MF_CAP != 0 {
-                if m.get_p() == Piece::King as u8 {
+                if m.get_p() == Piece::King {
                     self.play =
                         if self.side==Color::Black { search::GameState::BlackWin }
                         else { search::GameState::WhiteWin };
                 } else {
                     self.nhand[self.side as usize] += 1;
-                    self.hand[self.side as usize][UNPROMOTES[m.get_p() as usize] as usize] += 1;
+                    self.hand[self.side as usize][m.get_p().unpromotes() as usize] += 1;
                 }
             }
             let fsq = self.square[m.get_f() as usize];
@@ -267,7 +326,7 @@ impl search::Board for Board {
             self.square[m.get_f() as usize] = None;
             if flag & MF_PRO != 0 {
                 if let Some((p,c)) = self.square[m.get_t() as usize] {
-                    self.square[m.get_t() as usize] = Some((PROMOTES[p as usize].unwrap(), c));
+                    self.square[m.get_t() as usize] = Some((p.promotes(), c));
                 }
             }
         }
@@ -310,27 +369,26 @@ impl search::Board for Board {
         for f in 0..25 {
             if let Some((p,c)) = self.square[f] {
                 if c!=self.side { continue; }
-                let mvd = p as usize;
                 // step moves
-                for i in 0..move_step_num[mvd] {
-                    let t = box_to_board[(board_to_box[f] + mult*move_step_offset[mvd][i as usize]) as usize];
+                for &off in move_step_offset(p).iter().filter(|&&off|off!=0) {
+                    let t = box_to_board[(board_to_box[f] + mult*off) as usize];
                     if t<0 { continue; }
                     let t = t as usize;
                     if self.square[t]==None || self.square[t].unwrap().1==self.xside {
                         let mut flags = 0;
-                        let mut x = 0;
+                        let mut x = Piece::Empty;
                         if self.square[t]!=None {
                             flags |= MF_CAP;
-                            x = self.square[t].unwrap().0 as i32;
+                            x = self.square[t].unwrap().0;
                         }
                         if (promotion[t]==Some(self.side) || promotion[f]==Some(self.side))
-                            && PROMOTES[p as usize]!=None {
-                            add_move(f, t, x as usize, p as usize, flg|flags|MF_PRO,&mut n);
+                            && p.promotes()!=Piece::Empty {
+                            add_move(f, t, x, p, flg|flags|MF_PRO,&mut n);
                             if p!=Piece::Pawn {
-                                add_move(f, t, x as usize, p as usize, flg|flags|MF_NONPRO,&mut n);
+                                add_move(f, t, x, p, flg|flags|MF_NONPRO,&mut n);
                             }
                         } else {
-                            add_move(f, t, x as usize, p as usize, flg|flags,&mut n);
+                            add_move(f, t, x, p, flg|flags,&mut n);
                         }
                     }
                 }

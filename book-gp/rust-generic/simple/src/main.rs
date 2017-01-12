@@ -13,6 +13,9 @@ fn main() {
     let mut ml = [microshogi::Move::default(); 99];
     let n = ab.b.moves(&mut ml);
     println!("{} : {:?}", n, &ml[0..n]);
+
+    ab.b.show();
+    for &m in &ml[0..n] { print!(" {}", m) }; println!("");
     //println!("{:?}", ab.b);
     return;
 
