@@ -11,12 +11,14 @@ fn main() {
     let mut ab = search::AlphaBetaSearcher::<microshogi::Board>::new();
     println!("{:?}", ab.b.to_fen());
     let mut ml = [microshogi::Move::default(); 99];
-    let n = ab.b.moves(&mut ml);
-    println!("{} : {:?}", n, &ml[0..n]);
-
+    for j in 0..10 {
+        println!("*** {} ***", j);
+        ab.b.show();
+        let n = ab.b.moves(&mut ml);
+        for (i,&m) in (&ml[0..n]).iter().enumerate() { print!(" {}.{}", i+1, m) }; println!("");
+        ab.b.make_move(ml[0]);
+    }
     ab.b.show();
-    for &m in &ml[0..n] { print!(" {}", m) }; println!("");
-    //println!("{:?}", ab.b);
     return;
 
 

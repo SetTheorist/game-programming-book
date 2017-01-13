@@ -101,31 +101,31 @@ impl Move {
             ((m    as u32&0x3F)<< 8)|
             ((flag as u32&0xFF)<< 0) )
     }
-    pub fn get_f(self)    -> u8 { ((self.0 & 0xFC000000) >> 26) as u8 }
-    pub fn get_t(self)    -> u8 { ((self.0 & 0x03F00000) >> 20) as u8 }
-    pub fn get_p(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x000FC000) >> 14) as u8) } }
-    pub fn get_m(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x00003F00) >>  8) as u8) } }
-    pub fn get_flag(self) -> u8 { ((self.0 & 0x000000FF) >>  0) as u8 }
+    pub fn f(self)    -> usize { ((self.0 & 0xFC000000) >> 26) as usize }
+    pub fn t(self)    -> usize { ((self.0 & 0x03F00000) >> 20) as usize }
+    pub fn p(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x000FC000) >> 14) as u8) } }
+    pub fn m(self)    -> Piece { unsafe { mem::transmute(((self.0 & 0x00003F00) >>  8) as u8) } }
+    pub fn flag(self) -> u8 { ((self.0 & 0x000000FF) >>  0) as u8 }
 }
 impl fmt::Debug for Move {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "M[{:8x}|{}|{}|{}|{}|{}]", self.0,
-            self.get_f(), self.get_t(), self.get_p(), self.get_m(), self.get_flag())
+            self.f(), self.t(), self.p(), self.m(), self.flag())
     }
 }
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fn sq(x: u8) -> (char,char) {
+        fn sq(x: usize) -> (char,char) {
             ((('a' as u32) + ((x % 5) as u32)) as u8 as char,
              (('1' as u32) + ((x / 5) as u32)) as u8 as char)
         }
-        write!(f, "{}", self.get_m())?;
-        if self.get_flag()&MF_DROP==0{ let(a,b)=sq(self.get_f()); write!(f, "{}{}", a, b)?; }
+        write!(f, "{}", self.m())?;
+        if self.flag()&MF_DROP==0{ let(a,b)=sq(self.f()); write!(f, "{}{}", a, b)?; }
         write!(f, "{}",
-            (if self.get_flag()&MF_DROP!=0{"*"}else if self.get_flag()&MF_CAP!=0{":"}else{"-"}))?;
-        if self.get_flag()&MF_DROP==0{ let(a,b)=sq(self.get_t()); write!(f, "{}{}", a, b)?; }
+            (if self.flag()&MF_DROP!=0{"*"}else if self.flag()&MF_CAP!=0{":"}else{"-"}))?;
+        let(a,b)=sq(self.t()); write!(f, "{}{}", a, b)?;
         write!(f, "{}",
-            (if self.get_flag()&MF_PRO!=0{"+"}else if self.get_flag()&MF_NONPRO!=0{"="}else{""}))
+            (if self.flag()&MF_PRO!=0{"+"}else if self.flag()&MF_NONPRO!=0{"="}else{""}))
     }
 }
 
@@ -224,35 +224,12 @@ static promotion : [Option<Color>; 25] = [
 pub struct Board {
     square : [Option<(Piece,Color)>; 5*5],
     side : Color,
-    xside : Color,
-    hand : [[usize; 5+1]; 2],
-    nhand : [usize; 2],
+    hand : [[usize; 5+1]; 2+1],
+    nhand : [usize; 2+1],
     ply : i32,
     hash : search::Hash,
     play : search::GameState,
     hasher : Hasher,
-}
-
-impl Board {
-    pub fn show(&self) {
-        for y in (0..5).rev() {
-            print!("{}|", ('1' as u32 + y as u32) as u8 as char);
-            for x in 0..5 {
-                let x = self.square[x + y*5];
-                match x {
-                    None => { print!("."); }
-                    Some((p,c)) => {
-                        print!("{}", 
-                            if c==Color::Black { p.to_char() }
-                            else { p.to_char().to_lowercase().nth(0).unwrap() }
-                        );
-                    }
-                }
-            }
-            print!("\n");
-        }
-        print!(" +-----\n  abcde\n");
-    }
 }
 
 impl search::Board for Board {
@@ -262,9 +239,8 @@ impl search::Board for Board {
         let mut b = Board {
             square : {let mut x=[None; 25]; x.clone_from_slice(&INITIAL_BOARD[0..25]); x},
             side : Color::Black,
-            xside : Color::White,
-            hand : [[0; 5+1]; 2],
-            nhand : [0; 2],
+            hand : [[0; 5+1]; 2+1],
+            nhand : [0; 2+1],
             ply : 0,
             hash : 0,
             play : search::GameState::Playing,
@@ -304,36 +280,31 @@ impl search::Board for Board {
         *self = Self::new();
     }
     fn make_move(&mut self, m: Self::Move) -> search::MoveResult {
-        let flag = m.get_flag();
+        let flag = m.flag();
         if flag & MF_DROP != 0 {
-            self.square[m.get_t() as usize] =
-                Some((m.get_p(), unsafe{mem::transmute(self.side)}));
-            self.nhand[self.side as usize - 1] -= 1;
-            self.hand[self.side as usize - 1][m.get_p() as usize] -= 1;
+            self.square[m.t()] = Some((m.p(), unsafe{mem::transmute(self.side)}));
+            self.nhand[self.side as usize] -= 1;
+            self.hand[self.side as usize][m.p() as usize] -= 1;
         } else {
             if flag & MF_CAP != 0 {
-                if m.get_p() == Piece::King {
+                if m.p() == Piece::King {
                     self.play =
                         if self.side==Color::Black { search::GameState::BlackWin }
                         else { search::GameState::WhiteWin };
                 } else {
                     self.nhand[self.side as usize] += 1;
-                    self.hand[self.side as usize][m.get_p().unpromotes() as usize] += 1;
+                    self.hand[self.side as usize][m.p().unpromotes() as usize] += 1;
                 }
             }
-            let fsq = self.square[m.get_f() as usize];
-            self.square[m.get_t() as usize] = fsq;
-            self.square[m.get_f() as usize] = None;
+            self.square[m.t()] = self.square[m.f()];
+            self.square[m.f()] = None;
             if flag & MF_PRO != 0 {
-                if let Some((p,c)) = self.square[m.get_t() as usize] {
-                    self.square[m.get_t() as usize] = Some((p.promotes(), c));
+                if let Some((p,c)) = self.square[m.t()] {
+                    self.square[m.t()] = Some((p.promotes(), c));
                 }
             }
         }
-
         self.side = !self.side;
-        self.xside = !self.xside;
-
         self.hash = self.hash();
         search::MoveResult::SameSide
     }
@@ -341,20 +312,7 @@ impl search::Board for Board {
         self.hash = self.hash();
         search::MoveResult::SameSide
     }
-    fn hash(&self) -> search::Hash {
-        let mut h = if self.side==Color::White {self.hasher.side} else {0};
-        for i in 0..25 {
-            if let Some((p,c)) = self.square[i] {
-                h ^= self.hasher.piece[c as usize][p as usize][i];
-            }
-        }
-        for i in 0..2 {
-            for j in 0..5 {
-                h ^= self.hasher.hand[i][j][self.hand[i][j] as usize];
-            }
-        }
-        h
-    }
+    fn hash(&self) -> search::Hash { self.hash() }
     fn moves(&self, ml: &mut [Self::Move]) -> usize {
         let mut n = 0;
         let mut add_move = |f,t,p,m,fl,n:&mut usize| { ml[*n]=Move::new(f, t, p, m, fl); *n+=1; };
@@ -364,7 +322,19 @@ impl search::Board for Board {
         //     - empty square
         //     - not promotion
         //     - TODO: disallow checkmate pawn drops
-        for i in 0..5 {
+        if self.nhand[self.side as usize] > 0 {
+            for i in 0..5 {
+                if self.hand[self.side as usize][i] > 0 {
+                    let f = if self.side==Color::Black{B_HAND}else{W_HAND};
+                    for t in 0..25 {
+                        if self.square[t]==None
+                            && (i!=(Piece::Pawn as usize)||promotion[t]!=Some(self.side)) {
+                            let p = unsafe { mem::transmute(i as u8) };
+                            add_move(f, t, p, p, flg|MF_DROP, &mut n);
+                        }
+                    }
+                }
+            }
         }
         for f in 0..25 {
             if let Some((p,c)) = self.square[f] {
@@ -374,7 +344,7 @@ impl search::Board for Board {
                     let t = box_to_board[(board_to_box[f] + mult*off) as usize];
                     if t<0 { continue; }
                     let t = t as usize;
-                    if self.square[t]==None || self.square[t].unwrap().1==self.xside {
+                    if self.square[t]==None || self.square[t].unwrap().1==!self.side {
                         let mut flags = 0;
                         let mut x = Piece::Empty;
                         if self.square[t]!=None {
@@ -393,6 +363,14 @@ impl search::Board for Board {
                     }
                 }
                 // slide moves
+                for &off in move_slide_offset(p).iter().filter(|&&off|off!=0) {
+                    let mut t = f;
+                    loop {
+                        t = box_to_board[board_to_box[t] + off];
+                        if t<0 { break; }
+
+                    }
+                }
             }
         }
         n
@@ -402,5 +380,42 @@ impl search::Board for Board {
     }
     fn state(&self) -> search::GameState {
         search::GameState::Playing
+    }
+}
+
+impl Board {
+    pub fn show(&self) {
+        println!("{:016x}", self.hash());
+        for y in (0..5).rev() {
+            print!("{}|", ('1' as u32 + y as u32) as u8 as char);
+            for x in 0..5 {
+                let x = self.square[x + y*5];
+                match x {
+                    None => { print!("."); }
+                    Some((p,c)) => {
+                        print!("{}", 
+                            if c==Color::Black { p.to_char() }
+                            else { p.to_char().to_lowercase().nth(0).unwrap() }
+                        );
+                    }
+                }
+            }
+            print!("\n");
+        }
+        print!(" +-----\n  abcde\n");
+    }
+    fn hash(&self) -> search::Hash {
+        let mut h = if self.side==Color::White {self.hasher.side} else {0};
+        for i in 0..25 {
+            if let Some((p,c)) = self.square[i] {
+                h ^= self.hasher.piece[c as usize][p as usize][i];
+            }
+        }
+        for i in 0..2 {
+            for j in 0..5 {
+                h ^= self.hasher.hand[i][j][self.hand[i][j] as usize];
+            }
+        }
+        h
     }
 }
