@@ -1,6 +1,6 @@
 use std::fmt;
 use std::mem;
-use std::ops::{Neg,Not};
+use std::ops::{Add,Neg,Not,Sub};
 
 extern crate rand;
 
@@ -69,6 +69,11 @@ impl fmt::Display for Piece {
 pub enum Color {
     White=1, Black,
 }
+impl Color {
+    pub fn to_char(self) -> char {
+        match self { Color::White=>'W', Color::Black=>'B' }
+    }
+}
 impl Not for Color {
     type Output = Color;
     fn not(self) -> Color {
@@ -78,10 +83,22 @@ impl Not for Color {
 
 #[derive(Clone,Copy,Debug,Default,Eq,Ord,PartialEq,PartialOrd)]
 pub struct Eval(pub i32);
+impl Add<i32> for Eval {
+    type Output = Eval;
+    fn add(self, x: i32) -> Eval { Eval(self.0 + x) }
+}
+impl Sub<i32> for Eval {
+    type Output = Eval;
+    fn sub(self, x: i32) -> Eval { Eval(self.0 - x) }
+}
 impl Neg for Eval {
     type Output = Eval;
     fn neg(self) -> Eval { Eval(-self.0) }
 }
+static WIN_VALUE : Eval = Eval(100000000);
+static LOSE_VALUE : Eval = Eval(-100000000);
+static DRAW_VALUE : Eval = Eval(0);
+
 
 const B_HAND       : usize = 25;
 const W_HAND       : usize = 26;
@@ -282,9 +299,9 @@ impl search::Board for Board {
     fn make_move(&mut self, m: Self::Move) -> search::MoveResult {
         let flag = m.flag();
         if flag & MF_DROP != 0 {
-            self.square[m.t()] = Some((m.p(), unsafe{mem::transmute(self.side)}));
+            self.square[m.t()] = Some((m.m(), unsafe{mem::transmute(self.side)}));
             self.nhand[self.side as usize] -= 1;
-            self.hand[self.side as usize][m.p() as usize] -= 1;
+            self.hand[self.side as usize][m.m() as usize] -= 1;
         } else {
             if flag & MF_CAP != 0 {
                 if m.p() == Piece::King {
@@ -299,9 +316,7 @@ impl search::Board for Board {
             self.square[m.t()] = self.square[m.f()];
             self.square[m.f()] = None;
             if flag & MF_PRO != 0 {
-                if let Some((p,c)) = self.square[m.t()] {
-                    self.square[m.t()] = Some((p.promotes(), c));
-                }
+                self.square[m.t()] = Some((m.m().promotes(), self.side));
             }
         }
         self.side = !self.side;
@@ -309,7 +324,27 @@ impl search::Board for Board {
         search::MoveResult::SameSide
     }
     fn unmake_move(&mut self, m: Self::Move) -> search::MoveResult {
+        self.side = !self.side;
+        if m.f() < 25 {
+            self.square[m.f()] = Some((m.m(), self.side));
+            if m.flag() & MF_CAP != 0 {
+                self.square[m.t()] = Some((m.p(), !self.side));
+                if m.p() != Piece::King {
+                    self.nhand[self.side as usize] -= 1;
+                    self.hand[self.side as usize][m.p().unpromotes() as usize] -= 1;
+                }
+            } else {
+                self.square[m.t()] = None;
+            }
+        } else {
+            //assert_debug(m.flag() & MF_DROP != 0);
+            self.square[m.t()] = None;
+            self.nhand[self.side as usize] += 1;
+            self.hand[self.side as usize][m.m() as usize] += 1;
+        }
+
         self.hash = self.hash();
+        self.play = search::GameState::Playing;
         search::MoveResult::SameSide
     }
     fn hash(&self) -> search::Hash { self.hash() }
@@ -364,10 +399,30 @@ impl search::Board for Board {
                 }
                 // slide moves
                 for &off in move_slide_offset(p).iter().filter(|&&off|off!=0) {
-                    let mut t = f;
-                    loop {
-                        t = box_to_board[board_to_box[t] + off];
+                    let mut t = f as isize;
+                    'slide: loop {
+                        t = box_to_board[(board_to_box[t as usize] + off) as usize];
                         if t<0 { break; }
+                        let t = t as usize;
+                        let fp =
+                            if (promotion[f]==Some(self.side) || promotion[t]==Some(self.side))
+                                && p.promotes()!=Piece::Empty { MF_PRO } else { 0 };
+                        if self.square[t]==None {
+                            add_move(f, t, Piece::Empty, p, flg|fp, &mut n);
+                            if fp&MF_PRO != 0 {
+                                add_move(f, t, Piece::Empty, p, (flg|fp|MF_NONPRO)&!MF_PRO, &mut n);
+                            }
+                        } else if let Some((y,c)) = self.square[t] {
+                            if c==!self.side {
+                                add_move(f, t, y, p, flg|fp|MF_CAP, &mut n);
+                                if fp&MF_PRO != 0 {
+                                    add_move(f, t, y, p, (flg|fp|MF_NONPRO|MF_CAP)&!MF_PRO, &mut n);
+                                }
+                            }
+                            break 'slide;
+                        } else {
+                            break 'slide;
+                        }
 
                     }
                 }
@@ -375,12 +430,8 @@ impl search::Board for Board {
         }
         n
     }
-    fn evaluate(&self, ply:usize) -> Self::Eval {
-        Self::Eval::default()
-    }
-    fn state(&self) -> search::GameState {
-        search::GameState::Playing
-    }
+    fn evaluate(&self, ply:usize) -> Self::Eval { self.evaluate(ply) }
+    fn state(&self) -> search::GameState { self.play }
 }
 
 impl Board {
@@ -400,11 +451,27 @@ impl Board {
                     }
                 }
             }
+            if y==3 {
+                print!(" W:");
+                for i in 0..5 {
+                    for _ in 0..self.hand[Color::Black as usize][i] {
+                        print!("{}", unsafe{mem::transmute::<_,Piece>(i as u8)}.to_char());
+                    }
+                }
+            } else if y==2 {
+                print!(" B:");
+                for i in 0..5 {
+                    for _ in 0..self.hand[Color::White as usize][i] {
+                        print!("{}", unsafe{mem::transmute::<_,Piece>(i as u8)}.to_char());
+                    }
+                }
+            }
             print!("\n");
         }
-        print!(" +-----\n  abcde\n");
+        print!(" +-----  [{:?}]\n  abcde\n", self.evaluate(0));
+        println!("{:?} {}.t.m.", self.play, self.side.to_char());
     }
-    fn hash(&self) -> search::Hash {
+    pub fn hash(&self) -> search::Hash {
         let mut h = if self.side==Color::White {self.hasher.side} else {0};
         for i in 0..25 {
             if let Some((p,c)) = self.square[i] {
@@ -417,5 +484,46 @@ impl Board {
             }
         }
         h
+    }
+    pub fn evaluate(&self, ply:usize) -> Eval {
+        static piece_value : [i32; 10+1] = [ 0, 100, 300, 200, 400, 500, 1000, 150, 250, 500, 600 ];
+        static piece_value_hand : [i32; 5+1] = [ 0, 100/2, 300/2, 200/2, 400/2, 500/2 ];
+
+        // ++nodes_evaluated;
+
+        // terminal
+        match self.play {
+            search::GameState::BlackWin => {
+                return if self.side==Color::Black{(WIN_VALUE - ply as i32)}else{-(WIN_VALUE - ply as i32)} }
+            search::GameState::WhiteWin => {
+                return if self.side==Color::Black{(LOSE_VALUE - ply as i32)}else{-(LOSE_VALUE - ply as i32)} }
+            search::GameState::Draw => {
+                return if self.side==Color::Black{(DRAW_VALUE)}else{-(DRAW_VALUE)} }
+            _ => {}
+        }
+
+        let mut sum = 0;
+
+        // material
+        for &q in &self.square {
+            match q {
+                Some((p, Color::Black)) => { sum += piece_value[p as usize]; }
+                Some((p, Color::White)) => { sum -= piece_value[p as usize]; }
+                _ => {}
+            }
+        }
+        for i in 0..5 {
+            sum += (self.hand[Color::Black as usize][i] as i32) * piece_value_hand[i];
+            sum -= (self.hand[Color::White as usize][i] as i32) * piece_value_hand[i];
+        }
+
+        // king tropism
+
+        // randomness
+        sum += (self.hash&((1<<32)-1) % 7) as i32;
+        sum -= ((self.hash>>32) % 7) as i32;
+            
+        // return relative value
+        if self.side==Color::Black { Eval(sum) } else { Eval(-sum) }
     }
 }

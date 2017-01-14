@@ -11,17 +11,28 @@ fn main() {
     let mut ab = search::AlphaBetaSearcher::<microshogi::Board>::new();
     println!("{:?}", ab.b.to_fen());
     let mut ml = [microshogi::Move::default(); 99];
-    for j in 0..10 {
-        println!("*** {} ***", j);
+    let mut mv : Vec<microshogi::Move> = Vec::new();
+    for j in 0..25 {
+        println!("\n*** {} ***", j);
         ab.b.show();
         let n = ab.b.moves(&mut ml);
-        for (i,&m) in (&ml[0..n]).iter().enumerate() { print!(" {}.{}", i+1, m) }; println!("");
-        ab.b.make_move(ml[0]);
+        for (i,&m) in (&ml[0..n]).iter().enumerate() { print!(" {}.{}", i+1, m) };
+        let mj = ml[(j*j+7*j+1) % n];
+        println!(" <<{}>>", mj);
+        ab.b.make_move(mj);
+        mv.push(mj);
     }
     ab.b.show();
+    for &mj in mv.iter().rev() {
+        println!("----------");
+        println!("<<<{}>>>", mj);
+        ab.b.unmake_move(mj);
+        ab.b.show();
+    }
     return;
 
 
+/*
     let mut ab = search::AlphaBetaSearcher::<ttt::Board>::new();
     println!("{:?}", ab.b);
     while ab.b.state() == search::GameState::Playing {
@@ -54,5 +65,6 @@ fn main() {
     println!("{}", std::mem::size_of::<Option<(microshogi::Piece,microshogi::Color)>>());
     let mut rng = rand::thread_rng();
     println!("{}", rng.gen::<search::Hash>());
+*/
 }
 
