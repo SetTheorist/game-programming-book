@@ -7,7 +7,7 @@
 \usepackage[left=1in,right=0.75in,top=1in,bottom=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{makeidx}
-\usepackage{tikz}
+%\usepackage{tikz}
 %%%%% For the skak/etc. packages, need ps-tricks, dvi2ps->ps2pdf etc.
 % need 'lambda' package - not working on miktex at the moment...
 %%\usepackage{skak}
@@ -45,10 +45,6 @@ Need:
 
 consistent notation for moves / trees / ...
 
-vocabulary for move / board / game / state / evaluation / etc.
-
-vocabulary for pieces / colors / etc.
-
 build my own game-board typesetting macros?
 
 pseudo-code / program-listing style...
@@ -61,9 +57,6 @@ go boards
 
 hex boards
 
-C++ / Python / Scala / OCaml / C / D / Rust / Go ???
-Probably settle sadly on C++ - just need to verify that it won't impact performance over C...
-
 USE TikZ package for graphs/trees?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,19 +64,42 @@ USE TikZ package for graphs/trees?
 \chapter{Introduction}
 \label{chap-introduction}
 
-We'll use C or C++ for programming language probably.  Except if we
-don't.
+\section{Overview}
+
+\section{Games}
+
+vocabulary for move / board / game / state / evaluation / etc.
+
+vocabulary for pieces / colors / etc.
+
+\section{Programming language}
+
+We will use the Rust programming language for our examples.
+Although it is not a very wide-spread language, it is ideally suited for
+programming game systems.  It is low-level with extremely high-performance possible (comparable to C/C++),
+but it allows for generic and high-level programming through its traits systems.  Additionally, its ``safety''
+properties allows for spending less time debugging memory issues than in C++, for example.
+
+For those who are interested in using other programming languages should find it relatively easy to translate
+the examples into their language of choice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Warm Up --- Tic-Tac-Toe}
 \label{chap-warm-up}
 
-The simple game of \g{tic-tac-toe} (or \g{noughts-and-crosses} or ...)
-is well-known to most people and viewed as a simple
-child's game.  Despite this, we'll ...
+The simple game of \g{tic-tac-toe} (also know as \g{noughts-and-crosses} or ...)
+is a simple child's game which is well-known.
 
-we will build various pieces for this
+For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
+by two players ``X'' and ``O''.  Players alternate selecting an empty cell
+and claiming it (with ``X'' moving first)
+When a player has claimed three cells in a straight line (horizontally, vertically, or diagonally),
+then that player wins; i.e., 3-in-a-row wins.  If the board fills with no 3-in-a-row, then the game
+is declared drawn (sometimes called a ``cat's game'').
+
+Although the game is quite simple and has little interest for actual play by experienced players
+(as all games end in draws), we will develop a player.
 
 The simplicity of this game will allow us to look at a variety of aspects
 game programming without getting bogged down in complicated and game-specific details
@@ -98,46 +114,150 @@ is an overestimate, since some of the counted possibilities are impossible in a 
 legal board positions that can occur in a game is ???TODO??? --- we will compute this number
 in our work below).
 
-
 \section{Board Representation}
 The first step we'll need is to find a way to represent the state of the game.
-The most obvious approach is to simply make a three-by-three array to hold the
-state of each cell in the tic-tac-toe grid.
+
+First, we define the ``side'' and a ``cell'' which may be empty or contain a side.
 \begin{verbatim}
-typedef enum piece { empty, x_piece, o_piece } piece;
-typedef piece board[3][3];
+pub enum Side {
+    X=1,
+    O=2,
+}
+type Cell = Option<Side>;
 \end{verbatim}
+
+The most obvious approach is to simply make a three-by-three array to hold the
+state of each cell in the \g{tic-tac-toe} grid.
+\begin{verbatim}
+pub struct Board {
+    cells : [[Cell; 3]; 3],
+}
+\end{verbatim}
+
 A slight variation, which is sometimes convenient, is to collapse the two-dimensional array
 to a one-dimensional array:
 \begin{verbatim}
-typedef enum piece { empty, x_piece, o_piece } piece;
-typedef piece board[9];
+pub struct Board {
+    cells : [Cell; 9],
+}
 \end{verbatim}
 This means that if we want to use a row-column pair to access the cells, then we'll have to do
-the conversion ourself.  We might define convenience functions or macros for this.
+the conversion ourself.  We can define accessor functions to assist with this.
 \begin{verbatim}
-#define RC_to_I(r,c)  ((r)*3+(c))
-#define I_to_R(i)     ((i)/3)
-#define I_to_C(i)     ((i)%3)
+impl Board {
+    [inline]
+    pub fn cell_idx(&self, idx: usize) -> &Cell
+    { self.cells[idx] }
+    [inline]
+    pub fn cell_rc(&self, r: usize, c: usize) -> &Cell
+    { self.cells[r*3 + c] }
+    [inline]
+    pub fn cell_idx_mut(&mut self, idx: usize) -> &mut Cell
+    { self.cells[idx] }
+    [inline]
+    pub fn cell_rc_mut(&mut self, r: usize, c: usize) -> &mut Cell
+    { self.cells[r*3 + c] }
+}
 \end{verbatim}
-Though with 
 
 A less obvious approach, but taking much less space and allowing us to do some cute tricks
-in implemetation is a bit-board approach.  That is, we use the individual bits in an integer
-to ...  Note that we need to use an integer type which has at least 9 bits --- one for each cell
-of the board.  Note that this takes 4 bytes on a typical machine, whereas the cell approach
-takes 9 bytes.
+in implemetation is a ``bit-board'' approach.  That is, we use the individual bits in an integer
+to encode a single fact about each cell.  For \g{tic-tac-toe}, we will use one bit-board to
+indicate cells selected by X and another to indicate cells selected by O.
+This representation is surprisingly flexible and allows for fast computation of many
+features of the board (though the power of this representation won't be clear until
+we look at more complicated games later.)
+
+Note that we need to use an integer type which has at least 9 bits --- one for each cell
+of the board.  Note that this takes 4 bytes total typical machine, whereas the cell approach
+takes at least 9 bytes.
 \begin{verbatim}
-typedef unsigned short bitboard;
-typedef struct board {
-  bitboard x;
-  bitboard o;
-} board;
+type BitBoard = u16;
+pub struct Board {
+    x : BitBoard,
+    O : BitBoard,
+}
 \end{verbatim}
 
-
 \section{Move representation}
-For tic-tac-toe, a move can simply be represented
+For tic-tac-toe, a move can be represented in a variety of ways, though the most
+natural representation will depend on the board representation.  For the three board representations
+mentioned above, we have the following move representations corresponding
+\begin{enumerate}
+\item a pair $(r,c)$ giving the row and column of the cell
+\item an index $i$ in the range $0..9$
+\item a BitBoard with a single bit set
+\end{enumerate}
+
+We'll go ahead with the second representation of the board as a one-dimensional array of cells
+and a move representated by an integer.  Although, we can figure out whose turn it is to play,
+it's convenient to represent the player to move directly.
+
+Summing up this section, we have the following code.
+(We additionally fill in various necessary boiler-plate code for initialization, etc.)
+\begin{verbatim}
+// two sides playing
+pub enum Side {
+    X=1,
+    O=2
+}
+
+// possibly empty board cell
+type Cell = Option<Side>;
+
+// board representation
+pub struct Board {
+    cells : [Cell; 9],
+    to_move : Option<Side>,
+    moves_played : usize,
+}
+
+impl Board {
+    // initialization
+    pub fn new() -> Self {
+        Board { cells: [None; 9], to_move: Some(Side.X), moves_played: 0 }
+    }
+
+    // an inefficient but straightforward implementation
+    // we return None to indicate the game is still being played,
+    // otherwise return Some(Some(side)) where side won
+    // and Some(None) for a drawn game
+    pub fn is_game_over(&self) -> Option<Option<Side>> {
+        // check horizontal lines
+        if self.cells[0]==self.cells[1] && self.cells[1]==self.cells[2] && self.cells[0].is_some() {
+            Some(Some(self.cells[0]))
+        } else if self.cells[3]==self.cells[4] && self.cells[4]==self.cells[5] && self.cells[3].is_some() {
+            Some(Some(self.cells[3]))
+        } else if self.cells[6]==self.cells[7] && self.cells[7]==self.cells[8] && self.cells[6].is_some() {
+            Some(Some(self.cells[6]))
+        // check vertical lines
+        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
+            Some(Some(self.cells[0]))
+        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
+            Some(Some(self.cells[3]))
+        } else if self.cells[2]==self.cells[5] && self.cells[5]==self.cells[8] && self.cells[2].is_some() {
+            Some(Some(self.cells[6]))
+        // check diagonal lines
+        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
+            Some(Some(self.cells[0]))
+        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
+            Some(Some(self.cells[3]))
+        // check for draw
+        } else if self.moves_played==9 {
+            Some(None)
+        } else {
+            None
+        }
+    }
+
+    // a highly inefficient but straightforward implementation:
+    // iterate through integers 0..8 and keep those with empty cell
+    pub fn moves(&self) -> Vector<usize> {
+        (0..9).filter(|i| self.cells[i].is_none()).collect()
+    }
+}
+\end{verbatim}
+
 
 
 
@@ -150,6 +270,21 @@ for the first player or a win for the second player or a draw.
 It is a theoretical fact, first proven by von Neumann, that one of
 these three possibilities must hold.  Our algorithm will in fact be
 a kind of constructive ``proof'' of this.
+
+The basic idea is that we systematically examine each possible move:
+we temporarily make the move on the board, then repeat the process
+on the resulting position, making each possible move by the opponent,
+etc. until we reach positions which are won for one of the players
+or draw positions.  (Positions where the game has ended are called
+``terminal'' positions.)  We then proceed back up the tree, assuming
+that each player will make the beset possible move.  That is, if there
+is a move which will lead to a forced win for that player,
+he will select it, otherwise if there is a move leading to a drawn game,
+he will select that, otherwise (and only then) will he choose a move
+which leads to a forced win by the opponent.
+
+Some examples should make this clear:
+
 
 \section{Retrograde Analysis}
 An alternative to searching from a given position is to
@@ -192,6 +327,7 @@ The basis of most game-playing programs is the
 searching exhaustively through every possible sequence
 of moves to the end of the game and ...
 
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   [level/.style={sibling distance=20mm/#1}]
@@ -246,6 +382,7 @@ of moves to the end of the game and ...
     };
 \end{tikzpicture}
 \end{center}
+\fi
 
 \begin{verbatim}
   def Search(b: Board, depth: Int) {
@@ -414,6 +551,7 @@ this area, tend to lead to cleaner and more natural code.  It eliminates a lot o
 if-then checks for which side is moving in the search code.  (It can add a
 tiny complication to the board evaluation which is often naturally coded in absolute terms.)
 
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   [level/.style={sibling distance=30mm/#1}]
@@ -443,6 +581,7 @@ tiny complication to the board evaluation which is often naturally coded in abso
     };
 \end{tikzpicture}
 \end{center}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Transposition tables}
@@ -528,6 +667,7 @@ The idea is that we we don't really need to search every node, but can ignore si
 parts of the game-tree without affecting the accuracy of our result.
 
 The basic idea is illustrated in the following tree:
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   [level/.style={sibling distance=20mm/#1}]
@@ -543,6 +683,7 @@ The basic idea is illustrated in the following tree:
     };
 \end{tikzpicture}
 \end{center}
+\fi
 where we can ignore the (subtree off the) final branch by the following reasoning:
 the max player can guarantee a result of {\em at least 2} by making the first move, while if
 he makes the second move, the min player can ensure a result of {\em no better than 1} by taking
@@ -557,6 +698,7 @@ know the best move (if we know the best move, there would be no need to search i
 place!)
 
 Worst-case scenario (9 leaf nodes evaluated):
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   %[level/.style={sibling distance=30mm/#1}]
@@ -585,8 +727,10 @@ Worst-case scenario (9 leaf nodes evaluated):
   };
 \end{tikzpicture}
 \end{center}
+\fi
 
 Best-case scenario (5 leaf nodes evaluated):
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   %[level/.style={sibling distance=30mm/#1}]
@@ -613,6 +757,7 @@ Best-case scenario (5 leaf nodes evaluated):
   };
 \end{tikzpicture}
 \end{center}
+\fi
 
 The theoretical improvement we can expect from full width search to optimal \ab-search
 was computed by Knuth and [...] which takes a tree with uniform branching
@@ -1356,6 +1501,7 @@ change the value of that given node.  In fact, for different evaluation values, 
 may be different numbers ... blah blah....
 
 Standard example repeated {\it ad nauseum}:
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   %[level/.style={sibling distance=40mm/#1}]
@@ -1385,6 +1531,7 @@ where for node A we have
   6 & 2 & (D and E) or (F and G)
 \end{tabular}
 \end{center}
+\fi
 
 \subsection{Alpha-beta conspiracy search}
 
@@ -1500,6 +1647,7 @@ since our opponent needs to find only one move she can make that spoils our win 
 and for us to have a forced win, every possible move by the opponent must lead to a win.
 
 Consider the following simple example:
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   %[level/.style={sibling distance=40mm/#1}]
@@ -1522,6 +1670,7 @@ Consider the following simple example:
     ;
 \end{tikzpicture}
 \end{center}
+\fi
 We see that the proof number of the root node is 1 --- this makes sense, since if
 either $i$ or $j$ are wins, then the rightmost move at the root node leads to a win.
 Similarly, the disproof number of the root node is 4 --- this also makes sense, since
@@ -1623,6 +1772,7 @@ func pn_search(position) {
 
 ...
 step-by-step example of search \& updated
+\iffalse
 \begin{center}
 \begin{tikzpicture}%
   \tikzstyle{boxn}=[rectangle,draw=red,inner sep=2]
@@ -1785,6 +1935,7 @@ step-by-step example of search \& updated
     ;
 \end{tikzpicture}
 \end{center}
+\fi
 ...
 
 \subsection{Modifications and enhancements}
