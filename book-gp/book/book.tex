@@ -13,7 +13,10 @@
 % need 'lambda' package - not working on miktex at the moment...
 %%\usepackage{skak}
 %\usepackage{xskak}
+%%%%%
 %\usepackage{chessboard}
+%%%%%
+%\usepackage{diagram}
 %%%%%
 \makeindex
 
@@ -41,6 +44,18 @@
 %\chessboard[setfen=\xskakget{nextfen}]\\[1ex]
 %Position after 2.\,\xskakget{lan}
 %}
+
+%{
+%\storechessboardstyle{4x4}{maxfield=d4}
+%\chessboard[style=4x4,setwhite={Qa1,Qd2},showmover=false]
+%}
+
+%{
+%\begin{diagram}[4x4]
+%\pieces{wDa1, wDd2}
+%\end{diagram}
+%}
+
 
 Need:
 
@@ -334,6 +349,115 @@ he will select that, otherwise (and only then) will he choose a move
 which leads to a forced win by the opponent.
 
 Some examples should make this clear:
+
+
+Now here is the straightforward code for searching:
+// TODO: first implement NON-early exit version, then discuss
+// node-search counts... (a primitive form of alpha-beta?)
+{\small
+\begin{verbatim}
+pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return (s,1); }
+        None => { }
+    }
+    if b.to_move==Side.X {
+        let mut nodes = 1;
+        let ml = b.moves();
+        // initialize to loss
+        let mut result = Some(Side.O);
+        for m in ml {
+            b.make_move(m);
+            let (r,n) = fullsearch_v1(b);
+            nodes += n;
+            b.unmake_move(m);
+            match r {
+                // winning move, must play that
+                Some(Side.X) => { return (Some(Side.X),nodes); }
+                // move that results in draw:
+                // better than loss if we can't find a win
+                None => { result = None; }
+                // losing move, avoid if possible
+                Some(Side.O) => {}
+            }
+        }
+        return (result,nodes);
+    } else if b.to_move==Side.O {
+        let ml = b.moves();
+        let mut result = Some(Side.X);
+        for m in ml {
+            b.make_move(m);
+            let r = fullsearch_v1(b);
+            b.unmake_move(m);
+            match r {
+                // winning move, must play that
+                Some(Side.O) => { return Some(Side.O); }
+                // move that results in draw:
+                // better than loss if we can't find a win
+                None => { result = None; }
+                // losing move, avoid if possible
+                Some(Side.X) => {}
+            }
+        }
+        return result;
+    } else {
+        panic!("Unexpected: nobody to move in position {}", b);
+    }
+}
+\end{verbatim}
+}
+But looking at this code, we readily see that the two branches depending
+on who is to move are nearly identical, differing in only ...
+so let's implement a more unified version.  We'll add a helper function
+to the Side enum to give us the other side of a given Side.
+{\small
+\begin{verbatim}
+impl Side {
+    pub fn other(self) -> Self {
+        match self {
+            Side.O => Side.X,
+            Side.X => Side.O,
+        }
+    }
+}
+pub fn fullsearch_v2(b: &mut Board) -> Option<Side> {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return s; }
+        None => { }
+    }
+    let tm = b.to_move;  // same-side
+    let os = tm.other(); // other-side
+    let ml = b.moves();  // move-list
+    // initialize to loss
+    let mut result = Some(os);
+    for m in ml {
+        b.make_move(m);
+        let r = fullsearch_v2(b);
+        b.unmake_move(m);
+        match r {
+            // winning move, must play that,
+            Some(tm) => { return Some(tm); }
+            // move that results in draw:
+            // better than loss if we can't find a win
+            None => { result = None; }
+            // losing move, avoid if possible
+            Some(os) => {}
+        }
+    }
+    return result;
+}
+\end{verbatim}
+}
+Note that a lot of programming can be like this: don't be afraid to implement
+the simplest, most straightforward code that will achieve your goal, and then
+go back and refine it.  Often you will have a better chance of getting it correct
+this way, rather than attempting to immediately write the more complicated or
+``elegant'' version.
+
 
 
 \section{Hashing}
