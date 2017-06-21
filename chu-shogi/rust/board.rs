@@ -1,18 +1,8 @@
-#ifndef INCLUDED_BOARD_H_
-#define INCLUDED_BOARD_H_
-/* $Id: board.h,v 1.1 2010/12/21 16:30:32 ahogan Exp ahogan $ */
-#ifdef  __cplusplus
-extern "C" {
-#endif/*__cplusplus*/
 
-#include <stdio.h>
-#include "util.h"
 
-/* **************************************** */
-
-#define MAXBOARDI (144)
-#define MAXNCAPMOVES (256)
-#define MAXNMOVES (512)
+const MAXBOARDI : usize = 144;
+const MAXNCAPMOVES : usize = 256;
+const MAXNMOVES : usize = 512;
 
 /* **************************************** */
 
@@ -49,6 +39,14 @@ extern "C" {
  *
  *
  */
+
+struct movet(u32);
+#[derive(Clone,Copy,Debug,Eq,PartialEq,Ord,PartialOrd,Hash)]
+impl movet {
+    pub fn new(u32) -> Self {
+    }
+    pub fn 
+}
 typedef union movet {
   ui32 i;
   struct {
