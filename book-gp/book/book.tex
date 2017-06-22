@@ -352,8 +352,6 @@ Some examples should make this clear:
 
 
 Now here is the straightforward code for searching:
-// TODO: first implement NON-early exit version, then discuss
-// node-search counts... (a primitive form of alpha-beta?)
 {\small
 \begin{verbatim}
 pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
@@ -367,41 +365,36 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
         let mut nodes = 1;
         let ml = b.moves();
         // initialize to loss
-        let mut result = Some(Side.O);
+        let mut best_so_far = Some(Side.O);
         for m in ml {
             b.make_move(m);
-            let (r,n) = fullsearch_v1(b);
-            nodes += n;
+            let (result,n) = fullsearch_v1(b);
             b.unmake_move(m);
-            match r {
-                // winning move, must play that
-                Some(Side.X) => { return (Some(Side.X),nodes); }
-                // move that results in draw:
-                // better than loss if we can't find a win
-                None => { result = None; }
-                // losing move, avoid if possible
-                Some(Side.O) => {}
-            }
+            nodes += n;
+            best_so_far =
+                match (result, best_so_far) {
+                    (_,Some(Side.X)) | (Some(Side.X),_) => Some(Side.X),
+                    (_,None) | (None,_) => None,
+                    _ => Some(Side.O),
+                };
         }
-        return (result,nodes);
+        return (best_so_far, nodes);
     } else if b.to_move==Side.O {
         let ml = b.moves();
-        let mut result = Some(Side.X);
+        let mut best_so_far = Some(Side.X);
         for m in ml {
             b.make_move(m);
-            let r = fullsearch_v1(b);
+            let (result,n) = fullsearch_v1(b);
             b.unmake_move(m);
-            match r {
-                // winning move, must play that
-                Some(Side.O) => { return Some(Side.O); }
-                // move that results in draw:
-                // better than loss if we can't find a win
-                None => { result = None; }
-                // losing move, avoid if possible
-                Some(Side.X) => {}
-            }
+            nodes += n;
+            best_so_far =
+                match (result, best_so_far) {
+                    (_,Some(Side.O)) | (Some(Side.O),_) => Some(Side.O),
+                    (_,None) | (None,_) => None,
+                    _ => Some(Side.X),
+                };
         }
-        return result;
+        return (best_so_far, nodes);
     } else {
         panic!("Unexpected: nobody to move in position {}", b);
     }
@@ -409,9 +402,9 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
 \end{verbatim}
 }
 But looking at this code, we readily see that the two branches depending
-on who is to move are nearly identical, differing in only ...
+on who is to move are nearly identical, differing in only the preference for side,
 so let's implement a more unified version.  We'll add a helper function
-to the Side enum to give us the other side of a given Side.
+to the Side enum to give us the opposing side of a given one.
 {\small
 \begin{verbatim}
 impl Side {
@@ -422,45 +415,94 @@ impl Side {
         }
     }
 }
-pub fn fullsearch_v2(b: &mut Board) -> Option<Side> {
+pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
     // check if game is just over
     let res = b.is_game_move();
     match res {
-        Some(s) => { return s; }
+        Some(s) => { return (s,1); }
         None => { }
     }
-    let tm = b.to_move;  // same-side
-    let os = tm.other(); // other-side
-    let ml = b.moves();  // move-list
+    let tomove = b.to_move;
+    let other = tomove.other();
+    let mut nodes = 1;
+    let ml = b.moves();
     // initialize to loss
-    let mut result = Some(os);
+    let mut best_so_far = Some(other);
     for m in ml {
         b.make_move(m);
-        let r = fullsearch_v2(b);
+        let (result,n) = fullsearch_v2(b);
         b.unmake_move(m);
-        match r {
-            // winning move, must play that,
-            Some(tm) => { return Some(tm); }
-            // move that results in draw:
-            // better than loss if we can't find a win
-            None => { result = None; }
-            // losing move, avoid if possible
-            Some(os) => {}
-        }
+        nodes += n;
+        best_so_far =
+            match (result, best_so_far) {
+                (_,Some(tomove)) | (Some(tomove),_) => Some(tomove),
+                (_,None) | (None,_) => None,
+                _ => Some(other),
+            };
     }
-    return result;
+    return (best_so_far, nodes);
 }
 \end{verbatim}
 }
+
+The next modification is a speed-up: you may have noticed that once we find a winning move for the side
+to move, then the result will always be a win for that side. It would be a irrational to play a drawing or losing move
+if you've already found a winning move!  Thus, in this case, we can return immediately from the function once we have such a
+move.:
+{\small
+\begin{verbatim}
+pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return (s,1); }
+        None => { }
+    }
+    let tomove = b.to_move;
+    let other = tomove.other();
+    let mut nodes = 1;
+    let ml = b.moves();
+    // initialize to loss
+    let mut best_so_far = Some(other);
+    for m in ml {
+        b.make_move(m);
+        let (result,n) = fullsearch_v3(b);
+        b.unmake_move(m);
+        nodes += n;
+        best_so_far =
+            match (result, best_so_far) {
+                (_,Some(tomove)) | (Some(tomove),_) => { return (Some(tomove),nodes) },
+                (_,None) | (None,_) => None,
+                _ => Some(other),
+            };
+    }
+    return (best_so_far, nodes);
+}
+\end{verbatim}
+}
+This is a tiny change to a single line, but we'll see it can give a significant improvement to
+the number of nodes searched.
+
+\begin{center}
+\begin{tabular}{l|rr}
+    Searcher       & nodes searched & time (ms) \\\hline
+    fullsearch\_v1 &                &           \\
+    fullsearch\_v2 &                &           \\
+    fullsearch\_v3 &                &           \\
+\end{tabular}
+\end{center}
+
 Note that a lot of programming can be like this: don't be afraid to implement
 the simplest, most straightforward code that will achieve your goal, and then
 go back and refine it.  Often you will have a better chance of getting it correct
 this way, rather than attempting to immediately write the more complicated or
-``elegant'' version.
+``elegant'' version.  Then you can improve your correct solution for performance,
+elegance, etc.
+
+See {\tt chapter-1-tictactoe.rs}.
 
 
-
-\section{Hashing}
+\section{Transposition tables}
 
 In our search above, it turns out that there is a lot of repeated and
 redundant computation, due to ``transpositions'' --- differing sequences of 
@@ -474,15 +516,14 @@ integer and use it to index into an array.  We use a straightforward
 approach: for each cell, we code empty as 0, X as 1, and O as 2, then
 compute a code for a position as:
 \[
-    a_0\cdot 3^0 + a_1\cdot 3^1 + a_2\cdot 3^2 +
-    a_3\cdot 3^3 + a_4\cdot 3^4 + a_5\cdot 3^5 +
-    a_6\cdot 3^6 + a_7\cdot 3^7 + a_8\cdot 3^8
+    \sum_{i=0}^8 a_i 3^i
+    = a_0\cdot 3^0 + a_1\cdot 3^1 + a_2\cdot 3^2 +
+      a_3\cdot 3^3 + a_4\cdot 3^4 + a_5\cdot 3^5 +
+      a_6\cdot 3^6 + a_7\cdot 3^7 + a_8\cdot 3^8
 \]
 and noting that the maximum possible value achievable is
-$3^9-1 = 19682$.
-
-Thus we can store the results in an array of relatively small size
-(a little larger than 19k entries).
+$3^9-1 = 19682$, so we can store the results in a relatively small array
+of 19683 elements (a little larger than 19k entries).
 
 Our modified search is then as follows:
 {\small
@@ -529,10 +570,54 @@ extend and enhance ...
 
 Our core algorithms will be general and will be reused for each of the games,
 with only game-specific modules needing to be changed for move-generation and
-position evaluation.
+position evaluation.  We'll find that a surprisingly large number of games
+can be handled with general code, though tuning for optimal performance
+will still need to be done on a per-game basis.
 
+We will define a general ``interface'' ...
 
-We'll need to 
+{\small
+\begin{verbatim}
+trait GameSide {
+    pub fn first_mover() -> Self;
+    pub fn other(self) -> Self;
+    pub fn isnull(self) -> boolean;
+    pub fn nullmove() -> Self;
+}
+trait GameMove {
+}
+trait GameBoard<Side:GameSide, Move:GameMove> {
+    pub fn new() -> Self;
+    pub fn reset(&mut self);
+    pub fn make_move(&mut self, m: Move) -> Option<Side>;
+    pub fn unmake_move(&mut self, m: Move) -> Option<Side>;
+}
+trait GameEvaluator<Board:GameBoard> {
+    type Scale:Eq,Ord,PartialEq,PartialOrd;
+}
+trait Game {
+    type Board : GameBoard;
+    type Move : GameMove;
+    type Side : GameSide;
+}
+trait Evaluator<G:Game> {
+}
+\end{verbatim}
+}
+
+Once we have the general ...
+
+\begin{itemize}
+    \item Game, Board, Move traits
+    \item Searchers
+    \item Transposition Table
+\end{itemize}
+
+We'll also touch on other aspects the details of which are necessarily
+highly game-dependent, but common needs across games.
+
+Hashing, textual display, debugging, FEN,
+perft, time-controls, 
 
 
 
@@ -598,6 +683,36 @@ of moves to the end of the game and ...
     };
 \end{tikzpicture}
 \end{center}
+
+{\tiny
+\begin{verbatim}
+pub fn search_negamax<Board:GameBoard>(b: &mut Board, ss: &mut SearchStats, depth: isize) -> Board::Scale {
+    ss.nodes += 1;
+    // check if game is over
+    match b.is_terminal() {
+        Some(s) => { return s; }
+        None => { }
+    }
+    // check if hit depth bound
+    if depth<=0 {
+        let e = b.eval(ss, depth);
+        return Some(e);
+    }
+    let tomove = b.to_move();
+    let other = tomove.other();
+    let ml = b.moves();
+    // initialize to loss
+    let mut best_so_far = Board::Scale::worst(tomove);
+    for m in ml {
+        b.make_move(m);
+        let result = search_negamax_pruning(b, ss, depth);
+        b.unmake_move(m);
+        best_so_far = Board::Scale::max(tomove, best_so_far, result);
+    }
+    return best_so_far;
+}
+\end{verbatim}
+}
 
 \begin{verbatim}
   def Search(b: Board, depth: Int) {
