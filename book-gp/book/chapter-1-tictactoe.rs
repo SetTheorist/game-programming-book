@@ -33,7 +33,7 @@ pub struct Board {
 impl Board {
     // initialization
     pub fn new() -> Self {
-        Board { cells: [None; 9], to_move: Some(Side.X), moves_played: 0 }
+        Board { cells: [None; 9], to_move: Some(Side::X), moves_played: 0 }
     }
 
     // an inefficient but straightforward implementation
@@ -41,36 +41,32 @@ impl Board {
     // otherwise return Some(Some(side)) where side won
     // and Some(None) for a drawn game
     pub fn is_game_over(&self) -> Option<Option<Side>> {
-        // check horizontal lines
-        if self.cells[0]==self.cells[1] && self.cells[1]==self.cells[2] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[3]==self.cells[4] && self.cells[4]==self.cells[5] && self.cells[3].is_some() {
-            Some(Some(self.cells[3]))
-        } else if self.cells[6]==self.cells[7] && self.cells[7]==self.cells[8] && self.cells[6].is_some() {
-            Some(Some(self.cells[6]))
-        // check vertical lines
-        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
-            Some(Some(self.cells[3]))
-        } else if self.cells[2]==self.cells[5] && self.cells[5]==self.cells[8] && self.cells[2].is_some() {
-            Some(Some(self.cells[6]))
-        // check diagonal lines
-        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
-            Some(Some(self.cells[3]))
-        // check for draw
-        } else if self.moves_played==9 {
-            Some(None)
+        for &(s,d) in [
+            (0,1),(3,1),(6,1), // horizontal
+            (0,3),(1,3),(2,3), // vertical
+            (0,4),(3,2),       // diagonal
+            ].iter()
+        {
+            if self.cells[s]==self.cells[s+d]
+                && self.cells[s+d]==self.cells[s+d+d]
+                && self.cells[s].is_some()
+            {
+                return Some(self.cells[s])
+            }
+            
+        }
+        if self.moves_played==9 {
+            // draw?
+            return Some(None);
         } else {
-            None
+            // not over
+            return None;
         }
     }
 
     // a highly inefficient but straightforward implementation:
     // iterate through integers 0..8 and keep those with empty cell
-    pub fn moves(&self) -> Vector<Move> {
+    pub fn moves(&self) -> Vec<Move> {
         (0..9).filter(|&i| self.cells[i].is_none()).collect()
     }
 
@@ -81,24 +77,25 @@ impl Board {
         } else {
             self.moves_played += 1;
             self.cells[m] = self.to_move;
-            self.to_move = if self.to_move==Side::O {Side::X} else {Side::O};
+            self.to_move = Some(if self.to_move.unwrap()==Side::O {Side::X} else {Side::O});
             if self.is_game_over().is_some() { self.to_move = None; }
             Ok(self.to_move)
         }
     }
     pub fn unmake_move(&mut self, m: Move) -> Result<Side,()> {
+        return Err(());
     }
 }
 
 pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
+    let mut nodes = 1;
     // check if game is just over
     let res = b.is_game_over();
     match res {
-        Some(s) => { return (s,1); }
+        Some(s) => { return (s,nodes); }
         None => { }
     }
     if b.to_move==Some(Side::X) {
-        let mut nodes = 1;
         let ml = b.moves();
         // initialize to loss
         let mut best_so_far = Some(Side::O);
@@ -144,8 +141,8 @@ pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
         Some(s) => { return (s,1); }
         None => { }
     }
-    let tomove = b.to_move;
-    let other = tomove.unwrap().other();
+    let tomove = b.to_move.unwrap();
+    let other = tomove.other();
     let mut nodes = 1;
     let ml = b.moves();
     // initialize to loss
@@ -157,7 +154,7 @@ pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
         nodes += n;
         best_so_far =
             match (result, best_so_far) {
-                (_,Some(tomove)) | (Some(tomove),_) => Some(tomove),
+                (_,Some(x)) | (Some(x),_) if x==tomove => { return (Some(tomove),nodes) },
                 (_,None) | (None,_) => None,
                 _ => Some(other),
             };
@@ -172,8 +169,8 @@ pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
         Some(s) => { return (s,1); }
         None => { }
     }
-    let tomove = b.to_move;
-    let other = tomove.unwrap().other();
+    let tomove = b.to_move.unwrap();
+    let other = tomove.other();
     let mut nodes = 1;
     let ml = b.moves();
     // initialize to loss
@@ -185,7 +182,7 @@ pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
         nodes += n;
         best_so_far =
             match (result, best_so_far) {
-                (_,Some(tomove)) | (Some(tomove),_) => { return (Some(tomove),nodes) },
+                (_,Some(x)) | (Some(x),_) if x==tomove => { return (Some(tomove),nodes) },
                 (_,None) | (None,_) => None,
                 _ => Some(other),
             };
