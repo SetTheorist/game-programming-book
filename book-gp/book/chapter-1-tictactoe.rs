@@ -15,6 +15,21 @@ impl Side {
     }
 }
 
+#[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
+pub enum MoveResult {
+    SameSideMoves=1,
+    OtherSideMoves=2,
+    GameOver=3,
+    Error=4,
+}
+
+#[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
+pub enum GameResult {
+    Win(Side),
+    Draw,
+    Error,
+}
+
 // possibly empty board cell
 //#[derive(Clone,Copy,Debug,Eq,Ord,PartialEq,PartialOrd)]
 type Cell = Option<Side>;
@@ -40,7 +55,7 @@ impl Board {
     // we return None to indicate the game is still being played,
     // otherwise return Some(Some(side)) where side won
     // and Some(None) for a drawn game
-    pub fn is_game_over(&self) -> Option<Option<Side>> {
+    pub fn is_game_over(&self) -> Option<GameResult> {
         for &(s,d) in [
             (0,1),(3,1),(6,1), // horizontal
             (0,3),(1,3),(2,3), // vertical
@@ -51,13 +66,13 @@ impl Board {
                 && self.cells[s+d]==self.cells[s+d+d]
                 && self.cells[s].is_some()
             {
-                return Some(self.cells[s])
+                return Some(GameResult::Win(if self.cells[s]==Some(Side::X) {Side::X} else {Side::O} ))
             }
             
         }
         if self.moves_played==9 {
             // draw?
-            return Some(None);
+            return Some(GameResult::Draw);
         } else {
             // not over
             return None;
@@ -70,24 +85,24 @@ impl Board {
         (0..9).filter(|&i| self.cells[i].is_none()).collect()
     }
 
-    pub fn make_move(&mut self, m: Move) -> Result<Option<Side>,()> {
+    pub fn make_move(&mut self, m: Move) -> MoveResult {
         // check for ended game
         if self.cells[m]!=None || self.to_move==None {
-            Err(())
+            MoveResult::Error
         } else {
             self.moves_played += 1;
             self.cells[m] = self.to_move;
             self.to_move = Some(if self.to_move.unwrap()==Side::O {Side::X} else {Side::O});
             if self.is_game_over().is_some() { self.to_move = None; }
-            Ok(self.to_move)
+            MoveResult::OtherSideMoves
         }
     }
-    pub fn unmake_move(&mut self, m: Move) -> Result<Side,()> {
-        return Err(());
+    pub fn unmake_move(&mut self, m: Move) -> MoveResult {
+        MoveResult::Error
     }
 }
 
-pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v1(b: &mut Board) -> (GameResult,usize) {
     let mut nodes = 1;
     // check if game is just over
     let res = b.is_game_over();
@@ -98,7 +113,7 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
     if b.to_move==Some(Side::X) {
         let ml = b.moves();
         // initialize to loss
-        let mut best_so_far = Some(Side::O);
+        let mut best_so_far = GameResult::Win(Side::O);
         for m in ml {
             b.make_move(m);
             let (result,n) = fullsearch_v1(b);
@@ -106,15 +121,15 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
             nodes += n;
             best_so_far =
                 match (result, best_so_far) {
-                    (_,Some(Side::X)) | (Some(Side::X),_) => Some(Side::X),
-                    (_,None) | (None,_) => None,
-                    _ => Some(Side::O),
+                    (_,GameResult::Win(Side::X)) | (GameResult::Win(Side::X),_) => GameResult::Win(Side::X),
+                    (_,GameResult::Draw) | (GameResult::Draw,_) => GameResult::Draw,
+                    _ => GameResult::Win(Side::O),
                 };
         }
         return (best_so_far, nodes);
     } else if b.to_move==Some(Side::O) {
         let ml = b.moves();
-        let mut best_so_far = Some(Side::X);
+        let mut best_so_far = GameResult::Win(Side::X);
         for m in ml {
             b.make_move(m);
             let (result,n) = fullsearch_v1(b);
@@ -122,9 +137,9 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
             nodes += n;
             best_so_far =
                 match (result, best_so_far) {
-                    (_,Some(Side::O)) | (Some(Side::O),_) => Some(Side::O),
-                    (_,None) | (None,_) => None,
-                    _ => Some(Side::X),
+                    (_,GameResult::Win(Side::O)) | (GameResult::Win(Side::O),_) => GameResult::Win(Side::O),
+                    (_,GameResult::Draw) | (GameResult::Draw,_) => GameResult::Draw,
+                    _ => GameResult::Win(Side::X),
                 };
         }
         return (best_so_far, nodes);
@@ -134,7 +149,7 @@ pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
 }
 
 
-pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v2(b: &mut Board) -> (GameResult,usize) {
     // check if game is just over
     let res = b.is_game_over();
     match res {
@@ -146,7 +161,7 @@ pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
     let mut nodes = 1;
     let ml = b.moves();
     // initialize to loss
-    let mut best_so_far = Some(other);
+    let mut best_so_far = GameResult::Win(other);
     for m in ml {
         b.make_move(m);
         let (result,n) = fullsearch_v2(b);
@@ -154,15 +169,15 @@ pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
         nodes += n;
         best_so_far =
             match (result, best_so_far) {
-                (_,Some(x)) | (Some(x),_) if x==tomove => { return (Some(tomove),nodes) },
-                (_,None) | (None,_) => None,
-                _ => Some(other),
+                (_,GameResult::Win(x)) | (GameResult::Win(x),_) if x==tomove => { return (GameResult::Win(tomove),nodes) },
+                (_,GameResult::Draw) | (GameResult::Draw,_) => GameResult::Draw,
+                _ => GameResult::Win(other),
             };
     }
     return (best_so_far, nodes);
 }
 
-pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v3(b: &mut Board) -> (GameResult,usize) {
     // check if game is just over
     let res = b.is_game_over();
     match res {
@@ -174,7 +189,7 @@ pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
     let mut nodes = 1;
     let ml = b.moves();
     // initialize to loss
-    let mut best_so_far = Some(other);
+    let mut best_so_far = GameResult::Win(other);
     for m in ml {
         b.make_move(m);
         let (result,n) = fullsearch_v3(b);
@@ -182,9 +197,9 @@ pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
         nodes += n;
         best_so_far =
             match (result, best_so_far) {
-                (_,Some(x)) | (Some(x),_) if x==tomove => { return (Some(tomove),nodes) },
-                (_,None) | (None,_) => None,
-                _ => Some(other),
+                (_,GameResult::Win(x)) | (GameResult::Win(x),_) if x==tomove => { return (GameResult::Win(tomove),nodes) },
+                (_,GameResult::Draw) | (GameResult::Draw,_) => GameResult::Draw,
+                _ => GameResult::Win(other),
             };
     }
     return (best_so_far, nodes);
