@@ -140,9 +140,8 @@ central play by playing to a corner.)
 \end{center}
 
 Although the game is quite simple and has little interest for actual play by experienced players
-(as all games end in draws), we will develop a player.
-
-The simplicity of this game will allow us to look at a variety of aspects
+(as all games inevitably end in draws), we will go ahead and develop a player for it.
+The simplicity of this game will allow us to build a full system and look at a variety of aspects of
 game programming without getting bogged down in complicated and game-specific details
 of rules or game representations.  And, as it is such a simple game, we can
 do a deeper analysis of the game.  There are less than $3^9=19\,683$ different
@@ -155,10 +154,13 @@ is an overestimate, since some of the counted possibilities are impossible in a 
 legal board positions that can occur in a game is ???TODO??? --- we will compute this number
 in our work below).
 
+Later in this work, we will investigate many more complex games of real interest.
+
 \section{Board Representation}
 The first step we'll need is to find a way to represent the state of the game.
 
 First, we define the ``side'' and a ``cell'' which may be empty or contain a side.
+{\small
 \begin{verbatim}
 pub enum Side {
     X=1,
@@ -166,40 +168,80 @@ pub enum Side {
 }
 type Cell = Option<Side>;
 \end{verbatim}
+}
+
+Next, to allow us to try a few different representations, we'll define a generic
+trait (or ``interface'') that the boards will all satisfy.  Then, as long as our
+search (and other functionality) uses only the trait, then we can use any of the
+representations with the same search code.  (Note that we will not incur any
+performance penalties for genericity of our search code in Rust, due to its policy
+of ``monomorphization'' of generic (templated) code.
+
+{\small
+\begin{verbatim}
+pub trait Board {
+    type Square : Debug,Display,Clone,Copy,Move;
+    fn new() -> Self;
+    fn reset(&mut self);
+    fn cell(&self, square: Square) -> Cell;
+    fn set_cell(&mut self, square: Square, cell: Cell);
+}
+\end{verbatim}
+}
 
 The most obvious approach is to simply make a three-by-three array to hold the
 state of each cell in the \g{tic-tac-toe} grid.
+{\begin{tabular}{c|c|c} (0,0) & (0,1) & (0,2) \\\hline (1,0) & (1,1) & (1,2) \\\hline (2,0) & (2,1) & (2,2) \end{tabular}}
+{\small
 \begin{verbatim}
-pub struct Board {
+pub struct Board_rowccol : Board {
     cells : [[Cell; 3]; 3],
 }
+impl Board for Board_rowcol {
+    #[derive(Debug,Display,Clone,Copy,Move)]
+    type Square = (usize,usize);
+    fn new() -> Self {
+        Board_rowcol { cells:[[None;3];3] }
+    }
+    fn reset(&mut self) {
+        self.cells = [[None;3];3];
+    }
+    fn cell(&self, square: Square) -> Cell {
+        self.cells[square.0][square.1]
+    }
+    fn set_cell(&mut self, square: Square, cell: Cell) {
+        self.cells[square.0][square.1] = cell;
+    }
+
+}
 \end{verbatim}
+}
 
 A slight variation, which is sometimes convenient, is to collapse the two-dimensional array
 to a one-dimensional array:
+{\begin{tabular}{c|c|c} 0 & 1 & 2 \\\hline 3 & 4 & 5 \\\hline 6 & 7 & 8 \end{tabular}}
+{\small
 \begin{verbatim}
-pub struct Board {
+pub struct Board_array : Board {
     cells : [Cell; 9],
 }
-\end{verbatim}
-This means that if we want to use a row-column pair to access the cells, then we'll have to do
-the conversion ourself.  We can define accessor functions to assist with this.
-\begin{verbatim}
-impl Board {
-    [inline]
-    pub fn cell_idx(&self, idx: usize) -> &Cell
-    { self.cells[idx] }
-    [inline]
-    pub fn cell_rc(&self, r: usize, c: usize) -> &Cell
-    { self.cells[r*3 + c] }
-    [inline]
-    pub fn cell_idx_mut(&mut self, idx: usize) -> &mut Cell
-    { self.cells[idx] }
-    [inline]
-    pub fn cell_rc_mut(&mut self, r: usize, c: usize) -> &mut Cell
-    { self.cells[r*3 + c] }
+impl Board for Board_array {
+    type Square = usize;
+    fn new() -> Self {
+        Board_array { cells: [None; 9] }
+    }
+    fn reset(&mut self) {
+        self.cells = [None; 9];
+    }
+    fn cell(&self, square: Square) -> Cell {
+        self.cells[square]
+    }
+    fn set_cell(&mut self, square: Square, cell: Cell) {
+        self.cells[square] = cell;
+    }
 }
 \end{verbatim}
+}
 
 A less obvious approach, but taking much less space and allowing us to do some cute tricks
 in implemetation is a ``bit-board'' approach.  That is, we use the individual bits in an integer
@@ -212,13 +254,37 @@ we look at more complicated games later.)
 Note that we need to use an integer type which has at least 9 bits --- one for each cell
 of the board.  Note that this takes 4 bytes total typical machine, whereas the cell approach
 takes at least 9 bytes.
+{\small
 \begin{verbatim}
 type BitBoard = u16;
-pub struct Board {
+pub struct Board_bitboard {
     x : BitBoard,
     O : BitBoard,
 }
+impl Board for Board_array {
+    type Square = BitBoard;
+    fn new() -> Self {
+        Board_array { X:0, O:0 }
+    }
+    fn reset(&mut self) {
+        self.X = 0;
+        self.O = 0;
+    }
+    fn cell(&self, square: Square) -> Cell {
+        if self.X&square!=0 { Some(Side::X) }
+        else if self.O&square!=0 { Some(Side::O) }
+        else None
+    }
+    fn set_cell(&mut self, square: Square, cell: Cell) {
+        match cell {
+            Some(Side::X) => { self.X |= square; self.O &= !square; }
+            Some(Side::O) => { self.X &= !square; self.O |= square; }
+            None => { self.X &= !square; self.O &= !square; }
+        }
+    }
+}
 \end{verbatim}
+}
 
 \section{Move representation}
 For tic-tac-toe, a move can be represented in a variety of ways, though the most
@@ -230,43 +296,139 @@ mentioned above, we have the following move representations corresponding
 \item a BitBoard with a single bit set
 \end{enumerate}
 
-We'll go ahead with the second representation of the board as a one-dimensional array of cells
-and a move representated by an integer.  Although, we can figure out whose turn it is to play,
-it's convenient to represent the player to move directly.
+In the case here of \g{tic-tac-toe}, we will just use the Square representation as a move.  (For other games,
+we will need a more general Move trait, but we'll postpone discussion of this until later.
 
-We need to include these additional elements:
+We also need to include these additional elements:
 \begin{itemize}
 \item player to-move
 \item number of moves played
 \item routine to make or ``unmake'' a move on the board, (we'll see the need for this in the next section).
 \end{itemize}
 
+Thus we'll extend the Board trait as follows:
+{\small
+\begin{verbatim}
+pub trait Board {
+    ...
+    fn moves(&self) -> Vec<Self::Move>
+    fn to_move(&self) -> Option<Side>;
+    fn moves_played(&self) -> usize;
+    fn make_move(&mut self, m: Self::Move);
+    fn unmake_move(&mut self, m: Self::Move):
+}
+\end{verbatim}
+}
+
 Summing up this section, we have the following code.
 (We additionally fill in various necessary boiler-plate code for initialization, etc.)
 {\small
 \begin{verbatim}
 // two sides playing
+#[derive(Clone,Copy,Debug,Display,Eq,PartialEq)]
 pub enum Side {
     X=1,
     O=2
 }
 
 // possibly empty board cell
-type Cell = Option<Side>;
+pub type Cell = Option<Side>;
 
-type Move = usize;
+pub trait Board {
+    type Square : Debug,Display,Clone,Copy,Move;
+    fn new() -> Self;
+    fn reset(&mut self);
+    fn cell(&self, square: Square) -> Cell;
+    fn set_cell(&mut self, square: Square, cell: Cell);
+    fn moves(&self) -> Vec<Self::Move>
+    fn to_move(&self) -> Option<Side>;
+    fn moves_played(&self) -> usize;
+    fn is_game_over(&self) -> Option<Option<Side>>
+    fn make_move(&mut self, m: Self::Move) -> boolean;
+    fn unmake_move(&mut self, m: Self::Move) -> boolean:
+}
 
-// board representation
-pub struct Board {
-    cells : [Cell; 9],
-    to_move : Option<Side>,
+// board representations
+pub struct Board_rowccol : Board {
+    cells : [[Cell; 3]; 3],
     moves_played : usize,
 }
 
-impl Board {
+struct Board_array : Board {
+    cells : [Cell; 9],
+    moves_played : usize,
+}
+
+type BitBoard = u16;
+pub struct Board_bitboard {
+    type Square = BitBoard;
+    x : BitBoard,
+    O : BitBoard,
+    moves_played : usize,
+}
+
+impl Board for Board_bitboard {
+    type Move = BitBoard;
+
+    // initialization
+    fn new() -> Self {
+        Board { cells: [None; 9], to_move: Some(Side.X), moves_played: 0 }
+    }
+    fn reset(&mut self) {
+        *self = new();
+    }
+    fn to_move(&self) -> Option<Side> {
+        if (is_game_over().is_some()) {None}
+        else if moves_played&1==0 {Some(Side::X)}
+        else {Some(Side::O)}
+    }
+    // an inefficient but straightforward implementation:
+    // iterate through integers 0..8, map to bitboard and those with empty cells
+    fn moves(&self) -> Vector<Move> {
+        (0..9).map(|i|1<<i).filter(|m|(self.x|self.o)&m==0).collect()
+    }
+    [inline]
+    // use some bit operations to check for run of 3,
+    // could alternatively just check for each possibility directly,
+    // which could be just as good in this case, but 
+    fn is_win(bb: BitBoard) -> boolean {
+           (bb & (bb>>1) & (bb>>2) & 0b001_001_001 != 0) // horizontal
+        || (bb & (bb>>3) & (bb>>6) & 0x000_000_111 != 0) // vertical
+        || (bb & 0b100_010_001) || (bb & 0b001_010_100)  // diagonal
+    }
+    fn is_game_over(&self) -> Option<Option<Side>> {
+        if is_win(self.x) { Some(Some(Side::X)) }
+        else if is_win(self.o) { Some(Some(Side::O)) }
+        else if moves_played==9 { Some(None) }
+        else { None }
+    }
+    fn make_move(&mut self, m: Move) -> boolean {
+        if (moves_played&1)==0 {
+            self.x |= m;
+        } else {
+            self.o |= m;
+        }
+        self.moves_played += 1;
+        true
+    }
+    fn unmake_move(&mut self, m: Move) -> boolean {
+        self.moves_played -= 1;
+        if (moves_played&1)==0 {
+            self.x &= !m;
+        } else {
+            self.o &= !m;
+        }
+        true
+    }
+}
+
+impl Board for Board_Array {
     // initialization
     pub fn new() -> Self {
         Board { cells: [None; 9], to_move: Some(Side.X), moves_played: 0 }
+    }
+    pub fn reset(&mut self) {
+        *self = new();
     }
 
     // an inefficient but straightforward implementation
@@ -274,30 +436,26 @@ impl Board {
     // otherwise return Some(Some(side)) where side won
     // and Some(None) for a drawn game
     pub fn is_game_over(&self) -> Option<Option<Side>> {
-        // check horizontal lines
-        if self.cells[0]==self.cells[1] && self.cells[1]==self.cells[2] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[3]==self.cells[4] && self.cells[4]==self.cells[5] && self.cells[3].is_some() {
-            Some(Some(self.cells[3]))
-        } else if self.cells[6]==self.cells[7] && self.cells[7]==self.cells[8] && self.cells[6].is_some() {
-            Some(Some(self.cells[6]))
-        // check vertical lines
-        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
-            Some(Some(self.cells[3]))
-        } else if self.cells[2]==self.cells[5] && self.cells[5]==self.cells[8] && self.cells[2].is_some() {
-            Some(Some(self.cells[6]))
-        // check diagonal lines
-        } else if self.cells[0]==self.cells[3] && self.cells[3]==self.cells[6] && self.cells[0].is_some() {
-            Some(Some(self.cells[0]))
-        } else if self.cells[1]==self.cells[4] && self.cells[4]==self.cells[7] && self.cells[1].is_some() {
-            Some(Some(self.cells[3]))
-        // check for draw
-        } else if self.moves_played==9 {
-            Some(None)
+        for &(s,d) in [
+            (0,1),(3,1),(6,1), // horizontal
+            (0,3),(1,3),(2,3), // vertical
+            (0,4),(3,2),       // diagonal
+            ].iter()
+        {
+            if self.cells[s]==self.cells[s+d]
+                && self.cells[s]==self.cells[s+d+d]
+                && self.cells[s].is_some()
+            {
+                return Some(GameResult::Win(self.cells[s].unwrap()));
+            }
+
+        }
+        if self.moves_played==9 {
+            // draw?
+            return Some(GameResult::Draw);
         } else {
-            None
+            // not over
+            return None;
         }
     }
 
@@ -354,7 +512,7 @@ Some examples should make this clear:
 Now here is the straightforward code for searching:
 {\small
 \begin{verbatim}
-pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v1<B:Board>(b: &mut B) -> (Option<Side>,usize) {
     // check if game is just over
     let res = b.is_game_move();
     match res {
@@ -415,7 +573,7 @@ impl Side {
         }
     }
 }
-pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v2<B:Board>(b: &mut B) -> (Option<Side>,usize) {
     // check if game is just over
     let res = b.is_game_move();
     match res {
@@ -451,7 +609,7 @@ if you've already found a winning move!  Thus, in this case, we can return immed
 move.:
 {\small
 \begin{verbatim}
-pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
+pub fn fullsearch_v3<B:Board>(b: &mut B) -> (Option<Side>,usize) {
     // check if game is just over
     let res = b.is_game_move();
     match res {
@@ -484,20 +642,30 @@ This is a tiny change to a single line, but we'll see it can give a significant 
 the number of nodes searched.
 
 \begin{center}
-\begin{tabular}{l|rr}
-    Searcher       & nodes searched & time (ms) \\\hline
-    fullsearch\_v1 &                &           \\
-    fullsearch\_v2 &                &           \\
-    fullsearch\_v3 &                &           \\
+\begin{tabular}{ll|rr}
+    Searcher       & Board representation & nodes searched & time (ms) \\\hline
+    fullsearch\_v1 & Row-column           &                &           \\
+    fullsearch\_v1 & Array                &                &           \\
+    fullsearch\_v1 & BitBoard             &                &           \\
+    \\
+    fullsearch\_v2 & Row-column           &                &           \\
+    fullsearch\_v2 & Array                &                &           \\
+    fullsearch\_v2 & BitBoard             &                &           \\
+    \\
+    fullsearch\_v3 & Row-column           &                &           \\
+    fullsearch\_v3 & Array                &                &           \\
+    fullsearch\_v3 & BitBoard             &                &           \\
 \end{tabular}
 \end{center}
 
-Note that a lot of programming can be like this: don't be afraid to implement
+Note that a lot of programming can be effectively accomplished like this:
+don't be afraid to implement
 the simplest, most straightforward code that will achieve your goal, and then
 go back and refine it.  Often you will have a better chance of getting it correct
 this way, rather than attempting to immediately write the more complicated or
 ``elegant'' version.  Then you can improve your correct solution for performance,
-elegance, etc.
+elegance, etc.  The simpler version is more likely to be correct and gives you
+a reference to verify the more complex implementation.
 
 See {\tt chapter-1-tictactoe.rs}.
 
@@ -566,7 +734,8 @@ In this chapter we build simple players for the
 games of \g{mancala}, \g{mini-chess}, and \g{mini-shogi}.  This will
 show us the issues that can arise, but our implementation
 will be simplistic and na\"{\i}ve.  Later chapters will
-extend and enhance ...
+extend and enhance the techniques used here, but these algorithms
+form the core of the ``classical model'' of game playing.
 
 Our core algorithms will be general and will be reused for each of the games,
 with only game-specific modules needing to be changed for move-generation and
@@ -578,29 +747,58 @@ We will define a general ``interface'' ...
 
 {\small
 \begin{verbatim}
-trait GameSide {
-    pub fn first_mover() -> Self;
-    pub fn other(self) -> Self;
-    pub fn isnull(self) -> boolean;
-    pub fn nullmove() -> Self;
+trait Side : Clone,Copy,Debug,Display,Eq,Move,PartialEq {
+    fn first_mover() -> Self;
+    fn other(&self) -> Self;
+    fn isnull(&self) -> boolean;
+    fn nullmove() -> Self;
 }
-trait GameMove {
+trait Move : Clone,Copy,Debug,Display,Move,Eq,PartialEq {
+    fn nullmove() -> Self;
+    fn is_nullmove(&self) -> boolean;
 }
-trait GameBoard<Side:GameSide, Move:GameMove> {
-    pub fn new() -> Self;
-    pub fn reset(&mut self);
-    pub fn make_move(&mut self, m: Move) -> Option<Side>;
-    pub fn unmake_move(&mut self, m: Move) -> Option<Side>;
+trait MoveResult : Clone,Copy,Debug,Display,Move,Eq,PartialEq {
+    fn is_sameside(&self) -> boolean;
+    fn is_other(&self) -> boolean;
+    fn is_error(&self) -> boolean;
 }
-trait GameEvaluator<Board:GameBoard> {
-    type Scale:Eq,Ord,PartialEq,PartialOrd;
+trait GameResult<Side:Side> {
+    fn win(s:&Side) -> Self;
+    fn loss(s:&Side) -> Self;
+    fn draw() -> Self;
+    fn is_win(&self, s:&Side) -> boolean;
+    fn is_loss(&self, s:&Side) -> boolean;
+    fn is_draw(&self) -> boolean;
 }
 trait Game {
-    type Board : GameBoard;
-    type Move : GameMove;
-    type Side : GameSide;
+    type Move : Move;
+    type Side : Side;
+    type MoveResult : MoveResult;
+    type GameResult : GameResult;
+
+    fn new() -> Self;
+    fn reset(&mut self);
+
+    fn result(&self) -> GameResult;
+
+    fn make_move(&mut self, m: Self::Move) -> MoveResult;
+    fn unmake_move(&mut self, m: Self::Move) -> MoveResult;
+
+    fn moves(&self) -> Vec<Move>;
+}
+trait EvalScale : Copy,Clone,Move,Eq,PartialEq,Ord,PartialOrd {
+    fn is_mate_in_n(self) -> Option<isize>;
+    fn mate_in_n(n:isize) -> Self;
+    fn increment_mate(self) -> Self;
+    fn maximum() -> Self;
+    fn minimum() -> Self;
 }
 trait Evaluator<G:Game> {
+    type Scale : EvalScale;
+    // relative to mover
+    fn eval(g: &Game) -> Scale;
+    fn eval_abs(g: &Game) -> Scale;
+    fn eval_rel(g: &Game, s: &Game::Side) -> Scale;
 }
 \end{verbatim}
 }
@@ -627,7 +825,73 @@ perft, time-controls,
 The basis of most game-playing programs is the
 ``min-max'' search which is based on the idea of
 searching exhaustively through every possible sequence
-of moves to the end of the game and ...
+of moves to the end of the game and then ``backing up''
+the results, based on the idea that each player will play
+the best possible move, knowing that the other player is doing
+the same.
+
+We again reiterate that a ``game'' for this section will mean
+a two-player game of perfect information and no randomness.
+
+The basic observation is the following:
+Suppose in a given position $\pi$, we know the result (win/loss/draw)
+of all possible resulting positions from a move (all from the poin of view
+of the player to move in the position $\pi$.  Then we know the value of the position:
+\begin{itemize}
+\item If one of the moves leads to a win, then the position is a win:
+    we can simply choose (one of) the winning moves.  (In particular, we should
+    choose the move that has the shortest path to a win.  This will be ...)
+\item If none of the moves leads to a win, but one of the moves leads to a draw,
+    then the position is a draw: we choose a move leading to a draw.
+\item Finally, if none of the moves leads to a win or a draw,
+    then this means that every move leads to a loss, hence the position is a loss.
+\end{itemize}
+
+Theoretical aside:
+
+First define a {\em finite game} to be a game
+such that at any position there is a finite number of possible
+moves and such that there are no infinite sequence of plays (every game
+has finite length).  We include in a game ``position'', any necessary
+state to determine the result of that position during the play of a game.
+For example, for chess, where a third repetition of a position is ruled a draw
+(with the game ending), then we have to include the previous game up to that point
+in the game ``state'' of the position.
+
+First, we prove that each possible game position $\pi$ has a maximum
+possible length of play $l(\pi)$ from that position on.
+suppose, towards a contradiction, that there were a position $\pi$ with no bound on the length
+of play from that position on, {i.e.} $l(\pi)=\infty$.  Now, there are finitely many possible moves
+from that position, say $m_1, \dots, m_k$, and if each move $m_i$ resulted
+in a position $m_i:\pi$ with a maximum game length $l(m_i:\pi)=n_i$,
+then $n=1+\max\{\,n_1,\dots,n_k\,\}$ would be a bound on the length of
+any possible game from $\pi$.  Thus there must be at least one of the 
+moves $m_i$ with unbounded game length after making the move $m_i$,
+{i.e.} $l(m_i:m_i) = \infty$.
+But we can then repeat this argument to find a move $m_{i_1}$ in the
+position $m_i:\pi$ with $l(m_{i_1}:m_i:\pi)=\infty$.  If we keep repeating
+this, we find an infinite sequence of moves
+$m_i, m_{i_1}, m_{i_2}, \dots, m_{i_n}, \dots$ 
+with each move a possible move in the resulting position of moving
+all previous moves.  But this then gives us an infinitely long sequence of
+plays in the game, contradicting the assumption that we are dealing with a finite game.
+This contradiction shows that our assumption on the existence of position $\pi$ must be false,
+and hence every possible position $\pi$ has a maximum possible game length $l(\pi)$.
+
+(Note that this means that the number of possible
+positions is finite and the total number of possible games is also finite, though
+usually mind-bogglingly astronomical.)
+
+Next, we prove that any finite game has a definite result
+(either win for one of the players or draw.)  In fact, we will prove that every game
+position has a definite result.  We prove this by (total) induction on the maximum game
+length from a position.  For the base case we take all game-end positions $g_{e}$:
+the game has ended, so the game length from that position on is $l(g_e)=0$.
+
+
+
+Now for almost any game we'll find that actually searching to the end of
+the game is infeasible, due to the combinatorial explosion of the game tree.
 
 \begin{center}
 \begin{tikzpicture}%

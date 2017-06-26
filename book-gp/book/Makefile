@@ -3,6 +3,9 @@
 
 all: book.ind book.bbl book.dvi book.pdf
 
+touch:
+	touch book.tex
+
 book.pdf: book.dvi
 	dvipdfm book.dvi
 
