@@ -59,7 +59,7 @@
 
 Need:
 
-consistent notation for moves / trees / ...
+consistent notation for moves / trees / sides / ...
 
 build my own game-board typesetting macros?
 
@@ -104,15 +104,20 @@ the examples into their language of choice.
 \chapter{Warm Up --- Tic-Tac-Toe}
 \label{chap-warm-up}
 
-The simple game of \g{tic-tac-toe} (also know as \g{noughts-and-crosses} or ...)
+The simple game of \g{tic-tac-toe} (also known as \g{noughts-and-crosses} or ...)
 is a simple child's game which is well-known.
 
 For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
-by two players ``X'' and ``O''.  Players alternate selecting an empty cell
-and claiming it (with ``X'' moving first)
+{\small\begin{center}
+\begin{tabular}{c|c|c}
+ & & \\\hline & & \\\hline & &
+\end{tabular}
+\end{center}}
+by two players ``X'' and ``O''.  Players alternate (with ``X'' moving first)
+selecting an empty cell and claiming it by marking it with {\bf X} or {\bf O}, respectively.
 When a player has claimed three cells in a straight line (horizontally, vertically, or diagonally),
 then that player wins; i.e., 3-in-a-row wins.  If the board fills with no 3-in-a-row, then the game
-is declared drawn (sometimes called a ``cat's game'').
+is declared drawn (sometimes called a ``cat's game'' or ``Nick's game'' or ...).
 
 For example, here is a sample play, where the O player slips up on the first move
 and allows X to set up a winning combination (it was necessary for O to respond to X's
@@ -561,8 +566,11 @@ pub fn fullsearch_v1<B:Board>(b: &mut B) -> (Option<Side>,usize) {
 }
 But looking at this code, we readily see that the two branches depending
 on who is to move are nearly identical, differing in only the preference for side,
+In particular, notice that the behaviour of the two sides to play are symmetric
+--- each wants to 
 so let's implement a more unified version.  We'll add a helper function
 to the Side enum to give us the opposing side of a given one.
+
 {\small
 \begin{verbatim}
 impl Side {
@@ -833,7 +841,7 @@ the same.
 We again reiterate that a ``game'' for this section will mean
 a two-player game of perfect information and no randomness.
 
-The basic observation is the following:
+The fundamental observation is the following:
 Suppose in a given position $\pi$, we know the result (win/loss/draw)
 of all possible resulting positions from a move (all from the poin of view
 of the player to move in the position $\pi$.  Then we know the value of the position:
@@ -885,9 +893,19 @@ usually mind-bogglingly astronomical.)
 Next, we prove that any finite game has a definite result
 (either win for one of the players or draw.)  In fact, we will prove that every game
 position has a definite result.  We prove this by (total) induction on the maximum game
-length from a position.  For the base case we take all game-end positions $g_{e}$:
-the game has ended, so the game length from that position on is $l(g_e)=0$.
-
+length from a position.  For the base case we take all game-end positions $\pi_{e}$:
+the game has ended, so the game length from that position on is $l(\pi_e)=0$, and we of course
+know the definite game result (since the game is ended, the result $\rho(\pi_e)$ is clearly known!)
+Next, suppose we have a game position $\pi$ such that for every other game position $\pi'$
+with shorter maximum game length ({i.e.} $l(\pi)>l(\pi')$),
+we know, by the induction hypothesis, the result $\rho(\pi')$.  Then we apply the fundamental
+observation from above: let $m_1, \dots, m_k$ be the possible moves from $\pi$, then
+we know the result of the position after making the move $m_i$, $\rho(m_i:\pi)$ for each move.
+So if one of the results is a win (for the player to move in $\pi$), then the result of
+$\pi$ is a win.  If no result is a win, but one is a draw, then the result is a draw,
+and finally, if all results are losses, then the result is a loss for the player to move.
+Thus by induction, we have shown that every game position has a definite result (depending on
+the result of subsequent positions.)
 
 
 Now for almost any game we'll find that actually searching to the end of
@@ -950,7 +968,7 @@ the game is infeasible, due to the combinatorial explosion of the game tree.
 
 {\tiny
 \begin{verbatim}
-pub fn search_negamax<Board:GameBoard>(b: &mut Board, ss: &mut SearchStats, depth: isize) -> Board::Scale {
+pub fn search_negamax_pruning<Board:GameBoard,Eval:Evaluator<Board>>(b: &mut Board, eval: &eval, ss: &mut SearchStats, depth: isize) -> Board::Scale {
     ss.nodes += 1;
     // check if game is over
     match b.is_terminal() {
@@ -959,7 +977,7 @@ pub fn search_negamax<Board:GameBoard>(b: &mut Board, ss: &mut SearchStats, dept
     }
     // check if hit depth bound
     if depth<=0 {
-        let e = b.eval(ss, depth);
+        let e = eval.evaluate(b, ss, depth);
         return Some(e);
     }
     let tomove = b.to_move();
@@ -969,7 +987,7 @@ pub fn search_negamax<Board:GameBoard>(b: &mut Board, ss: &mut SearchStats, dept
     let mut best_so_far = Board::Scale::worst(tomove);
     for m in ml {
         b.make_move(m);
-        let result = search_negamax_pruning(b, ss, depth);
+        let result = search_negamax_pruning(b, eval, ss, depth - 100);
         b.unmake_move(m);
         best_so_far = Board::Scale::max(tomove, best_so_far, result);
     }
@@ -978,54 +996,11 @@ pub fn search_negamax<Board:GameBoard>(b: &mut Board, ss: &mut SearchStats, dept
 \end{verbatim}
 }
 
+{\tiny
 \begin{verbatim}
-  def Search(b: Board, depth: Int) {
-    if Terminal(b) return Result(b)
-    if (depth==0) return Eval(b)
-    if (b.ToMove == Maximizer) {
-      best_result = -Inf
-      for (m <- Moves(b)) {
-        MakeMove(b, m)
-        result = Search(b, depth-1)
-        UnMakeMove(b,m)
-        if (result > best_result) best_result = result;
-      }
-    } else { // b.ToMove == Minimizer
-      ...
-    }
-  }
+pub fn search_negamax_ttable<Board:GameBoard,Eval:Evaluator<Board>>(b: &mut Board, eval: &eval, ss: &mut SearchStats, depth: isize) -> Board::Scale {
 \end{verbatim}
-
-\begin{verbatim}
-  def Search(g: Game, depth: Int, eval: Evaluator): Value = {
-    if (g.board.Terminal()) return g.board.Result()
-    if (depth==0) return eval(g.board)
-    g.board.ToMove() match {
-      case Maximizer => {
-        var best_v = Value.Min_Inf
-        for (m <- g.board.Moves()) {
-          g.board.MakeMove(m)
-          var res = Search(g, depth-1, eval)
-          g.board.UnMakeMove(m)
-          res = res.step
-          if (res > best_v) best_v = res
-        }
-        return best_v
-      }
-      case Minimizer => {
-        var best_v = Value.Pos_Inf
-        for (m <- g.board.Moves()) {
-          g.board.MakeMove(m)
-          var res = Search(g, depth-1, eval)
-          g.board.UnMakeMove(m)
-          res = res.step
-          if (res < best_v) best_v = res
-        }
-        return best_v
-      }
-    }
-  }
-\end{verbatim}
+}
 
 \begin{verbatim}
 template <class TMove, bool tt>
@@ -1073,54 +1048,10 @@ result minimax(Board<TMove>& b) {
 }
 \end{verbatim}
 
-\begin{verbatim}
-template <class Board, class TMove, bool tt>
-result minimax(Board& b) {
-  hash h;
-  if (tt) {
-    h = b.Hash();
-    if (ttable[h].type == EXACT_BD) {
-      ++tthits;
-      return ttable[h].res;
-    }
-  }
-  result eval = b.Result();
-  ++nodes_searched;
-  if (IS_TERMINAL(eval)) {
-    if (tt) { ttable[h].res = eval; ttable[h].type = EXACT_BD; }
-    return eval;
-  }
-  result best_v;
-  if (b.ToMove() == XX) {
-    std::vector<TMove> moves;
-    best_v = OO_WIN_IN(-1);
-    int num_m = b.Moves(moves);
-    for (int m=0; m<num_m; ++m) {
-      b.MakeMove(moves[m]);
-      result res = minimax<Board,TMove,tt>(b);
-      b.UnMakeMove(moves[m]);
-      res = PLY_UP_RESULT(res);
-      if (res > best_v) best_v = res;
-    }
-  } else {
-    std::vector<TMove> moves;
-    best_v = XX_WIN_IN(-1);
-    int num_m = b.Moves(moves);
-    for (int m=0; m<num_m; ++m) {
-      b.MakeMove(moves[m]);
-      result res = minimax<Board,TMove,tt>(b);
-      b.UnMakeMove(moves[m]);
-      res = PLY_UP_RESULT(res);
-      if (res < best_v) best_v = res;
-    }
-  }
-  if (tt) { ttable[h].res = best_v; ttable[h].type = EXACT_BD; }
-  return best_v;
-}
-\end{verbatim}
-
 %%%%%%%%%%%%%%%%%%%%
 \section{Negamax search}
+
+%%% MOVE THIS TO TICTACTOE DISCUSSION!!!!!
 
 Most real game-playing programs don't use the min-max
 formulation for their search, but rather use the so-called
@@ -1196,6 +1127,38 @@ the same position, but with a different intermediate step.
 \label{chap-board-move}
 
 Here 
+
+%%%%%%%%%%%%%%%%%%%%
+\section{Array}
+
+The most obvious representation of games set on a grid of cells is to use an array
+representation, with each element of the array indicating which piece, if any, in the cell.
+This can be a two-dimensional array, matching the layout of the game-board, for example.
+Though, it is often more convenient to use a one-dimensional array, with the mapping
+
+Example, chess:
+{\tiny\begin{verbatim}
+    // basic setup
+    pub enum Piece { Pawn, Knight, Bishop, Rook, Queen, King };
+    pub enum Color { White, Black };
+\end{verbatim}}
+Matrix or two-dimensional representation:
+{\tiny\begin{verbatim}
+    // definition
+    pub struct Board_matrix { cells : [[Option<(Color,Piece)>; 8]; 8], };
+    // creation
+    let mut b = Board_matrix { cells : [[None; 8]; 8], };
+    // put white knight on c2 square
+    b.cells[1][2] = Some((Color::White,Piece::Knight));
+\end{verbatim}}
+{\tiny\begin{verbatim}
+    // definition
+    pub struct Board_array { cells : [Option<(Piece,Color)>; 8 * 8], };
+    // creation
+    let mut b = Board_array { cells : [None; 8*8], };
+    // put white knight on c2 square
+    b.cells[1*8 + 2] = Some((Color::White,Piece::Knight));
+\end{verbatim}}
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Piece lists}
@@ -1392,7 +1355,8 @@ Additionally, xor operates bit-by-bit on an integer, so it is a very fast operat
 %%%%%%%%%%%%%%%%%%%%
 \section{Iterative deepening}
 
-In iterative-deepening, we do a series of searches to increasing depth.
+In iterative-deepening, we do a series of searches to increasing depth, rather than
+deciding beforehand a fixed depth to search
 
 As we will see later, using iterative deepening makes for good use of
 time --- allowing us to do the best search we can in a given time interval,
@@ -1402,10 +1366,10 @@ Although re-searching the same position multiple times may seem like a ridiculou
 of time, it is actually quite efficient and it is possible for an iterative-deepened search to
 a given depth to actually take {\em less} time than a single search directly to that depth!
 The main reason for this is that with the use of a transposition table, we are able to use
-the results of shallower searches to sort the moves when doing a deeper search, thus tending to
-get better results for \ab-pruning.  Another point to note is that often shallower search results
+the results of shallower searches to sort the moves when doing a deeper search, thus generally
+achieving better results for \ab-pruning.  Another point to note is that often shallower search results
 stored in the transposition table are re-used in the deeper search allowing for savings in the
-deeper search.
+deeper search; that is, sub-trees can often be reached via different move sequences of different lengths.
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Quiescence search}
@@ -1430,11 +1394,12 @@ and check responses.  Note that it is important to allow a ``stand pat'' option 
 searching (where a side can just accept the static evaluation instead of following
 further in the quiescence search.
 
-Following captures is a relatively safe and self-
-
-
-For \g{shogi}, doing a quiescence search which searched captures as well as drops would
-lead to horrendous search explosions as capture-drop sequences can be unending.
+Following captures is a relatively safe and for many games, is a self-limiting approach,
+since each capture can reduce the number of pieces on the board.  However, this is not
+universally true.
+For example, in \g{shogi}, doing a quiescence search which searched captures as well as drops would
+lead to horrendous search explosions as capture-drop sequences can be unending
+(with each captured piece being reused as a possible drop by the capturing side.)
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Null-move pruning}
@@ -1802,146 +1767,146 @@ time $\verb|base|=t$ and there is no extra time $\verb|extra|=0$.
 For sudden-death with no increment, it uses 
 
 \begin{verbatim}
-	case tctINCREMENT:
-		if (pcon->tc.tmIncr) {
-			TM	tmTarget;
+    case tctINCREMENT:
+        if (pcon->tc.tmIncr) {
+            TM    tmTarget;
 
-			//	An increment time control tries not to go below the increment
-			//	plus 30 seconds, or 6 times the increment, whichever is more.
-			//
-			//	If it finds itself below that, it will the increment minus
-			//	1/10 of the time by which it is under the target.
-			//
-			//	If it is over that, it will use the increment plus 1/20 of
-			//	the time by which it is over the target.
-			//
-			//	So the program will drift slowly down to the target, but if
-			//	it gets a ways below it, it will tend to come up quickly.
-			//
-			//	There are a zillion different increment time controls, and
-			//	sometimes I could end up with a stupid base time.  I try hard
-			//	to make sure the base time doesn't go below zero, which would
-			//	be very bad since my time quantity is an unsigned value.
-			//
-			//	I will try hard to use >= half of the increment.  I will also
-			//	make sure to not use more than half the remaining time (which
-			//	is taken care of by the code at "lblSet".
-			//
-			tmTarget = pcon->tc.tmIncr + 30000;
-			if (tmTarget < 6 * pcon->tc.tmIncr)
-				tmTarget = 6 * pcon->tc.tmIncr;
-			if (pcon->ss.tmUs >= tmTarget)
-				tmBase = pcon->tc.tmIncr + (pcon->ss.tmUs - tmTarget) / 20;
-			else	// The following statement can go negative on an unsigned.
-				tmBase = pcon->tc.tmIncr - (tmTarget - pcon->ss.tmUs) / 10;
-			Assert(sizeof(long) == sizeof(TM));
-			if ((long)tmBase < (long)pcon->tc.tmIncr / 2)
-				tmBase = pcon->tc.tmIncr / 2;
-		} else {
-			//
-			//	A zero-increment time control will use 1/30 of the remaining
-			//	time down to 10 minutes, 1/40 down to one minute, and 1/60
-			//	after that.
-			//
-			if (pcon->ss.tmUs >= 600000)		// 10 minutes.
-				tmBase = pcon->ss.tmUs / 30;
-			else if (pcon->ss.tmUs > 60000)	// 1 minute.
-				tmBase = pcon->ss.tmUs / 40;
-			else
-				tmBase = pcon->ss.tmUs / 60;
-		}
-		//	This code dummy-checks "tmBase", assigns "tmExtra", then assigns
-		//	an end-time based upon "pcon->ss.tmStart".
-		//
-		//	First I check to see if I'm scheduled to eat more than half of
-		//	my remaining time.  I put a ceiling at that amount, right off.
-		//
-		//	Next, I'll assign some emergency time.  This is 3x the base time,
-		//	with a ceiling on base + extra of 1/2 the remaining time.  I will
-		//	also allocate no emergency time if I have < 30 seconds on the
-		//	clock.
-		//
-		//	So there will be plenty of "extra" time if there is time left,
-		//	otherwise there is little or none.
-		//
-lblSet:	if (tmBase > pcon->ss.tmUs / 2)
-			tmBase = pcon->ss.tmUs / 2;
-		tmExtra = (pcon->ss.tmUs < 20000) ? 0 : tmBase * 3;
-		if (tmBase + tmExtra > pcon->ss.tmUs / 2)
-			tmExtra = pcon->ss.tmUs / 2 - tmBase;
-		pcon->ss.tmEnd = pcon->ss.tmStart + tmBase;
-		pcon->ss.tmExtra = tmExtra;
-		break;
-	case tctFIXED_TIME:
-		tmBase = pcon->tc.tmBase;		// Use *all* the time.
-		pcon->ss.tmEnd = pcon->ss.tmStart + tmBase;
-		pcon->ss.tmExtra = 0;			// No emergency time.
-		break;
-	case tctTOURNEY:
-		movMade = pcon->gc.ccm / 2 + pcon->gc.movStart - 1;
-		while (movMade >= pcon->tc.cMoves)
-			movMade -= pcon->tc.cMoves;
-		movLeft = pcon->tc.cMoves - movMade;
-		Assert(movLeft >= 1);
-		//
-		//	This expression is kind of nasty.  It is:
-		//
-		//		Time / (3/4 x Moves + 3)
-		//
-		//	The point of the "3" is to make sure there's some extra time pad
-		//	at the beginning, and the point of the 3/4 is to make sure that
-		//	earlier moves take a little longer per move.
-		//
-		//	This expression has been reduced to ...
-		//
-		//		(4 * Time) / (3 * Moves + 12)
-		//
-		//	.. by multiplying the top and the bottom by 4.  This helps out
-		//	with the integer math.
-		//
-		tmBase = (4 * pcon->ss.tmUs) / (3 * movLeft + 12);
-		goto lblSet;
-	}
+            //    An increment time control tries not to go below the increment
+            //    plus 30 seconds, or 6 times the increment, whichever is more.
+            //
+            //    If it finds itself below that, it will the increment minus
+            //    1/10 of the time by which it is under the target.
+            //
+            //    If it is over that, it will use the increment plus 1/20 of
+            //    the time by which it is over the target.
+            //
+            //    So the program will drift slowly down to the target, but if
+            //    it gets a ways below it, it will tend to come up quickly.
+            //
+            //    There are a zillion different increment time controls, and
+            //    sometimes I could end up with a stupid base time.  I try hard
+            //    to make sure the base time doesn't go below zero, which would
+            //    be very bad since my time quantity is an unsigned value.
+            //
+            //    I will try hard to use >= half of the increment.  I will also
+            //    make sure to not use more than half the remaining time (which
+            //    is taken care of by the code at "lblSet".
+            //
+            tmTarget = pcon->tc.tmIncr + 30000;
+            if (tmTarget < 6 * pcon->tc.tmIncr)
+                tmTarget = 6 * pcon->tc.tmIncr;
+            if (pcon->ss.tmUs >= tmTarget)
+                tmBase = pcon->tc.tmIncr + (pcon->ss.tmUs - tmTarget) / 20;
+            else    // The following statement can go negative on an unsigned.
+                tmBase = pcon->tc.tmIncr - (tmTarget - pcon->ss.tmUs) / 10;
+            Assert(sizeof(long) == sizeof(TM));
+            if ((long)tmBase < (long)pcon->tc.tmIncr / 2)
+                tmBase = pcon->tc.tmIncr / 2;
+        } else {
+            //
+            //    A zero-increment time control will use 1/30 of the remaining
+            //    time down to 10 minutes, 1/40 down to one minute, and 1/60
+            //    after that.
+            //
+            if (pcon->ss.tmUs >= 600000)        // 10 minutes.
+                tmBase = pcon->ss.tmUs / 30;
+            else if (pcon->ss.tmUs > 60000)    // 1 minute.
+                tmBase = pcon->ss.tmUs / 40;
+            else
+                tmBase = pcon->ss.tmUs / 60;
+        }
+        //    This code dummy-checks "tmBase", assigns "tmExtra", then assigns
+        //    an end-time based upon "pcon->ss.tmStart".
+        //
+        //    First I check to see if I'm scheduled to eat more than half of
+        //    my remaining time.  I put a ceiling at that amount, right off.
+        //
+        //    Next, I'll assign some emergency time.  This is 3x the base time,
+        //    with a ceiling on base + extra of 1/2 the remaining time.  I will
+        //    also allocate no emergency time if I have < 30 seconds on the
+        //    clock.
+        //
+        //    So there will be plenty of "extra" time if there is time left,
+        //    otherwise there is little or none.
+        //
+lblSet:    if (tmBase > pcon->ss.tmUs / 2)
+            tmBase = pcon->ss.tmUs / 2;
+        tmExtra = (pcon->ss.tmUs < 20000) ? 0 : tmBase * 3;
+        if (tmBase + tmExtra > pcon->ss.tmUs / 2)
+            tmExtra = pcon->ss.tmUs / 2 - tmBase;
+        pcon->ss.tmEnd = pcon->ss.tmStart + tmBase;
+        pcon->ss.tmExtra = tmExtra;
+        break;
+    case tctFIXED_TIME:
+        tmBase = pcon->tc.tmBase;        // Use *all* the time.
+        pcon->ss.tmEnd = pcon->ss.tmStart + tmBase;
+        pcon->ss.tmExtra = 0;            // No emergency time.
+        break;
+    case tctTOURNEY:
+        movMade = pcon->gc.ccm / 2 + pcon->gc.movStart - 1;
+        while (movMade >= pcon->tc.cMoves)
+            movMade -= pcon->tc.cMoves;
+        movLeft = pcon->tc.cMoves - movMade;
+        Assert(movLeft >= 1);
+        //
+        //    This expression is kind of nasty.  It is:
+        //
+        //        Time / (3/4 x Moves + 3)
+        //
+        //    The point of the "3" is to make sure there's some extra time pad
+        //    at the beginning, and the point of the 3/4 is to make sure that
+        //    earlier moves take a little longer per move.
+        //
+        //    This expression has been reduced to ...
+        //
+        //        (4 * Time) / (3 * Moves + 12)
+        //
+        //    .. by multiplying the top and the bottom by 4.  This helps out
+        //    with the integer math.
+        //
+        tmBase = (4 * pcon->ss.tmUs) / (3 * movLeft + 12);
+        goto lblSet;
+    }
 \end{verbatim}
 
 \begin{verbatim}
-//	This is called a whole bunch of times via the engine/interface protocol.
-//	Given what is known about the time control, the current time, and the
-//	search depth, this may set "ptcon->fTimeout", which will eventually finish
-//	the search.
+//    This is called a whole bunch of times via the engine/interface protocol.
+//    Given what is known about the time control, the current time, and the
+//    search depth, this may set "ptcon->fTimeout", which will eventually finish
+//    the search.
 
-//	This routine has a built-in defense against cases where someone might try
-//	to force a move before the first ply has been fully considered.  It will
-//	simply ignore such cases.
+//    This routine has a built-in defense against cases where someone might try
+//    to force a move before the first ply has been fully considered.  It will
+//    simply ignore such cases.
 
 void VCheckTime(PCON pcon)
 {
-	TM	tmNow;
+    TM    tmNow;
 
-	if (pcon->ss.plyDepth == 1)	// Can't time out before a one-ply
-		return;					//  search is finished.
-	if (pcon->smode != smodeTHINK)
-		return;
-	if ((tmNow = TmNow()) >= pcon->ss.tmEnd) {
-		//
-		//	Time has expired.  Check for a fail-high or fail low and try to
-		//	add some time.  Don't add any time if we're already dead lost and
-		//	just slowly collapsing, or if we are won and are probably failing
-		//	high repeatedly.  The standard for "won" is a little greater than
-		//	for "lost".
-		//
-		if ((pcon->ss.prsa != prsaNORMAL) && (pcon->ss.val < valROOK) &&
-			(pcon->ss.val >= -valMINOR))
-			if (pcon->ss.tmExtra < 1000) {
-				pcon->ss.tmEnd += pcon->ss.tmExtra;
-				pcon->ss.tmExtra = 0;
-			} else {
-				pcon->ss.tmEnd += pcon->ss.tmExtra / 2;
-				pcon->ss.tmExtra -= pcon->ss.tmExtra / 2;
-			}
-		if (tmNow >= pcon->ss.tmEnd)
-			pcon->fTimeout = fTRUE;
-	}
+    if (pcon->ss.plyDepth == 1)    // Can't time out before a one-ply
+        return;                    //  search is finished.
+    if (pcon->smode != smodeTHINK)
+        return;
+    if ((tmNow = TmNow()) >= pcon->ss.tmEnd) {
+        //
+        //    Time has expired.  Check for a fail-high or fail low and try to
+        //    add some time.  Don't add any time if we're already dead lost and
+        //    just slowly collapsing, or if we are won and are probably failing
+        //    high repeatedly.  The standard for "won" is a little greater than
+        //    for "lost".
+        //
+        if ((pcon->ss.prsa != prsaNORMAL) && (pcon->ss.val < valROOK) &&
+            (pcon->ss.val >= -valMINOR))
+            if (pcon->ss.tmExtra < 1000) {
+                pcon->ss.tmEnd += pcon->ss.tmExtra;
+                pcon->ss.tmExtra = 0;
+            } else {
+                pcon->ss.tmEnd += pcon->ss.tmExtra / 2;
+                pcon->ss.tmExtra -= pcon->ss.tmExtra / 2;
+            }
+        if (tmNow >= pcon->ss.tmEnd)
+            pcon->fTimeout = fTRUE;
+    }
 }
 \end{verbatim}
 
@@ -3360,15 +3325,15 @@ ultima, wa shogi, whale shogi, yari shogi
 The pieces' basic movement is given as follows
 \begin{itemize}
 \item King - moves one step in any direction \\
-	$\begin{array}{||c|c|c||}\hline\hline \x & \x & \x \\\hline \x & \text{K} & \x \\\hline \x & \x & \x\\\hline\hline\end{array}$
+    $\begin{array}{||c|c|c||}\hline\hline \x & \x & \x \\\hline \x & \text{K} & \x \\\hline \x & \x & \x\\\hline\hline\end{array}$
 \item Queen - slides any number of steps in any direction \\ 
-	$\begin{array}{||c|c|c||}\hline\hline \nwarrow & \uparrow & \nearrow \\\hline \leftarrow & \text{Q} & \rightarrow \\\hline \swarrow & \downarrow & \searrow\\\hline\hline\end{array}$
+    $\begin{array}{||c|c|c||}\hline\hline \nwarrow & \uparrow & \nearrow \\\hline \leftarrow & \text{Q} & \rightarrow \\\hline \swarrow & \downarrow & \searrow\\\hline\hline\end{array}$
 \item Rook - slides any number of steps in an orthogonal direction \\ 
-	$\begin{array}{||c|c|c||}\hline\hline  & \uparrow &  \\\hline \leftarrow & \text{R} & \rightarrow \\\hline  & \downarrow & \\\hline\hline\end{array}$
+    $\begin{array}{||c|c|c||}\hline\hline  & \uparrow &  \\\hline \leftarrow & \text{R} & \rightarrow \\\hline  & \downarrow & \\\hline\hline\end{array}$
 \item Bishop - slides any number of steps in a diagonal direction \\ 
-	$\begin{array}{||c|c|c||}\hline\hline \nwarrow & & \nearrow \\\hline & \text{B} &  \\\hline \swarrow & & \searrow\\\hline\hline\end{array}$
+    $\begin{array}{||c|c|c||}\hline\hline \nwarrow & & \nearrow \\\hline & \text{B} &  \\\hline \swarrow & & \searrow\\\hline\hline\end{array}$
 \item Knight - jumps one orthogonal and one diagonal step \\ 
-	$\begin{array}{||c|c|c|c|c||}\hline\hline
+    $\begin{array}{||c|c|c|c|c||}\hline\hline
    & \x &          & \x &    \\\hline
 \x &    &          &    & \x \\\hline
    &    & \text{N} &    &    \\\hline
@@ -3376,7 +3341,7 @@ The pieces' basic movement is given as follows
    & \x &          & \x &    \\\hline\hline
 \end{array}$
 \item Pawn - moves one step forward (without the right of capturing) or captures diagonally forward \\
-	$\begin{array}{||c|c|c||}\hline\hline c & m & c \\\hline    & \text{P} &    \\\hline    &    &   \\\hline\hline\end{array}$
+    $\begin{array}{||c|c|c||}\hline\hline c & m & c \\\hline    & \text{P} &    \\\hline    &    &   \\\hline\hline\end{array}$
 \end{itemize}
 
 \section{Shogi}
