@@ -18,6 +18,11 @@
 %%%%%
 %\usepackage{diagram}
 %%%%%
+\usepackage{epic}
+
+
+\usepackage[all]{xy}
+
 \makeindex
 
 \newcommand{\ab}{{$\alpha\beta$}}
@@ -107,12 +112,29 @@ the examples into their language of choice.
 The simple game of \g{tic-tac-toe} (also known as \g{noughts-and-crosses} or ...)
 is a simple child's game which is well-known.
 
+\section{Rules}
+
 For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
-{\small\begin{center}
-\begin{tabular}{c|c|c}
- & & \\\hline & & \\\hline & &
-\end{tabular}
-\end{center}}
+\newcommand{\tictactoeboard}[9]{{
+\setlength{\unitlength}{1mm}
+\begin{picture}(21,21)(0,0)
+\thicklines
+\put(0,7){\line(1,0){21}}
+\put(0,14){\line(1,0){21}}
+\put(7,0){\line(0,1){21}}
+\put(14,0){\line(0,1){21}}
+\put(0,14){\makebox(7,7){#1}}
+\put(7,14){\makebox(7,7){#2}}
+\put(14,14){\makebox(7,7){#3}}
+\put(0,7){\makebox(7,7){#4}}
+\put(7,7){\makebox(7,7){#5}}
+\put(14,7){\makebox(7,7){#6}}
+\put(0,0){\makebox(7,7){#7}}
+\put(7,0){\makebox(7,7){#8}}
+\put(14,0){\makebox(7,7){#9}}
+\end{picture}
+}}
+\begin{center}\tictactoeboard{}{}{}{}{}{}{}{}{}\end{center}
 by two players ``X'' and ``O''.  Players alternate (with ``X'' moving first)
 selecting an empty cell and claiming it by marking it with {\bf X} or {\bf O}, respectively.
 When a player has claimed three cells in a straight line (horizontally, vertically, or diagonally),
@@ -121,35 +143,26 @@ is declared drawn (sometimes called a ``cat's game'' or ``Nick's game'' or ...).
 
 For example, here is a sample play, where the O player slips up on the first move
 and allows X to set up a winning combination (it was necessary for O to respond to X's
-central play by playing to a corner.)
-% TODO: make the cells uniform (etc.)
+central play by playing to a corner.)  (We mark immediate threats with a dot.)
 \begin{center}
-\begin{tabular}{cccc}
-\begin{tabular}{c|c|c}{}&{}&{}\\\hline{}&{}&{}\\\hline{}&{}&{}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{}&{}\\\hline{}&{\underline X}&{}\\\hline{}&{}&{}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{}&{}\\\hline{\underline O}&{X}&{}\\\hline{}&{}&{}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{}&{}\\\hline{O}&{X}&{}\\\hline{\underline X}&{}&{}\end{tabular}
-\\
-\\
-\begin{tabular}{c|c|c}{}&{}&{\underline O}\\\hline{O}&{X}&{}\\\hline{X}&{}&{}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{}&{O}\\\hline{O}&{X}&{}\\\hline{X}&{\underline X}&{}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{}&{O}\\\hline{O}&{X}&{}\\\hline{X}&{X}&{\underline O}\end{tabular}
-&
-\begin{tabular}{c|c|c}{}&{\underline X}&{O}\\\hline{O}&{X}&{}\\\hline{X}&{X}&{O}\end{tabular}
-\end{tabular}
+\tictactoeboard{}{}{}{}{}{}{}{}{}
+\tictactoeboard{}{}{}{}{\underline X}{}{}{}{}
+\tictactoeboard{}{}{}{\underline O}{X}{}{}{}{}
+\tictactoeboard{}{}{.}{O}{X}{}{\underline X}{}{}
+\tictactoeboard{}{}{\underline O}{O}{X}{}{X}{}{}
+\tictactoeboard{}{.}{O}{O}{X}{}{X}{\underline X}{.}
+\tictactoeboard{}{.}{O}{O}{X}{}{X}{X}{\underline O}
+\tictactoeboard{}{\underline X}{O}{O}{X}{}{X}{X}{O}
+\tictactoeboard{}{\bf X}{O}{O}{\bf X}{}{X}{\bf X}{O}
 \end{center}
+And X has won with a line down the center.
 
 Although the game is quite simple and has little interest for actual play by experienced players
 (as all games inevitably end in draws), we will go ahead and develop a player for it.
 The simplicity of this game will allow us to build a full system and look at a variety of aspects of
 game programming without getting bogged down in complicated and game-specific details
 of rules or game representations.  And, as it is such a simple game, we can
-do a deeper analysis of the game.  There are less than $3^9=19\,683$ different
+do a deeper analysis of the game.  There are fewer than $3^9=19\,683$ different
 possible board states the game can be in --- each of the 9 squares can be empty,
 marked ``X'', or marked ``O'' (three possibilities).  The player to move can be
 determined by the number of X's and O's on the board (if they are the same, it is
@@ -165,7 +178,7 @@ Later in this work, we will investigate many more complex games of real interest
 The first step we'll need is to find a way to represent the state of the game.
 
 First, we define the ``side'' and a ``cell'' which may be empty or contain a side.
-{\small
+{\scriptsize
 \begin{verbatim}
 pub enum Side {
     X=1,
@@ -175,6 +188,429 @@ type Cell = Option<Side>;
 \end{verbatim}
 }
 
+We'll define the possible results for a game
+{\scriptsize
+\begin{verbatim}
+pub enum Result {
+    XWin=1,
+    OWin=2,
+    Draw=3,
+}
+\end{verbatim}}
+
+Then we'll create a board struct to hold a representation of the board using
+the most obvious approach where we simply make a three-by-three array to hold the
+state of each cell in the \g{tic-tac-toe} grid.  The co\"ordinates corresponding to cells in our array
+are as follows:
+{\scriptsize\tictactoeboard{(0,0)}{(0,1)}{(0,2)}{(1,0)}{(1,1)}{(1,2)}{(2,0)}{(2,1)}{(2,2)}}
+We define a Square type as an alias for the ordered pair and define a couple of accessor functions.
+{\scriptsize\begin{verbatim}
+#[derive(Clone,Copy,Debug,Move)]
+pub struct Board {
+    cells : [[Cell; 3]; 3],
+    moves_played : usize,
+    to_move : Option<Side>,
+    result : Option<Result>,
+}
+type Square = (usize,usize);
+impl Board {
+    fn new() -> Self {
+        Board {
+            cells        : [[None; 3]; 3],
+            moves_played : 0,
+            to_move      : Some(Side::X),
+            result       : None,
+        }
+    }
+    fn reset(&mut self) {
+        *self = Board::new();
+    }
+    fn cell(&self, square: Square) -> Cell {
+        self.cells[square.0][square.1]
+    }
+    fn set_cell(&mut self, square: Square, cell: Cell) {
+        self.cells[square.0][square.1] = cell;
+    }
+
+}
+\end{verbatim}}
+We'll probably want a little nicer representation than the default Rust version:
+{\scriptsize\begin{verbatim}
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        //write!(f, "{}", self.to_char())
+        fn ch(c: Cell) -> char {
+            match c {
+                Some(Side::X) => 'X',
+                Some(Side::O) => 'O',
+                None          => ' ',
+            }
+        }
+        write!(f, "{}|{}|{}\n-+-+-\n{}|{}|{}\n-+-+-\n{}|{}|{}\n",
+            ch(self.cells[0][0]), ch(self.cells[0][1]), ch(self.cells[0][2]),
+            ch(self.cells[1][0]), ch(self.cells[1][1]), ch(self.cells[1][2]),
+            ch(self.cells[2][0]), ch(self.cells[2][1]), ch(self.cells[2][2])
+            )?;
+        write!(f, "moves played: {}\n", self.moves_played)?;
+        write!(f, "to move: {}\n", self.to_move)?;
+        write!(f, "result: {}\n", self.result)
+    }
+}
+}
+\end{verbatim}}
+
+The next thing we need is to analyze a board position to determine if somebody has won the position or
+if it is a draw or if the game is still on-going.  For this we will simply check every possible
+winning triplet to see that each cell contains a piece and that all the cells are identical.
+For this, we'll simply exhaustively list all possibilities and go through them:
+{\scriptsize\begin{verbatim}
+impl Board {
+    fn compute_result(&self) -> Option<Result> {
+        static let triplets = [
+            // horizontal
+            [(0,0), (0,1), (0,2)], [(1,0), (1,1), (1,2)], [(2,0), (2,1), (2,2)],
+            // vertical
+            [(0,0), (1,0), (2,0)], [(0,1), (1,1), (2,1)], [(0,2), (1,2), (2,2)],
+            // diagonal
+            [(0,0), (1,1), (2,2)], [(0,2), (1,1), (2,0)]
+        ];
+        for trip in triplets {
+            if self.cell(trip[0]).is_some
+                && self.cell(trip[0])==self.cell(trip[1])
+                && self.cell(trip[0])==self.cell(trip[2])
+            {
+                return (
+                    match self.cell(trip[0]) {
+                        Side::X => Some(Result::XWin),
+                        Side::O => Some(Result::OWin),
+                        //None => Some(Result::Draw),//impossible
+                    }
+                );
+            }
+        }
+        if self.moves_played==9 {
+            return Some(Draw);
+        } else {
+            return None;
+        }
+    }
+}
+\end{verbatim}}
+
+Finally, we need to be able to get all possible moves and make or unamke a move on the board.
+(When we get to the search routines, we'll see why it is necessary to be able to {\em un}make a move.)
+(These won't necessarily be the most efficient implementations, but they will be sufficient for our
+purposes here.  Later we'll look at more performant approaches.)
+{\scriptsize\begin{verbatim}
+impl Board {
+    fn moves(&self) -> Vec<Square> {
+        let mut ml = Vec::new();
+        for r in (0..3) {
+            for c in (0..3) {
+                if self.cells[r][c].is_none() {
+                    ml.push((r,c));
+                }
+            }
+        }
+        return ml;
+    }
+    // returns true if move was valid for making
+    fn make_move(&mut self, m: Square) -> boolean {
+        if self.cell(m).is_some() || self.to_move.is_none() {
+            false
+        } else {
+            self.set_cell(m, self.to_move);
+            self.moves_played += 1;
+            self.to_move =
+                match self.to_move {
+                    Some(Side::X) => Some(Side::O),
+                    Some(Side::O) => Some(Side::X),
+                    // None => None, // impossible
+                };
+            self.result = self.compute_result();
+            if self.result.is_some() { self.to_move = None; }
+            true
+        }
+    }
+    // returns true if move was valid for unmaking
+    fn unmake_move(&mut self, m: Square) -> boolean {
+        if self.cell(m).is_none() || self.moves_played==0 {
+            false
+        } else {
+            self.set_cell(m, None);
+            self.moves_played -= 1;
+            self.to_move = Some(if self.moves_played%2==0 {Side::X} else {Side::O});
+            self.result = None;
+            true
+        }
+    }
+}
+\end{verbatim}}
+
+
+To test out our representation, we'll implement a simple REPL.
+This will allow us to interactively make moves, reset the board, etc.
+We will expand it later as we implement further functionality for searching, etc.
+
+{\scriptsize\begin{verbatim}
+pub fn main() {
+    let mut board = Board::new();
+    let mut quit = false;
+    while (!quit) {
+        println!("Board:\n{}", board);
+        println!("[reset] reset the board\n(1) [moves] show possible moves\n(2) [move n] make move\n(3) [unmove n] unmake move\n[quit] end program");
+        // get input
+        println!("> ");
+        match choice {
+            "reset" => { board.reset(); }
+            "moves" => { println!("Moves: {}", board.moves()); }
+            "move n" => { get input & make move }
+            "unmove n" => { get input & unmake move }
+            "quit" => { quit = true; }
+            _ => {}
+        }
+    }
+}
+\end{verbatim}}
+
+
+\section{Search}
+The first programming we'll do is write a solver for the game.
+This will tell us, for any position, the {\em theoretical value}
+of the position  --- that is, if we assume two players who play
+the best possible move at each position, whether the game is a win
+for the first player or a win for the second player or a draw.
+It is a theoretical fact, first proven by von Neumann, that one of
+these three possibilities must hold.  Our algorithm will in fact be
+a kind of constructive ``proof'' of this.
+
+The basic idea is that we systematically examine each possible move:
+we temporarily make the move on the board, then repeat the process
+on the resulting position, making each possible move by the opponent,
+etc. until we reach positions which are won for one of the players
+or draw positions.  (Positions where the game has ended are called
+``terminal'' positions.)  We then proceed back up the tree, assuming
+that each player will make the beset possible move.  That is, if there
+is a move which will lead to a forced win for that player,
+he will select it, otherwise if there is a move leading to a drawn game,
+he will select that, otherwise (and only then) will he choose a move
+which leads to a forced win by the opponent.
+
+Some examples should make this clear:
+
+
+Now here is the straightforward code for searching:
+{\scriptsize
+\begin{verbatim}
+pub fn fullsearch_v1(b: &mut Board) -> (Option<Side>,usize) {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return (s,1); }
+        None => { }
+    }
+    if b.to_move==Side.X {
+        let mut nodes = 1;
+        let ml = b.moves();
+        // initialize to loss
+        let mut best_so_far = Some(Side.O);
+        for m in ml {
+            b.make_move(m);
+            let (result,n) = fullsearch_v1(b);
+            b.unmake_move(m);
+            nodes += n;
+            best_so_far =
+                match (result, best_so_far) {
+                    (_,Some(Side.X)) | (Some(Side.X),_) => Some(Side.X),
+                    (_,None) | (None,_) => None,
+                    _ => Some(Side.O),
+                };
+        }
+        return (best_so_far, nodes);
+    } else if b.to_move==Side.O {
+        let ml = b.moves();
+        let mut best_so_far = Some(Side.X);
+        for m in ml {
+            b.make_move(m);
+            let (result,n) = fullsearch_v1(b);
+            b.unmake_move(m);
+            nodes += n;
+            best_so_far =
+                match (result, best_so_far) {
+                    (_,Some(Side.O)) | (Some(Side.O),_) => Some(Side.O),
+                    (_,None) | (None,_) => None,
+                    _ => Some(Side.X),
+                };
+        }
+        return (best_so_far, nodes);
+    } else {
+        panic!("Unexpected: nobody to move in position {}", b);
+    }
+}
+\end{verbatim}
+}
+But looking at this code, we readily see that the two branches depending
+on who is to move are nearly identical, differing in only the preference for side,
+In particular, notice that the behaviour of the two sides to play are symmetric
+--- each wants to 
+so let's implement a more unified version.  We'll add a helper function
+to the Side enum to give us the opposing side of a given one.
+{\scriptsize\begin{verbatim}
+impl Side {
+    pub fn other(self) -> Self {
+        match self {
+            Side.O => Side.X,
+            Side.X => Side.O,
+        }
+    }
+}
+\end{verbatim}}
+Then we can implement the more compact version
+{\scriptsize\begin{verbatim}
+pub fn fullsearch_v2(b: &mut Board) -> (Option<Side>,usize) {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return (s,1); }
+        None => { }
+    }
+    let tomove = b.to_move;
+    let other = tomove.other();
+    let mut nodes = 1;
+    let ml = b.moves();
+    // initialize to loss
+    let mut best_so_far = Some(other);
+    for m in ml {
+        b.make_move(m);
+        let (result,n) = fullsearch_v2(b);
+        b.unmake_move(m);
+        nodes += n;
+        best_so_far =
+            match (result, best_so_far) {
+                (_,Some(tomove)) | (Some(tomove),_) => Some(tomove),
+                (_,None) | (None,_) => None,
+                _ => Some(other),
+            };
+    }
+    return (best_so_far, nodes);
+}
+\end{verbatim}
+}
+
+The next modification is a speed-up: you may have noticed that once we find a winning move for the side
+to move, then the result will always be a win for that side. It would be a irrational to play a drawing or losing move
+if you've already found a winning move!  Thus, in this case, we can return immediately from the function once we have such a
+move.:
+{\scriptsize\begin{verbatim}
+pub fn fullsearch_v3(b: &mut Board) -> (Option<Side>,usize) {
+    // check if game is just over
+    let res = b.is_game_move();
+    match res {
+        Some(s) => { return (s,1); }
+        None => { }
+    }
+    let tomove = b.to_move;
+    let other = tomove.other();
+    let mut nodes = 1;
+    let ml = b.moves();
+    // initialize to loss
+    let mut best_so_far = Some(other);
+    for m in ml {
+        b.make_move(m);
+        let (result,n) = fullsearch_v3(b);
+        b.unmake_move(m);
+        nodes += n;
+        best_so_far =
+            match (result, best_so_far) {
+                (_,Some(tomove)) | (Some(tomove),_) => { return (Some(tomove),nodes) },
+                (_,None) | (None,_) => None,
+                _ => Some(other),
+            };
+    }
+    return (best_so_far, nodes);
+}
+\end{verbatim}
+}
+This is a tiny change to a single line, but we'll see it can give a significant improvement to
+the number of nodes searched.
+
+\begin{center}
+\begin{tabular}{ll|rr}
+    Searcher       & nodes searched & time (ms) \\\hline
+    fullsearch\_v1 &                &           \\
+    fullsearch\_v2 &                &           \\
+    fullsearch\_v3 &                &           \\
+\end{tabular}
+\end{center}
+
+Note that a lot of programming can be effectively accomplished like this:
+don't be afraid to implement
+the simplest, most straightforward code that will achieve your goal, and then
+go back and refine it.  Often you will have a better chance of getting it correct
+this way, rather than attempting to immediately write the more complicated or
+``elegant'' version.  Then you can improve your correct solution for performance,
+elegance, etc.  The simpler version is more likely to be correct and gives you
+a reference to verify the more complex implementation.
+
+See {\tt chapter-1-tictactoe.rs}.
+
+
+\section{Transposition tables}
+
+In our search above, it turns out that there is a lot of repeated and
+redundant computation, due to ``transpositions'' --- differing sequences of 
+moves that end up with the same position.  Then all search from that position
+on will be identical, though the path leading to it was different.  So if we
+store the result from the first time we encounter this position, then we can
+simply reuse it without having to re-search.
+
+In order to store, we will encode all possible board positions into an
+integer and use it to index into an array.  We use a straightforward
+approach: for each cell, we code empty as 0, X as 1, and O as 2, then
+compute a code for a position as:
+\[
+    \sum_{i=0}^8 a_i 3^i
+    = a_0\cdot 3^0 + a_1\cdot 3^1 + a_2\cdot 3^2 +
+      a_3\cdot 3^3 + a_4\cdot 3^4 + a_5\cdot 3^5 +
+      a_6\cdot 3^6 + a_7\cdot 3^7 + a_8\cdot 3^8
+\]
+and noting that the maximum possible value achievable is
+$3^9-1 = 19682$, so we can store the results in a relatively small array
+of 19683 elements (a little larger than 19k entries).
+
+Our modified search is then as follows:
+{\scriptsize
+\begin{verbatim}
+    impl Board {
+        pub fn code(&self) -> usize {
+              *   1 + *   3 + *   9
+            + *  27 + *  81 + * 243
+            + * 729 + *2187 + *6561
+        }
+    }
+    pub fn search(..., hash: Vector<...>) {
+    }
+\end{verbatim}
+}
+
+
+% TODO: this probably doesn't apply to TTT, so better to mention it
+% for some other game
+%
+%\section{Retrograde Analysis}
+%An alternative to searching from a given position is to
+%work backwards from the end of the game: find the positions that
+%are already ended (win, loss, or draw).  Then find positions that are 
+%one move away from ending; then two moves away; etc.
+%
+%The basic technique is to list every possible position, mark
+%the positions which are wins for X or O (and the invalid one)
+%and then work backwards from those.
+%
+
+
+\section{Alternative representations}
+
 Next, to allow us to try a few different representations, we'll define a generic
 trait (or ``interface'') that the boards will all satisfy.  Then, as long as our
 search (and other functionality) uses only the trait, then we can use any of the
@@ -182,7 +618,7 @@ representations with the same search code.  (Note that we will not incur any
 performance penalties for genericity of our search code in Rust, due to its policy
 of ``monomorphization'' of generic (templated) code.
 
-{\small
+{\scriptsize
 \begin{verbatim}
 pub trait Board {
     type Square : Debug,Display,Clone,Copy,Move;
@@ -194,38 +630,13 @@ pub trait Board {
 \end{verbatim}
 }
 
-The most obvious approach is to simply make a three-by-three array to hold the
-state of each cell in the \g{tic-tac-toe} grid.
-{\begin{tabular}{c|c|c} (0,0) & (0,1) & (0,2) \\\hline (1,0) & (1,1) & (1,2) \\\hline (2,0) & (2,1) & (2,2) \end{tabular}}
-{\small
-\begin{verbatim}
-pub struct Board_rowccol : Board {
-    cells : [[Cell; 3]; 3],
-}
-impl Board for Board_rowcol {
-    #[derive(Debug,Display,Clone,Copy,Move)]
-    type Square = (usize,usize);
-    fn new() -> Self {
-        Board_rowcol { cells:[[None;3];3] }
-    }
-    fn reset(&mut self) {
-        self.cells = [[None;3];3];
-    }
-    fn cell(&self, square: Square) -> Cell {
-        self.cells[square.0][square.1]
-    }
-    fn set_cell(&mut self, square: Square, cell: Cell) {
-        self.cells[square.0][square.1] = cell;
-    }
-
-}
-\end{verbatim}
-}
 
 A slight variation, which is sometimes convenient, is to collapse the two-dimensional array
-to a one-dimensional array:
-{\begin{tabular}{c|c|c} 0 & 1 & 2 \\\hline 3 & 4 & 5 \\\hline 6 & 7 & 8 \end{tabular}}
-{\small
+to a one-dimensional array.  Although it is less convenient to access a cell by row and column
+(though it is easy enough to write helper functions, if one really wants), it often turns out to
+be more convenient to have a single integer index denoting each 
+\tictactoeboard{0}{1}{2}{3}{4}{5}{6}{7}{8}
+{\scriptsize
 \begin{verbatim}
 pub struct Board_array : Board {
     cells : [Cell; 9],
@@ -244,6 +655,10 @@ impl Board for Board_array {
     fn set_cell(&mut self, square: Square, cell: Cell) {
         self.cells[square] = cell;
     }
+    // helper
+    fn rowcol_to_square(row: usize, col: usize) -> Square {
+        row * 3 + col
+    }
 }
 \end{verbatim}
 }
@@ -259,7 +674,7 @@ we look at more complicated games later.)
 Note that we need to use an integer type which has at least 9 bits --- one for each cell
 of the board.  Note that this takes 4 bytes total typical machine, whereas the cell approach
 takes at least 9 bytes.
-{\small
+{\scriptsize
 \begin{verbatim}
 type BitBoard = u16;
 pub struct Board_bitboard {
@@ -312,7 +727,7 @@ We also need to include these additional elements:
 \end{itemize}
 
 Thus we'll extend the Board trait as follows:
-{\small
+{\scriptsize
 \begin{verbatim}
 pub trait Board {
     ...
@@ -327,7 +742,7 @@ pub trait Board {
 
 Summing up this section, we have the following code.
 (We additionally fill in various necessary boiler-plate code for initialization, etc.)
-{\small
+{\scriptsize
 \begin{verbatim}
 // two sides playing
 #[derive(Clone,Copy,Debug,Display,Eq,PartialEq)]
@@ -489,249 +904,6 @@ impl Board for Board_Array {
 }
 
 
-\section{Search}
-The first programming we'll do is write a solver for the game.
-This will tell us, for any position, the {\em theoretical value}
-of the position  --- that is, if we assume two players who play
-the best possible move at each position, whether the game is a win
-for the first player or a win for the second player or a draw.
-It is a theoretical fact, first proven by von Neumann, that one of
-these three possibilities must hold.  Our algorithm will in fact be
-a kind of constructive ``proof'' of this.
-
-The basic idea is that we systematically examine each possible move:
-we temporarily make the move on the board, then repeat the process
-on the resulting position, making each possible move by the opponent,
-etc. until we reach positions which are won for one of the players
-or draw positions.  (Positions where the game has ended are called
-``terminal'' positions.)  We then proceed back up the tree, assuming
-that each player will make the beset possible move.  That is, if there
-is a move which will lead to a forced win for that player,
-he will select it, otherwise if there is a move leading to a drawn game,
-he will select that, otherwise (and only then) will he choose a move
-which leads to a forced win by the opponent.
-
-Some examples should make this clear:
-
-
-Now here is the straightforward code for searching:
-{\small
-\begin{verbatim}
-pub fn fullsearch_v1<B:Board>(b: &mut B) -> (Option<Side>,usize) {
-    // check if game is just over
-    let res = b.is_game_move();
-    match res {
-        Some(s) => { return (s,1); }
-        None => { }
-    }
-    if b.to_move==Side.X {
-        let mut nodes = 1;
-        let ml = b.moves();
-        // initialize to loss
-        let mut best_so_far = Some(Side.O);
-        for m in ml {
-            b.make_move(m);
-            let (result,n) = fullsearch_v1(b);
-            b.unmake_move(m);
-            nodes += n;
-            best_so_far =
-                match (result, best_so_far) {
-                    (_,Some(Side.X)) | (Some(Side.X),_) => Some(Side.X),
-                    (_,None) | (None,_) => None,
-                    _ => Some(Side.O),
-                };
-        }
-        return (best_so_far, nodes);
-    } else if b.to_move==Side.O {
-        let ml = b.moves();
-        let mut best_so_far = Some(Side.X);
-        for m in ml {
-            b.make_move(m);
-            let (result,n) = fullsearch_v1(b);
-            b.unmake_move(m);
-            nodes += n;
-            best_so_far =
-                match (result, best_so_far) {
-                    (_,Some(Side.O)) | (Some(Side.O),_) => Some(Side.O),
-                    (_,None) | (None,_) => None,
-                    _ => Some(Side.X),
-                };
-        }
-        return (best_so_far, nodes);
-    } else {
-        panic!("Unexpected: nobody to move in position {}", b);
-    }
-}
-\end{verbatim}
-}
-But looking at this code, we readily see that the two branches depending
-on who is to move are nearly identical, differing in only the preference for side,
-In particular, notice that the behaviour of the two sides to play are symmetric
---- each wants to 
-so let's implement a more unified version.  We'll add a helper function
-to the Side enum to give us the opposing side of a given one.
-
-{\small
-\begin{verbatim}
-impl Side {
-    pub fn other(self) -> Self {
-        match self {
-            Side.O => Side.X,
-            Side.X => Side.O,
-        }
-    }
-}
-pub fn fullsearch_v2<B:Board>(b: &mut B) -> (Option<Side>,usize) {
-    // check if game is just over
-    let res = b.is_game_move();
-    match res {
-        Some(s) => { return (s,1); }
-        None => { }
-    }
-    let tomove = b.to_move;
-    let other = tomove.other();
-    let mut nodes = 1;
-    let ml = b.moves();
-    // initialize to loss
-    let mut best_so_far = Some(other);
-    for m in ml {
-        b.make_move(m);
-        let (result,n) = fullsearch_v2(b);
-        b.unmake_move(m);
-        nodes += n;
-        best_so_far =
-            match (result, best_so_far) {
-                (_,Some(tomove)) | (Some(tomove),_) => Some(tomove),
-                (_,None) | (None,_) => None,
-                _ => Some(other),
-            };
-    }
-    return (best_so_far, nodes);
-}
-\end{verbatim}
-}
-
-The next modification is a speed-up: you may have noticed that once we find a winning move for the side
-to move, then the result will always be a win for that side. It would be a irrational to play a drawing or losing move
-if you've already found a winning move!  Thus, in this case, we can return immediately from the function once we have such a
-move.:
-{\small
-\begin{verbatim}
-pub fn fullsearch_v3<B:Board>(b: &mut B) -> (Option<Side>,usize) {
-    // check if game is just over
-    let res = b.is_game_move();
-    match res {
-        Some(s) => { return (s,1); }
-        None => { }
-    }
-    let tomove = b.to_move;
-    let other = tomove.other();
-    let mut nodes = 1;
-    let ml = b.moves();
-    // initialize to loss
-    let mut best_so_far = Some(other);
-    for m in ml {
-        b.make_move(m);
-        let (result,n) = fullsearch_v3(b);
-        b.unmake_move(m);
-        nodes += n;
-        best_so_far =
-            match (result, best_so_far) {
-                (_,Some(tomove)) | (Some(tomove),_) => { return (Some(tomove),nodes) },
-                (_,None) | (None,_) => None,
-                _ => Some(other),
-            };
-    }
-    return (best_so_far, nodes);
-}
-\end{verbatim}
-}
-This is a tiny change to a single line, but we'll see it can give a significant improvement to
-the number of nodes searched.
-
-\begin{center}
-\begin{tabular}{ll|rr}
-    Searcher       & Board representation & nodes searched & time (ms) \\\hline
-    fullsearch\_v1 & Row-column           &                &           \\
-    fullsearch\_v1 & Array                &                &           \\
-    fullsearch\_v1 & BitBoard             &                &           \\
-    \\
-    fullsearch\_v2 & Row-column           &                &           \\
-    fullsearch\_v2 & Array                &                &           \\
-    fullsearch\_v2 & BitBoard             &                &           \\
-    \\
-    fullsearch\_v3 & Row-column           &                &           \\
-    fullsearch\_v3 & Array                &                &           \\
-    fullsearch\_v3 & BitBoard             &                &           \\
-\end{tabular}
-\end{center}
-
-Note that a lot of programming can be effectively accomplished like this:
-don't be afraid to implement
-the simplest, most straightforward code that will achieve your goal, and then
-go back and refine it.  Often you will have a better chance of getting it correct
-this way, rather than attempting to immediately write the more complicated or
-``elegant'' version.  Then you can improve your correct solution for performance,
-elegance, etc.  The simpler version is more likely to be correct and gives you
-a reference to verify the more complex implementation.
-
-See {\tt chapter-1-tictactoe.rs}.
-
-
-\section{Transposition tables}
-
-In our search above, it turns out that there is a lot of repeated and
-redundant computation, due to ``transpositions'' --- differing sequences of 
-moves that end up with the same position.  Then all search from that position
-on will be identical, though the path leading to it was different.  So if we
-store the result from the first time we encounter this position, then we can
-simply reuse it without having to re-search.
-
-In order to store, we will encode all possible board positions into an
-integer and use it to index into an array.  We use a straightforward
-approach: for each cell, we code empty as 0, X as 1, and O as 2, then
-compute a code for a position as:
-\[
-    \sum_{i=0}^8 a_i 3^i
-    = a_0\cdot 3^0 + a_1\cdot 3^1 + a_2\cdot 3^2 +
-      a_3\cdot 3^3 + a_4\cdot 3^4 + a_5\cdot 3^5 +
-      a_6\cdot 3^6 + a_7\cdot 3^7 + a_8\cdot 3^8
-\]
-and noting that the maximum possible value achievable is
-$3^9-1 = 19682$, so we can store the results in a relatively small array
-of 19683 elements (a little larger than 19k entries).
-
-Our modified search is then as follows:
-{\small
-\begin{verbatim}
-    impl Board {
-        pub fn code(&self) -> usize {
-              *   1 + *   3 + *   9
-            + *  27 + *  81 + * 243
-            + * 729 + *2187 + *6561
-        }
-    }
-    pub fn search(..., hash: Vector<...>) {
-    }
-\end{verbatim}
-}
-
-
-% TODO: this probably doesn't apply to TTT, so better to mention it
-% for some other game
-%
-%\section{Retrograde Analysis}
-%An alternative to searching from a given position is to
-%work backwards from the end of the game: find the positions that
-%are already ended (win, loss, or draw).  Then find positions that are 
-%one move away from ending; then two moves away; etc.
-%
-%The basic technique is to list every possible position, mark
-%the positions which are wins for X or O (and the invalid one)
-%and then work backwards from those.
-%
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -753,7 +925,7 @@ will still need to be done on a per-game basis.
 
 We will define a general ``interface'' ...
 
-{\small
+{\scriptsize
 \begin{verbatim}
 trait Side : Clone,Copy,Debug,Display,Eq,Move,PartialEq {
     fn first_mover() -> Self;
@@ -966,7 +1138,7 @@ the game is infeasible, due to the combinatorial explosion of the game tree.
 \end{tikzpicture}
 \end{center}
 
-{\tiny
+{\scriptsize
 \begin{verbatim}
 pub fn search_negamax_pruning<Board:GameBoard,Eval:Evaluator<Board>>(b: &mut Board, eval: &eval, ss: &mut SearchStats, depth: isize) -> Board::Scale {
     ss.nodes += 1;
@@ -996,7 +1168,7 @@ pub fn search_negamax_pruning<Board:GameBoard,Eval:Evaluator<Board>>(b: &mut Boa
 \end{verbatim}
 }
 
-{\tiny
+{\scriptsize
 \begin{verbatim}
 pub fn search_negamax_ttable<Board:GameBoard,Eval:Evaluator<Board>>(b: &mut Board, eval: &eval, ss: &mut SearchStats, depth: isize) -> Board::Scale {
 \end{verbatim}
@@ -1137,13 +1309,13 @@ This can be a two-dimensional array, matching the layout of the game-board, for 
 Though, it is often more convenient to use a one-dimensional array, with the mapping
 
 Example, chess:
-{\tiny\begin{verbatim}
+{\scriptsize\begin{verbatim}
     // basic setup
     pub enum Piece { Pawn, Knight, Bishop, Rook, Queen, King };
     pub enum Color { White, Black };
 \end{verbatim}}
 Matrix or two-dimensional representation:
-{\tiny\begin{verbatim}
+{\scriptsize\begin{verbatim}
     // definition
     pub struct Board_matrix { cells : [[Option<(Color,Piece)>; 8]; 8], };
     // creation
@@ -1151,7 +1323,7 @@ Matrix or two-dimensional representation:
     // put white knight on c2 square
     b.cells[1][2] = Some((Color::White,Piece::Knight));
 \end{verbatim}}
-{\tiny\begin{verbatim}
+{\scriptsize\begin{verbatim}
     // definition
     pub struct Board_array { cells : [Option<(Piece,Color)>; 8 * 8], };
     // creation
@@ -1766,6 +1938,7 @@ time $\verb|base|=t$ and there is no extra time $\verb|extra|=0$.
 
 For sudden-death with no increment, it uses 
 
+{\scriptsize
 \begin{verbatim}
     case tctINCREMENT:
         if (pcon->tc.tmIncr) {
@@ -1868,7 +2041,9 @@ lblSet:    if (tmBase > pcon->ss.tmUs / 2)
         goto lblSet;
     }
 \end{verbatim}
+}
 
+{\scriptsize
 \begin{verbatim}
 //    This is called a whole bunch of times via the engine/interface protocol.
 //    Given what is known about the time control, the current time, and the
@@ -1909,6 +2084,7 @@ void VCheckTime(PCON pcon)
     }
 }
 \end{verbatim}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -1961,6 +2137,7 @@ of times that the best move has changed in the $\text{it}$'th iteration.
 Glaurung will stop a search early if there seems to be an ``easy'' move (a move
 which is clearly better than the rest).  If it has done at least 5 iterations
 and:
+{\scriptsize
 \begin{verbatim}
     // Stop search early if one move seems much better than the rest:
     if(RSI->iteration >= 5 && RSI->easymove &&
@@ -1972,6 +2149,7 @@ and:
       break;
     }
 \end{verbatim}
+}
 
 The search will be ended if most of \verb|max_time| has been used at the end
 of an iteration (because there wouldn't be time to complete the next iteration
@@ -1979,6 +2157,7 @@ in any case.)  Specifically if the time used so far exceeds
 $(\verb|max_time| + \verb|extra_time|)\x80/128$.
 
 During the search, the timeout is
+{\scriptsize
 \begin{verbatim}
 void check_for_timeout(void) {
   int t;
@@ -2004,6 +2183,7 @@ void check_for_timeout(void) {
     RSI->thinking_status = ABORTED;
 }
 \end{verbatim}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2107,10 +2287,13 @@ The parameter $\gamma$ can be tuned from 1 to $b$ to move continuously from cons
 ply depth.)
 
 To start the search, one calls
+{\scriptsize
 \begin{verbatim}
   ABC(root, -infinity, +infinity, d_max, d_min, [], [])
 \end{verbatim}
+}
 where
+{\scriptsize
 \begin{verbatim}
   ABC(node, alpha, beta, d_max, d_min, max_options, min_options) {
     if (terminate?(node, alpha, beta, d_max, d_min, max_options, min_options)) {
@@ -2130,7 +2313,9 @@ where
     }
   }
 \end{verbatim}
+}
 and
+{\scriptsize
 \begin{verbatim}
   terminate?(node, alpha, beta, d_max, d_min, max_options, min_options) {
     v = static value of node;
@@ -2146,20 +2331,25 @@ and
     return false;
   }
 \end{verbatim}
+}
 and
+{\scriptsize
 \begin{verbatim}
   max_depth(v, max_options) {
     return sum over all value lists L in max-options of S(k)
       where k is the number of elements of L > v-delta
   }
 \end{verbatim}
+}
 and
+{\scriptsize
 \begin{verbatim}
   min_depth(v, min_options) {
     return sum over all value lists L in min-options of S(k)
       where k is the number of elements of L < v+delta
   }
 \end{verbatim}
+}
 
 %%%%%%%%%%%%%%%%%%%%
 \section{Proof number}
