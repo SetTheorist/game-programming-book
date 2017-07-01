@@ -1,0 +1,115 @@
+
+		Changes from version 1.1 to 1.2
+		-------------------------------
+
+1) Improved interface to plain TeX
+
+   It is now possible to `\input chess.sty' in plain TeX without having
+   to specify the category code for the `@'.
+
+2) Language support using the babel package from Johannes Braams
+  
+   Babel offers facilities to dynamically change from language within one
+   document. The default language is english unless you specify
+   explicitly another language in your documentstyle, ex.:
+     (LaTeX:)
+   	\documentstyle[....,english,dutch,chess]{article}
+     (plain TeX equivalent:)
+   	\input english.sty
+   	\input dutch.sty
+   	\input chess.sty
+   
+   The default language is dutch because it is the last defined document-
+   style. When chess.sty is processed dutch is defined as the current 
+   language. So the chess macros use the dutch letters for chess pieces 
+   (K=Koning, D=Dame, T=toren, L=loper, P=paard and I=pIon). Currently 
+   four languages are built into chess.sty: english (default), german, 
+   french and dutch but you can easily add another language by searching 
+   the string FOREIGN in chess.sty and following the instructions in the 
+   comments near that string. To work nicely with the babel system one
+   also should have a FOREIGN.sty language style (see babel documentation).
+   Here follow the letters for the chess pieces for the above mentioned
+   languages:
+   
+	english  german    french    dutch
+	----------------------------------
+	Pawn     Bauer     Pion      pIon
+	kNight   Springer  Cavalier  Paard
+	Bishop   L\"aufer  Fou       Loper
+	Rook     T\"urm    Tour      Toren
+	Queen    Dame      Dame      Dame
+	King     K\"onig   Roi       Koning 
+   
+   It is not possible to change dynamically to another chess language. I 
+   leave this as an exercise to the reader :-). For a complete example of
+   the usage of a language you can look at SchaakMaatje.ltx (dutch).
+
+3) \begin{nochess} ... \end{nochess}
+
+   In my previous versions I have introduced a chess-environment that 
+   activated the `|' character. I needed this environment because LaTeX 
+   uses the `|' character in the tabular environment in SchaakMaatje.ltx.
+   In stead of annoying everybody with this environment (you only need
+   it for very rare occasions) I provide now an nochess-environment
+   which does the opposite: protects the `|' character from being
+   activated by the chess macros. Within the nochess-environment you
+   can reactivate the `|' again with the chess-environment.  
+   The chess-environment can also be used as an alternative for the
+   |....| pair.
+   
+   IMPORTANT: 
+     - remove \begin{chess} ... \end{chess} from your LaTeX-documents
+       using chess.sty version 1.0 or 1.1 (in plain TeX \chess ... 
+       \endchess)
+     - add \begin{nochess} ... \end{nochess} if you need to make the 
+       `|' characters inactive (in plain TeX: \nochess ... \endnochess)
+
+4) Some files renamed to serve MSDOS users.
+
+   We all suffer from the limitations created by MSDOS. The chess macros 
+   used chessfig10 as the fontname for the figurine font. This name is
+   changed to chessf10. There are a lot more filenames that don't fit in
+   the 8+3 name space. Most of them does not give serious problems so I
+   have not made them MSDOS friendly (would be UNIX, VAX-VMS and AmigaDOS
+   unfriendly!). The chess macros can be used with emTeX.
+
+5) Handling of promotion improved
+      * Black promotion problem solved (plain TeX)
+      * comment allowed also with promotion
+      * if no promotion piece is provided a default Q(ueen) is supposed
+      
+   The syntax of the argument for \ply and \move has been changed with 
+   respect to promotion:
+      \ply [a-h][1-8][a-h][1-8]{{Q|R|B|N}comment}
+      
+     (letters: Q (queen), R (rook), B (bishop) and N (knight) depend on 
+      the chess language)
+      
+   A promotion piece may be ommited (in that case a queen is supposed) 
+   and comment is now also handled correctly.
+   
+6) Small changes
+   - change {--} into \hbox{--} to prevent hyphenation within move
+   - \move's lined up on last row (or digit in case of castling)
+   - `en passant capture' bug solved
+
+7) Added a scanned EPSF picture (doc/board.epsf) of original font.
+
+8) Fixed Fisher's typo in example game Fisher-Tal (see comments in
+   doc/tal.tex and doc/tal.ltx).
+
+9) Added Informator symbols (see doc/Symbos.tex and doc/Symbols.ltx)
+   and a LaTeX example how to use them (see doc/Kasparov.ltx).
+
+10) Added updated version of TUGboat article.
+   
+I would like to thank Jan Jaap Spreij (puls@cs.rug.nl) for reporting
+points 1, 3, 5 and 6 and for his contributions to chess.sty; John Saba
+(saba@cccit.arizona.edu) and Henry Thomas (hthomas@irisa.fr) for their
+help in improving the Informator symbols and Alex Lopez-Ortiz
+(alopez-o@maytag.uwaterloo.ca) for his help in finding the `Fisher
+typo'.
+
+Geldrop, Feb. 1992
+Piet Tutelaers
+internet: rcpt@urc.tue.nl

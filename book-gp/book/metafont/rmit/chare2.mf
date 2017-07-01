@@ -1,0 +1,14 @@
+beginthaichar("OH", "E2", "oh", 2thick# + normwd#, normht# + uvgap# + uvht#, 0);
+	b_def(1, thick, 0);
+	rhat_def(2);
+
+	y2top = normht + uvgap + uvht;
+	y1bot = 0;
+	x2lft = leftmost;
+	x2rt = rightmost;
+	x1rt = rightmost;
+	x1 = x2;
+
+	filldraw rhat_path(2) -- reverse b_path(1) -- cycle;
+	penlabels(1,2);
+endthaichar;

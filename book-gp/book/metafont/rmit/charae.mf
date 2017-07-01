@@ -1,0 +1,30 @@
+beginthaichar("DAW CHAH!-DAH", "AE", "dc", 2thick# + normwd# + dia#, normht#, lvgap# + lvht#);
+	d_def(1, thick, 1/2thick);
+	gor_def(2);
+	penpos5(thick, 0);
+	penpos8(thin, 90);
+	penpos9(thin, 180);
+	penpos10(thin, 270);
+	penpos11(thin, 300);
+
+	x1lft = leftmost;
+	x1l = x2lft;
+	x2rt = x5r = rightmost;
+	y1bot = 0;
+	x11 = 0.8[x9, x5l];
+	x8 = x10 = 1/3[x9l, x5l];
+	x9r = leftmost + dia;
+	y5 = y10r = - lvgap - lvht;
+	y11r = y8r = -lvgap - 1/2lvht;
+	y9 = 1/2[y8, y10];
+
+	filldraw d_path(1) -- gor_path_i(2) -- z5l -- z5r
+		-- reverse gor_path_o(2) -- cycle;
+	filldraw z5l{dir 135} 
+		.. z8l{left} .. z9l{down}
+		.. z10l{right} .. {dir 45}z11l -- z11r{dir 225}
+		.. z10r{left} .. z9r{up}
+		.. z8r{right} 
+		.. z5r -- cycle;
+	penlabels(range 1 thru 11);
+endthaichar;

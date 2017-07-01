@@ -1,0 +1,41 @@
+beginthaichar("YAW YING", "AD", "yi", jutout# + 3thick# + skinnywd# + normwd#, normht#, lvgap# + lvht#);
+	b_def(1, thick, thick - thin);
+	gor_def(2);
+	cup_def(3);
+	topcap_def(4);
+
+	lft x1lft = lft x2lft = leftmost + jutout;
+	rt x4r = rightmost;
+	x4r = x3rt;
+	x2rt = x3lft + thick;
+	x3lft + thick + thick + skinnywd = x3rt;
+	bot y1bot = 0;
+	top y4top = normht;
+
+	filldraw b_path(1) -- gor_path_i(2) -- cup_path_o(3) -- z4r -- z4l
+		-- reverse cup_path_i(3) -- reverse gor_path_o(2) -- cycle;
+
+	% little curl under the character
+
+	penpos10(thin, 180);
+	penpos11(thin, 270);
+	penpos12(thick, 0);
+
+	if dia > thick: dotdia := dia;
+	else: dotdia := thick; fi;
+	if dotdia > lvht: dotdia := lvht; fi;
+	x10r = x3lft;
+	x12r = x3rt;
+	x11 = 1/2[x10r, x12r];
+	y10 = - lvgap - dotdia/2;
+	bot y11 = -lvgap - lvht;
+	top y12 = -lvgap;
+
+	filldraw z10l{down} .. {right}z11l .. {up}z12l -- z12r{down}
+		.. z11r{left} .. z10r{up} -- cycle;
+	filldraw z10r{up} .. (z10r + (dotdia/2, dotdia/2)){right}
+		.. (z10r + (dotdia, 0)){down}
+		.. (z10r + (dotdia/2, -dotdia/2)){left} .. cycle;
+
+	penlabels(1,2,3,4,10,11,12);
+endthaichar;

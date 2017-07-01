@@ -1,0 +1,21 @@
+beginthaichar("CHAW CHUH", "AC", "cu/chu", jutout# + 3thick# + 2normwd#, normht#, 0);
+	b_def(1, thick, thick - thin);
+	gor_def(2);
+	dd_def(3);
+	penpos4(thick, 0);
+	topcap_def(5);
+
+	lft x1lft = lft x2lft = leftmost + jutout;
+	rt x5r = rightmost;
+	x4 = x5;
+	x2rt = x3r;
+	x3l = 1/2[x1,x5];
+	bot y1bot = 0;
+	bot y4 = 0;
+	top y5top = normht;
+
+	filldraw b_path(1) -- gor_path_i(2) -- dd_path_i(3) .. z4l -- z4r
+		.. reverse dd_path_o(3) -- reverse gor_path_o(2) -- cycle;
+	filldraw z4r -- z4l -- z5l -- z5r -- cycle;
+	penlabels(1,2,3,4,5);
+endthaichar;

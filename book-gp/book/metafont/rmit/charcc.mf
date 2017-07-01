@@ -1,0 +1,33 @@
+beginthaichar("LAW JOO!-LAH", "CC", "lj", 2dia# + 2thick# + normwd#, normht# + dia#, 0);
+	q_def(1, thick, 1/4thick);
+	penpos2(thick, 0);
+	penpos3(thin ++ thin, 270);
+	penpos4(thin ++ thin, 270);
+	penpos5(thin ++ thin, 270);
+	penpos6(thick, 0);
+	q_def(7, thick, 1/4thick);
+	penpos8(thin, 270);
+	penpos9(1/2[thin, thick], 360-45);
+
+	lft x1lft = leftmost;
+	x1 = x2;
+	x6 = x7;
+	x3 = x2r;
+	x5 = x6l;
+	x4 = 1/2[x3,x5];
+	rt x7r = x8;
+	rt x9r = rightmost;
+	x8 + dia = x9;
+	top y1top = top y7top = normht;
+	bot y2 = bot y6 = 0;
+	y3r = y2;
+	y5r = y6;
+	y4r + 3dia = y7top;
+	y8r = y7bot + thin;
+	top y9l = normht + dia;
+
+	filldraw q_path(1) -- z3l -- z4l -- z5l -- q_path(7) -- z6r
+		-- z6l -- z4r -- z2r -- z2l -- cycle;
+	filldraw z8l. .. z9l -- z9r .. z8r -- cycle;
+	penlabels(1,2,3,4,5,6,7);
+endthaichar;

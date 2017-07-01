@@ -1,0 +1,477 @@
+% File:	   SchaakMaatje.ltx
+% Purpose: chess magazine for our chess club: Schaakclub Geldrop.
+%	   Demonstrates the usage of te Dutch language and the nochess 
+%	   environment (needed for the first table). Contains a chess 
+%	   challenge at the very end (game of Max Euwe against the young 
+%	   Bobby Fisher).
+% Version: 1.2 (June 1991)
+% Author:  Piet Tutelaers (internet: rcpt@urc.tue.nl)
+%
+\documentstyle[a4wide,fancyheadings,dutch,chess]{article}
+
+%
+% TeX macros
+%
+
+\def\h{\leavevmode
+   \raise.5ex\hbox{\the\scriptfont0 1}\kern-.1em
+   /\kern-.15em\lower.25ex\hbox{\the\scriptfont0 2}}
+   
+\def\d{\vrule height7.5pt width15pt depth2.5pt}
+\def\S{$\sum$}
+\def\remise{\h--\h}
+
+\def\G#1{$G_{#1}$}
+
+%
+% LaTeX macros
+%
+
+\thispagestyle{empty}
+\begin{document}
+\begin{nochess} % put the environment outside the twocolumn option!
+\twocolumn[
+{\hfil\Huge Schaakmaatje\hfil\par}
+\vspace{1cm}
+\begin{tabular}{|l|l|l|ll|l|}	\hline
+\multicolumn{6}{|c|}{Schaakclub Geldrop--{\bf SCG}} \\ \hline
+Voorzitter	&Paul van Heuven &Schoutstr 22	 &5663 EZ &Geldrop &040--852191 \\ \hline
+Secr/penningm	&Sjim Jonkmans	 &Adm Byrdstr 26 &5665 HE &Geldrop &040--851630 \\\hline
+Wedstrijdleider	&Hans van Keulen &Nieuwendijk 31 &5591 JJ &Heeze   &04907--5266 \\ \hline
+Redakteur	&Piet Tutelaers	 &Lambertushof 52&5667 SG &Geldrop &040--854670 \\\hline
+\end{tabular}
+\par
+\vspace{1cm}
+{\hfill{}12${}^e$ Jaargang nr. 225, 9 januari 1990}
+\vspace{1cm}
+]
+\end{nochess}
+
+\pagestyle{fancy}
+\lhead{Schaakmaatje}\rhead{{}12${}^e$ Jaargang nr. 225}
+\subsection*{Van de redaktie}
+Helaas verschijnt deze aflevering niet op de geplande 19 december (sorry
+Sjim), maar daar waren zoals je weet enkele redenen voor.  Maar niet
+getreurd, dit nummer staat weer barstens vol met schaaknieuws.
+
+Naast de zeer gewaardeerde H(aHa)--lijn, heb ik een wat serieuzere
+bijdrage voor de leden toegevoegd.  Het betreft een partij tussen
+niemand minder dan Max Euwe en Bobby Fisher.  Euwe kan het aanstormend
+talent Fisher hier nog de baas.  De partij is in de vorm van een
+schaaktest gegoten.  Voor elke zet kun je punten verdienen.  Aan het
+eind kun je je eigen zetten vergelijken met de zet die gespeeld is, of
+die gespeeld had kunnen worden.  Ik ben zeer benieuwd wat jullie
+puntentotaal is! Laat horen of je zo'n schaaktest leuk vindt, wie weet
+komen er dan nog meer. (Meer gegevens vind je bovenaan op pagina~5.)
+
+\subsection*{Bavaria tournooi}
+We spelen dit jaar weer mee met het Bavaria tournooi. Onze tegenstanders
+in de A2 groep zijn: SCAR~1 (Aarle--Rixtel), De Combinatie~2 (Asten),
+Deurnese SC en En Passant (Veghel). Hoewel ons spelers potentieel enorm
+is toegenomen, wil ik toch proberen zoveel mogelijk mensen mee te laten
+spelen. Dus het motto blijft voorlopig: ``Meedoen is belangrijker dan
+winnen''. De Bavaria ronden zijn gepland op:
+
+\begin{tabbing}
+di\hspace{.3cm} \= 16--1 \hspace{.3cm}\= SCG vrij \\
+ma \> 12--2 \> En Passant --- SCG \\
+di \> 13--3 \> SCG --- Deurnese SC \\
+do \> 05--4 \> SCAR~1 -- SCG \\
+di \> 24--4 \> SCG --- De Combinatie 2 \\
+\end{tabbing}
+
+\subsection*{De H(aha)--lijn --13--}
+De dertiende aflevering, als dit maar goed gaat \ldots.  Niet dat ik
+bijgelovig ben, maar er bestaat nog zoiets als de Wet van Murphy.  U
+weet wel, alles wat fout kan gaan, gaat ook fout.  Ik schrijf deze
+bijdrage voor het Schaakmaatje 225, waarvoor als verschijningsdatum 19
+december 1989 is voorzien.  Maar of dat lukt?? Ik zal de goden maar niet
+verzoeken met opmerkingen als: ``In deze laatste bijdrage van het jaar
+\ldots.'' of ``Voor de komende feestdagen de volgende opgaven...''. 
+Ach, het doet er ook allemaal niet zoveel toe, wanneer jullie dit onder
+ogen krijgen.  Als je er maar plezier aan beleeft.  Eerst de oplossingen
+van de vorige keer. 
+
+\subsubsection*{Oplossing \G{22}}
+Niet echt moeilijk. |1.: Dh3+; 2. K*h3, Lf1 mat| of |2. Kf2 (of Kg1), Df1|
+ mat, of |2. Kh1, Df1+; 3. Lg1, D*f3| mat. Toen ik deze oplossing overtikte
+uit mijn schriftje met problemen zat ik met een scheef oog naar het diagram
+te kijken. Wat? |3. Lg1|? Waar komt die in hemelsnaam vandaan? Wel, om de
+waarheid te zeggen van e3. In het diagram van de vorige keer was ik de witte
+loper van e3 vergeten. Foei toch. Maar gelukkig bleef het probleem oplosbaar. 
+
+\subsubsection*{Oplossing \G{23}}
+De tweeling. Stand a, met de toren op a1 is niet moeilijk. |1. 0-0-0|
+geeft mat in \'e\'en zet. De stand is mogelijk. De koning kan van c4 gekomen
+zijn na |Lb1-a2+|. Stand b, met de |T| op b1 i.p.v. a1 is onmogelijk met wit aan
+zet. (Probeer maar eens de laatste zet van zwart te vinden.) Dus Zwart is aan
+zet en na |K*c2| wordt zwart met |Dd2| matgezet. Oorspronkelijk stond er in mijn
+tekst: ``Stand b, met de witte toren op b''. Een collega van mij kon geen
+oplossing vinden met de toren van a1 op b1 en zette vervolgens de toren van
+e4 op b1 en vond toen een oplossing. Probeer het maar eens. 
+
+\board{ * * *k*} 
+      {* * * l } 
+      { * * * *} 
+      {* * *T*T} 
+      { * * *T*} 
+      {* * * * } 
+      { * * *K*} 
+      {* * * * }
+\subsubsection*{Opgave \G{24}}
+Hoe we mat met twee torens moeten geven weten we allemaal. Maar
+met drie? Wit (aan zet) geeft mat in drie zetten.
+%\begin{dia}
+\vspace{.2cm}
+$$\showboard$$
+\centerline{Diagram 1: Opgave \G{24}}
+%\caption{Opgave \G{24}}
+%\end{dia}
+
+\board{ * *d* *} 
+      {* * * * } 
+      { * *t* *} 
+      {DIP k * } 
+      { * * * *} 
+      {* * K * } 
+      { * * * *} 
+      {* * * * }
+\subsubsection*{Opgave \G{25}}
+Bij schaakproblemen is het meestal van belang wat er gaat
+gebeuren. In deze opgave gaat het erom wat er is gebeurd. Als
+wit zijn laatste zet terug mocht nemen zou hij mat in \'e\'en zet kunnen geven.
+Het terugnemen van een zet is natuurlijk niet regelementair, maar voor de rest
+wordt er strikt volgens de regels gespeeld.
+
+Deze laatste opgave staat (o.a) in het boekje van L\'eon Vi\'e: ``Denk
+mee met L\'eon Vi\'e''.  Als toegift geef ik een aardig probleempje dat,
+zij het in een iets andere vorm, eveneens in dat boekje is vermeld:
+
+\subsubsection*{Opgave \G{26}}
+Van een volkomen regulier verlopen schaakpartij is alleen gegeven dat na
+de spectaculaire opening |1.  f2-f3(!)| een even spectaculair slot
+volgt.  Na de vierde (!!) zet van Zwart staat de witte koning mat op h4. 
+De vraag luidt: Hoe zag die complete schaakpartij eruit??
+
+\centerline{(Sjim)}
+
+%\begin{dia}
+\vspace{.2cm}
+$$\showboard$$
+\centerline{Diagram 2: Opgave \G{25}}
+%\caption{Opgave \G{25}}
+%\end{dia}
+
+\subsection*{Van de wedstrijdleider}
+
+\subsubsection*{Competitie}
+De leiding in de competitie wordt op dit ogenblik gedeeld door George van de
+Wall, Leen schoenmeijer en Ad Weekers. Dit zijn namen die tot nu toe niet
+allen in de bovenste regionen van onze clubcompetitie te vinden waren.
+De clubkampioen en de nummer twee van vorig jaar doen het op het ogenblik
+slechts matig. Misschien is een verklaring hiervoor dat sterkere spelers nu
+meer dan vorig jaar tegen spelers van hetzelfde niveau worden opgesteld.
+Leo hovestadt, een nieuw lid, doet het zeer goed met 3 punten uit drie
+partijen.
+
+\subsubsection*{Elo}
+De Elo competitie wordt aangevoerd door George van de Wall met 55
+winstpunten, maar hij wordt op korte afstand gevolgd door Leen Schoenmeijer
+en Leo Hovestadt. Er is in de Elo lijst nu een zekere mate van stabilisatie
+te zien.
+
+\subsubsection*{Snelschaak}
+Hier gaat het nieuwe lid Leo Hovestadt ruimschoots voorop met 21 punten uit
+drie snelschaakronden. Teun van Loopik en Jack Tinnemans lopen erachteraan.
+
+\subsubsection*{Gongwedstrijd}
+Op 28 November is de jaarlijkse gongwedstrijd gehouden ter ere van de
+verjaardag van de goed heiligman. Er zijn drie prijzen verloot aan het einde
+van deze wedstrijd. De uitslag van deze dag luidde:
+
+\begin{tabbing}
+Agnes van der Waalsss   \= 999 \kill
+Piet Tutelaers      \>  8,5 \\
+Nico Hazewindus     \>  8,0 \\
+Cees Buthker        \>  7,0 \\
+Marco Kessels       \>  6,5 \\
+George van de Wall  \>  6,5 \\
+Hans van Keulen     \>  5,0 \\
+Teun van Loopik     \>  5,0 \\
+Jack Tinnemans      \>  5,0 \\
+Hans Naus           \>  4,5 \\
+Piet Bell           \>  4,0 \\
+Sjim Jonkmans       \>  4,0 \\
+Olaf van Mol        \>  3,5 \\
+Leen Schoenmeijer   \>  3,5 \\
+Geert Bogers        \>  3,0 \\
+Jacques Zwaard      \>  3,0 \\
+Paul van Heuven     \>  3,0 \\
+\end{tabbing}
+
+\centerline{(Hans)}
+
+\subsection*{Stand interne competitie}
+\begin{tabbing}
+Agnes van der Waalsss   \= 99   \= 99   \= 99   \= 99,0 \kill
+George van de Wall      \> 5    \> 1    \> 0    \> 5,5 \\
+Leen Schoenmeijer       \> 5    \> 1    \> 3    \> 5,5 \\
+Ad Weekers              \> 4    \> 3    \> 3    \> 5,5 \\
+Paul van Heuven         \> 4    \> 1    \> 2    \> 4,5 \\
+Hans Naus               \> 3    \> 2    \> 2    \> 4,0 \\
+Hans van Keulen         \> 4    \> 0    \> 3    \> 4,0 \\
+Teun van Loopik         \> 2    \> 4    \> 4    \> 4,0 \\
+Sjack Tinnemans         \> 3    \> 1    \> 1    \> 3,5 \\
+Marco Kessels           \> 2    \> 3    \> 1    \> 3,5 \\
+Ben van de Heuvel       \> 2    \> 3    \> 4    \> 3,5 \\
+Leo Hovestadt           \> 3    \> 0    \> 0    \> 3,0 \\
+Kees van Hooidonk       \> 2    \> 2    \> 2    \> 3,0 \\
+Olaf van Mol            \> 2    \> 2    \> 4    \> 3,0 \\
+Agnes van der Waals     \> 1    \> 3    \> 1    \> 2,5 \\
+Geert Bogers            \> 2    \> 0    \> 1    \> 2,0 \\
+Piet Tutelaers          \> 2    \> 0    \> 1    \> 2,0 \\
+Jacques Zwaard          \> 1    \> 2    \> 1    \> 2,0 \\
+Sjim Jonkmans           \> 1    \> 2    \> 2    \> 2,0 \\
+Cees B\"uthker          \> 0    \> 4    \> 2    \> 2,0 \\
+Piet Bell               \> 1    \> 2    \> 3    \> 2,0 \\
+Karel Snijders          \> 1    \> 0    \> 0    \> 1,0 \\
+Hanny Dielissen         \> 1    \> 0    \> 1    \> 1,0 \\
+Guus van der Waals      \> 0    \> 0    \> 0    \> 0,0 \\
+Jan Toorenspits         \> 0    \> 0    \> 1    \> 0,0 \\
+Remko van Dam           \> 0    \> 0    \> 9    \> 0,0 \\
+\end{tabbing}
+
+\subsection*{Stand snelschaken}
+\begin{tabbing}
+Agnes van der Waalsss   \= 999 \kill
+Leo Hovestadt           \> 21 \\
+Teun van Loopik         \> 13 \\
+Sjack Tinnemans         \> 11 \\
+Sjim Jonkmans           \>  7 \\
+Piet Tutelaers          \>  6 \\
+George van de Wall      \>  4 \\
+Hans van Keulen         \>  3 \\
+Piet Bell               \>  2 \\
+Agnes van der Waals     \>  1 \\
+Olaf van Mol            \>  1 \\
+Ben van de Heuvel       \>  1 \\
+Cees B\"uthker          \>  1 \\
+\end{tabbing}
+
+\subsection*{Elo rating stand}
+\begin{tabbing}
+Agnes van der Waalsss     \= 999999   \= 999999    \= +9999 \kill
+			  \> oud    \> nieuw   \> verschil \\
+George van de Wall        \> 1700   \> 1755    \> +55 \\
+Paul van Heuven           \> 1714   \> 1709    \>  -5 \\
+Marco Kessels             \> 1656   \> 1658    \>  +2 \\
+Sjack Tinnemans           \> 1595   \> 1630    \> +35 \\
+Piet Tutelaers            \> 1596   \> 1620    \> +24 \\
+Sjim Jonkmans             \> 1626   \> 1610    \> -16 \\
+Cees B\"uthker            \> 1629   \> 1592    \> -37 \\
+Leo Hovestadt             \> 1500   \> 1543    \> +43 \\
+Piet Bell                 \> 1526   \> 1515    \> -11 \\
+Leen Schoenmeijer         \> 1467   \> 1509    \> +42 \\
+Agnes van der Waals       \> 1477   \> 1483    \>  +6 \\
+Ben van de Heuvel         \> 1510   \> 1480    \> -30 \\
+Teun van Loopik           \> 1485   \> 1461    \> -24 \\
+Kees van Hooidonk         \> 1458   \> 1451    \>  -7 \\
+Jacques Zwaard            \> 1442   \> 1438    \>  -4 \\
+Jan Toorenspits           \> 1432   \> 1413    \> -19 \\
+Geert Bogers              \> 1400   \> 1410    \> +10 \\
+Ad Weekers                \> 1386   \> 1407    \> +21 \\
+Hans van Keulen           \> 1383   \> 1402    \> +19 \\
+Hans Naus                 \> 1368   \> 1401    \> +33 \\
+Hanny Dielissen           \> 1400   \> 1400    \>  +0 \\
+Olaf van Mol              \> 1395   \> 1366    \> -29 \\
+Guus van der Waals        \> 1325   \> 1325    \>  +0 \\
+Karel Snijders            \> 1258   \> 1280    \> +22 \\
+Remko van Dam             \> 1400   \> 1270    \>-130 \\
+\end{tabbing}
+
+\subsection*{Uitslagen snelschaakronden}
+\begin{tabbing}
+Agnes van der Waalsss \= 999 \kill
+{\sl 19 december 1989} \\
+Jack Tinnemans      \>   9 \\
+Leo Hovestadt       \>   6 \\
+George van de Wall  \>   3 \\
+Teun van Loopik     \>   1 \\
+Piet Bell           \>   1 \\
+\end{tabbing}
+
+\onecolumn
+
+\subsection*{Gespeelde partijen}
+\begin{tabbing}
+Agnes van der Waalsss \= Agnes van der Waalssss \= \remise \kill
+\hspace*{2.5cm}{\sl 7 november 1989} \\
+Agnes van der Waals\> Piet Bell             \> \remise \\
+Olaf van Mol       \> Remko van Dam         \> 1 -- 0 \\
+Teun van Loopik    \> Hans van Keulen       \> 1 -- 0 \\
+Marco Kessels      \> Leen Schoenmeijer     \> 1 -- 0 \\
+George van de Wall \> Piet Tutelaers        \> 1 -- 0 \\
+Cees Buthker       \> Paul van Heuven       \> 0 -- 1 \\
+Geert Bogers       \> Hans Naus             \> 0 -- 1 \\
+Ad Weekers         \> Ben van de Heuvel     \> 0 -- 1 \\[.5cm]
+\hspace*{2.5cm}{\sl 14 november 1989}\\[.2cm]
+Ad Weekers         \> Teun van Loopik       \> \remise \\
+Leen Schoenmeijer  \> Cees Buthker          \> \remise \\
+Piet Tutelaers     \> Piet Bell             \> 1 -- 0 \\
+Sjim Jonkmans      \> Ben van de Heuvel     \> 1 -- 0 \\
+Remko van Dam      \> Hans van Keulen       \> 0 -- 1 \\
+Olaf van Mol       \> Geert Bogers          \> 0 -- 1 \\[.5cm]
+\hspace*{2.5cm}{\sl 21 november 1989}\\[.2cm]
+Sjim Jonkmans      \> Cees Buthker          \> \remise \\
+Ad Weekers         \> Olaf van Mol          \> \remise \\
+Leen Schoenmeijer  \> Ben van de Heuvel     \> 1 -- 0 \\
+George van de Wall \> Piet Bell             \> 1 -- 0 \\
+Remko van Dam      \> Geert Bogers          \> 0 -- 1 \\
+Jacques Zwaard     \> Hans Naus             \> 0 -- 1 \\
+Teun van Loopik    \> Leo Hovestadt         \> 0 -- 1 \\[.5cm]
+\hspace*{2.5cm}{\sl 12 december 1989}\\[.2cm]
+Hans Naus          \> Ben van de Heuvel     \> \remise \\
+Piet Bell          \> Cees Buthker          \> \remise \\
+Ad Weekers         \> Remko van Dam         \> 1 -- 0 \\
+Jack Tinnemans     \> Leen Schoenmeijer     \> 1 -- 0 \\
+Teun van Loopik    \> Paul van Heuven       \> 0 -- 1 \\
+Marco Kessels      \> Piet Tutelaers        \> 0 -- 1 \\
+\end{tabbing}
+
+
+\parindent=0pt
+
+\twocolumn[
+{\hfil\Huge Schaaktest\hfil\par}
+\par
+\vspace{1cm}
+Je kunt je speelsterkte testen door de volgende partij na te spelen tot
+en met zet 11 van Zwart. Hierna schrijft je de zetten op die Max
+Euwe volgens jou had moeten spelen. Om het eerlijk te spelen, moet je wel
+de zetten links onderaan de pagina met een stuk karton bedekken.
+Telkens als je een zet bedacht hebt, schrijf je die op in de kolom ``Uw
+keuze voor Wit''. Het karton waarmee de echte zetten bedekt zijn, kan nu
+een regel opgeschoven worden. Er moeten in totaal tien zetten gespeeld
+worden. Als alle zetten gespeeld zijn, bepaal je de behaalde punten.
+Meestal staat het puntentotaal in de kolom ``Punten'', linksonder. Soms
+vallen er ook nog punten te verdienen als je een andere zet hebt gekozen
+dan de zet die in de partij gespeeld werd. Deze vindt je op de volgende
+pagina. Veel plezier! (Piet)
+\vspace{1cm}
+]
+
+Wit: Dr.~Max~Euwe / Zwart: Bobby Fisher\par
+New York 1957.
+
+{\sl Geweigerd Damegambiet}
+
+\newgame
+\move d2d4 g8f6
+\move c2c4 e7e6
+\move b1c3 d7d5
+\move c4d5 e6d5
+\move c1g5 f8b4
+\move e2e3 h7h6
+\move g5h4 c7c5
+
+(Een enigzins riskante opzet.)
+
+\move f1d3 b8c6
+\move g1e2 c5d4
+
+(Na |9: 0-0 10 0-0| gaat |10: c*d4| niet goed meer wegens |11 L*f6, D*f6|
+|12 P*d5|. 
+
+Met |9: c4| kon Zwart het spel een geheel andere wending geven,
+maar hij houdt dan moeilijkheden met de dekking van d5. B.v. |10 Lc2, 0-0|
+|11 0-0, Le6 12 Pf4|.)
+
+\vfill
+
+\begin{tabular}{lcrc}
+&{\sl Wit}&\multicolumn{1}{c}{\sl Punten}& {\sl Zwart}\\[2ex]
+12.&|Ld3-c2| & 20 & |Lb4-e7| \\
+13.&|Pe2-f4| & 15 & |Dd8-b6| \\
+14.&|Lh4*f6| &  8 & |Le7*f6| \\
+15.&|Dd1-d3| &  6 & |Tf8-d8| \\
+16.&|Dd3-h7+|&  4 & |Kg8-f8| \\
+17.&|Ta1-e1| & 13 & |Pc6-b4| \\
+18.&|a2-a3| & 20 & |Pb4*c2| \\
+19.&|Pc3*d5| & 10 & |Td8*d5| \\
+20.&|Pf4*d5| &  4 & Zwart geeft op\\\cline{3-3}
+   &           &100 \\
+\end{tabular}
+\newpage
+
+\move e3d4 e8g8
+\move e1g1 c8e6
+\medskip
+$$\showboard$$
+\smallskip
+\centerline{\sl De lezer heeft Wit.}
+
+\vfill
+
+\begin{tabular}{ccc}
+\sl Uw keuze voor Wit &\hspace{.5cm}& \sl Behaalde punten \\[2ex]
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+                      &&                     \\\cline{1-1}\cline{3-3}
+\multicolumn{1}{r}{\bf Uw score}   &&                   \\\cline{3-3}
+\end{tabular}
+
+\onecolumn
+
+{\em Opmerkingen\/}:
+
+\begin{tabular}{lp{12cm}}
+|12. Ld3-c2|& Met de duidelijke bedoeling Zwart door |13 Dd3| voor een
+voldongen feit te stellen. Positioneel bevredigend is ook |12 Tc1| -- {\bf
+6 punten}.\\
+
+|12.: Lb4-e7|& Om |13 Dd3| te beantwoorden met |13: Pb4|.\\
+
+|13. Pe2-f4| & Rustiger en voldoende om voordeel te handhaven was |13 a3|
+-- {\bf 6 punten}.\\
+
+|13.: Dd8-b6| & Het enige was hier |13: g5 14 P*e6, f*e6 15 Lg3, Db6| en
+Zwart kan nog tegenstand bieden.\\
+
+|15. Dd1-d3| & |15 Pc*d5| levert wegens |15: D*d4| niets op.\\
+
+|15.: Tf8-d8| & Op |15: g6| volgt niet |16 P*e6| wegens |16: Pb4|,
+maar |16 P*g6 (16: Pb4 17 Pe7+)|.\\
+
+|16. Dd3-h7+| & In de partij geschiedde |16 Tae1| -- {\bf 4 punten} --
+|Pb4 17 Dh7+|, hetgeen op hetzelfde neerkomt.\\
+
+|17. Ta1-e1| & Iets minder sterk is |17 Tfe1| --{\bf 8 punten}--, omdat
+onder bepaalde omstandigheden het slaan op b2 verwarring kan stichten
+(zie de opmerking bij de volgende zet onder 3). Met de tekstzet dreigt
+|18 P*d5|.\\
+
+|17.: Pc6-b4|& Andere mogelijkheden:\\
+& 1) |17: P*d4 of L*d4 18 Pc*d5| enz.\\
+& 2) |17: D*d4 18 T*e6!|\\
+& 3) |17: D*b2 18 Pc*d5, g5 19 T*e6!|\\
+& 4) |17: Pe7 18 Dh8+, Pg8 19 Lh7, Dc6 20 Pf*d5!, T*d5 21 D*g8+|.\\
+& 5) |17: g5 18 T*e6, f*e6 19 P*e6+, Ke8 20 Lg6 mat|.\\
+
+|18. a2-a3| & Verjaagt het paard, waarna Wit op d5 kan inslaan. Iets
+langzamer, maar ook voldoende voor de winst was |18 Lf5|--{\bf 15 punten}.\\
+
+|18.: Pb4*c2| & Op |18: D*d4| beslist weer |19 T*e6|.\\
+
+|19. Pc3*d5| & |19 Pf*d5|--{\bf 10 punten}--komt op hetzelfde neer.\\
+
+|20. Pf4*d5| & Zwart geeft het op, daar zowel |21 P*b6| als |21 Dh8|
+mat dreigt.
+\end{tabular}
+
+\end{document}

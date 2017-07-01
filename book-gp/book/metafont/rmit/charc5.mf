@@ -1,0 +1,26 @@
+beginthaichar("LAW LEE!NG", "C5", "li", jutout# + 2thick# + normwd#, normht#, 0);
+	b_def(1, thick, 1/2thick);
+	penpos6(thick, 0);
+	penpos2(thin, 270);
+	penpos3(thin, 0);
+	penpos4(thick, 0);
+	hat_def(5, thick);
+
+	lft x1lft = leftmost + jutout;
+	x6l = x1lft;
+	x2 = 1/2[x1r, x3r];
+	x3l = x4l;
+	rt x4r = rightmost;
+	x5rt = x4r;
+	x5lft = leftmost;
+	bot y1bot = 0;
+	top y2 + thin = bot y5bot;
+	y6 = y2r - curveht;
+	bot y3 = bot y4 = 0;
+	top y5top = normht + overshoot;
+
+	filldraw b_path(1) -- z6r{up} .. {right}z2r .. {down}z3l -- z3r{up}
+		.. {left}z2l .. {down}z6l -- cycle;
+	filldraw z4l -- hat_path(5) -- z4r -- cycle;
+	penlabels(1,2,3,4,5);
+endthaichar;

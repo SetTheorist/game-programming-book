@@ -1,0 +1,25 @@
+beginthaichar("HAW NOK HOOK", "CE", "hn", 2thick# + normwd#, normht#, 0);
+	p_def(1, thick, 1/3thick);
+	cup_def(2);
+	penpos3(thick, 0);
+	penpos4(thin, 90);
+	penpos5(thin, 180);
+	penpos6(thin, 270);
+	penpos7(thin, 315);
+
+	x1lft = x2lft = x5r = leftmost;
+	x2rt = x3r = x7r = rightmost;
+	x4 = x6 = 1/2[x3, x5];
+	y1top + jutout = y6r;
+	y3 = y4l - curveht;
+	y4r = normht;
+	y5 = 1/2[y4l, y6l];
+	y6l = y4l - curveht;
+	y7r = normht;
+
+	filldraw p_path(1) --- cup_path_i(2) --- z3l{up} .. z4l{left}
+		.. z5l{down} .. z6l{right} .. {dir 45}z7l -- z7r{dir 225}
+		.. z6r{left} .. z5r{up} .. z4r{right} .. z3r{down}
+		--- reverse cup_path_o(2) --- cycle;
+	penlabels(1,2,3);
+endthaichar;

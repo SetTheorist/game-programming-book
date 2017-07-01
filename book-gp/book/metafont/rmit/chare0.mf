@@ -1,0 +1,11 @@
+beginthaichar("EH", "E0", "ay/eh", thick# + dia# + thin#, normht#, 0);
+	b_def(1, thick, 0);
+	penpos2(thick, 0);
+
+	x1lft = x2l = leftmost;
+	y1bot = 0;
+	y2 = normht;
+
+	filldraw b_path(1) -- z2r -- z2l -- cycle;
+	penlabels(1,2);
+endthaichar;

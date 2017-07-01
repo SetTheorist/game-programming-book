@@ -1,0 +1,43 @@
+%
+%   This is a 2-side format for TeX.  Simply
+%
+%   \input 2side
+%   \gutter{5pt}
+%
+%   You want to have set your hsize, vsize, hoffset, and voffset
+%   (and magnification) *before* inputting this file.
+%
+%   You can also say `\top{...}' and the `...' will be placed at
+%   the top of the page, and the columns will be reduced
+%   proportionally.  This is useful for the title of the document,
+%   and any comments you might want to put later in the document.
+%   Note that if you put this command after the first half of the
+%   page has been `shipped', it will be postponed until the next
+%   page.
+%
+\newdimen\fullsize\fullsize=\hsize
+\newdimen\realvsize\realvsize=\vsize
+\def\gutter#1{\global\advance\hsize by-#1 \global\divide\hsize by 2}%
+\def\makefootline{\baselineskip24pt\hbox to\fullsize{\the\footline}}%
+\let\lr=L \newbox\leftcolumn
+\let\ntop=\relax
+\output={\if L\lr
+ \global\setbox\leftcolumn=\columnbox \global\let\lr=R
+ \else\global\let\lr=L\doubleformat\global\fi
+ \ifnum\outputpenalty>-20000\else\dosupereject\fi
+ \global\let\ntop=\relax}%
+\def\doubleformat{\shipout\vbox{\hbox{\box\topbox}%
+   \hbox to\fullsize{\box\leftcolumn\hfil\columnbox}%
+   \makefootline}%
+ \global\vsize=\realvsize\ntop
+ \advancepageno}%
+\def\columnbox{\leftline{\pagebody}}%
+\newbox\topbox
+\def\top#1{\if L\lr\message{Setting...}
+   {\hsize=\fullsize\global\setbox\topbox=\vbox{#1}%
+   \global\vsize=\realvsize
+   \global\advance\vsize by-\ht\topbox
+   \global\advance\vsize by-\baselineskip}%
+  \else\global\def\ntop{\top{#1}}\message{Saving...}%
+  \fi}%
+\def\bye{\vfill\eject\if R\lr\null\vfill\eject\fi\end}%

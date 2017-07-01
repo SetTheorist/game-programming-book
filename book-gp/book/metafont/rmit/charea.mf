@@ -1,0 +1,43 @@
+beginthaichar("MY DTREE", "EA", "md", 0, normht# + uvgap# + uvht#, 0);
+	penpos1(thin, 90);
+	penpos2(thin, 0);
+	penpos3(thin, 270);
+	penpos4(thin, 180);
+	penpos5(thin, 0);
+	penpos6(thin, 270);
+	penpos7(thin, 180);
+	penpos20(thin, 0);
+	penpos8(thin, 270);
+	penpos9(thin, 180);
+	penpos10(thin, 180);
+	penpos11(thin, 180);
+	penpos12(thin, 180);
+
+	z20 = z7;
+	x1 = x3 = 1/2[x2, x4];
+	x2r + thin = x4r;
+	x5r = x2l;
+	x6 = 1/2[x5, x7];
+	x7 = 1/2[x5, x9];
+	x8 = 1/2[x7, x9];
+	x9 = x11 - 2thin;
+	x10 = x12 = x9 - thin;
+	y2 = y4 = 1/2[y1, y3];
+	y3r = y1r + thin;
+	y5 = y9 = 1/2[y1, y6];
+	y6 = y8 = 2/3[y1, y12];
+	y7 = y3r;
+	y10 = y1;
+	y11 = 1/2[y10, y12];
+	% these parameters define size of object
+	x5l = x11 - 12thin;           % leftmost
+	x11r = -rightgap;             % rightmost
+	y1l = normht + uvgap;         % bottom
+	y12 = normht + uvgap + uvht;  % top
+
+	penstroke z1e{left} .. z2e{up} .. z3e{right} .. z4e{down} .. z1e{left}
+		.. z5e{up} .. z6e{right} .. {down}z7e;
+	penstroke z20e{up} .. z8e{right} .. z9e{down} .. z10e;
+	penstroke z12e .. z11e{down} .. z10e;
+	penlabels(1,2,3,4,5,6,7,8,9,10,11,12);
+endthaichar;

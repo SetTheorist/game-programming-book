@@ -1,0 +1,2 @@
+beginthaichar("blank", "A0", "bl/sp", normwd#, normht#, 0);
+endthaichar;

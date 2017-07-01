@@ -1,0 +1,80 @@
+%% 
+%% This is file `babel.switch', generated 
+%% on <1991/7/5> with the docstrip utility (2.0i).
+%% 
+%% The original source files were:
+%% 
+%% hyphen.doc 
+%% 
+%% Copyright (C) 1989, 1990, 1991 
+%% by Johanes Braams. All rights reserved. 
+%% 
+%% IMPORTANT NOTICE: 
+%% 
+%% You are not allowed to change this file. You may however copy this file 
+%% to a file with a different name and then change the copy. 
+%% 
+%% You are NOT ALLOWED to distribute this file alone. You are NOT ALLOWED 
+%% to take money for the distribution or use of this file (or a changed 
+%% version) except for a nominal charge for copying etc. 
+%% 
+%% You are allowed to distribute this file under the condition that it is 
+%% distributed together with all files mentioned below. 
+%% 
+%% If you receive only some of these files from someone, complain! 
+%% 
+%% Error Reports in case of UNCHANGED versions to 
+%% 
+%% J. Braams 
+%% PTT Research, dr Neher Laboratorium 
+%% P.O. box 421 
+%% 2260 AK Leidschendam 
+%% The Netherlands 
+%% Internet: <JL_Braams@pttrnl.nl> 
+%% 
+\def\filename{hyphen.doc}
+\def\fileversion{hyphen-1.0c}
+\def\filedate{6 juni 91}
+\def\docdate{29 may 91}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\countdef\last@language 19
+\def\addlanguage{\alloc@9\language\chardef\@cclvi}
+\def\adddialect#1#2{%
+    \global\chardef#1#2
+    \wlog{\string#1 = a dialect from \string\language#2}}
+\def\iflanguage#1#2#3{\@bsphack%
+  \@ifundefined{l@#1}
+    {\@nolanerr{#1}}
+    {\ifnum\language=\expandafter\csname l@#1\endcsname\relax #2
+     \else#3\fi}\@esphack}
+\def\selectlanguage{\protect\p@selectlanguage}
+\def\p@selectlanguage#1{\@bsphack\@ifundefined{l@#1}{\@nolanerr{#1}}%
+    {\language=\expandafter\csname l@#1\endcsname\relax
+     \originalTeX
+     \expandafter\csname captions#1\endcsname
+     \expandafter\csname date#1\endcsname
+     \expandafter\csname extras#1\endcsname
+     \def\originalTeX{\expandafter\csname noextras#1\endcsname}%
+     \@esphack}}%
+\def\@nolanerr#1{\errhelp{Your command will be ignored,^^J
+type <return> to proceed}
+\errmessage{You haven't defined the language #1 yet}}
+
+\endinput
+%% 
+%% End of file `babel.switch'.

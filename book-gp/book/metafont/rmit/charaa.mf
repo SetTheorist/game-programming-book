@@ -1,0 +1,26 @@
+beginthaichar("CHAW CHAHNG", "AA", "ca/cha", curlywd# + 2thick# + skinnywd#, normht#, 0);
+	curly_def(1);
+	base_def(2);
+	penpos3(thick, 0);
+	penpos4(thick, 0);
+	penpos5(thick, 0);
+	penpos6(thick, 0);
+
+	lft x1lft = leftmost;
+	x1l = x2lft;
+	x2rt = x3r;
+	lft x4l = rt x1rt + thin;
+	x3 = 1/2[x4, x5];
+	rt x5r = rightmost;
+	top y5 = normht + jutout;
+	y5 - y4 = x5 - x4;
+	y4 - y3 = x3 - x4;
+	y2bot = 0;
+	z6 = z5 + (0, dia);
+
+	filldraw curly_path(1) -- base_path_i(2) .. {up}z3l .. {left}z4l{right}
+		.. {up}z5l -- z6l -- z6r -- z5r{down}
+		.. {left}z4r{right} .. {down}z3r
+		-- reverse base_path_o(2) -- cycle;
+	penlabels(1,2,3,4,5);
+endthaichar;

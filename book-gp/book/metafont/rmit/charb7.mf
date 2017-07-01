@@ -1,0 +1,22 @@
+beginthaichar("TAW TAH!-HAHN", "B7", "th", 2thick# + curlywd# + normwd#, normht#, 0);
+	curly_def(1);
+	penpos2(thick, 0);
+	penpos3(thin, 0);
+	penpos4(thin, 270);
+	penpos5(thick, 180);
+	penpos6(thick, 180);
+
+	lft x1lft = leftmost;
+	x1l = x2l;
+	x3r = x2r;
+	rt x5l = rt x6l = rightmost;
+	x4 = 2/3[x3r, x5r];
+	bot y2 = bot y3 = bot y6 = 0;
+	top y4l = normht + overshoot;
+	y5 = y4r - curveht;
+
+	filldraw curly_path(1) -- z2r -- z2l -- cycle;
+	filldraw z3l{dir 85} ... {right}z4l ... {down}z5l -- z6l -- z6r
+		-- z5r{up} ... {left}z4r ... {dir (85+180)}z3r -- cycle;
+	penlabels(1,2,3,4,5,6);
+endthaichar;

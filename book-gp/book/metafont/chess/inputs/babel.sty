@@ -1,0 +1,229 @@
+%% 
+%% This is file `babel.sty', generated 
+%% on <1991/7/5> with the docstrip utility (2.0i).
+%% 
+%% The original source files were:
+%% 
+%% babel.doc 
+%% 
+%% Copyright (C) 1989, 1990, 1991 
+%% by Johanes Braams. All rights reserved. 
+%% 
+%% IMPORTANT NOTICE: 
+%% 
+%% You are not allowed to change this file. You may however copy this file 
+%% to a file with a different name and then change the copy. 
+%% 
+%% You are NOT ALLOWED to distribute this file alone. You are NOT ALLOWED 
+%% to take money for the distribution or use of this file (or a changed 
+%% version) except for a nominal charge for copying etc. 
+%% 
+%% You are allowed to distribute this file under the condition that it is 
+%% distributed together with all files mentioned below. 
+%% 
+%% If you receive only some of these files from someone, complain! 
+%% 
+%% Error Reports in case of UNCHANGED versions to 
+%% 
+%% J. Braams 
+%% PTT Research, dr Neher Laboratorium 
+%% P.O. box 421 
+%% 2260 AK Leidschendam 
+%% The Netherlands 
+%% Internet: <JL_Braams@pttrnl.nl> 
+%% 
+\def\filename{babel.doc}
+\let\thisfilename\filename
+\def\fileversion{babel-3.0b}
+\def\filedate{6 juni 1991}
+\def\docdate{6 juni 1991}
+%% \CheckSum{5282}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\wlog{Style option `babel' version \fileversion\space <\filedate>}
+\wlog{English documentation dated <\docdate>}
+\@ifundefined{iflanguage}{\input babel.switch\relax}{\relax}
+\let\babel@core@loaded\relax
+{\def\format{plain}
+\ifx\fmtname\format
+      \aftergroup\endinput
+\fi}
+\@ifundefined{doc@style}%
+    {\def\doc@style{0}%
+        \@ifundefined{opening}%
+            {\@ifundefined{chapter}%
+                {\def\doc@style{1}}%
+                {\def\doc@style{2}}%
+            }{\def\doc@style{3}}%
+    }{\relax}%
+\newif\if@restonecol
+\@ifundefined{figurename}{\def\fnum@figure{\figurename{} \thefigure}}{}
+\@ifundefined{tablename}{\def\fnum@table{\tablename{} \thetable}}{}
+\ifcase \doc@style\relax
+\or
+\@ifundefined{contentsname}%
+    {\def\tableofcontents{\section*{\contentsname%
+          \@mkboth{\uppercase\expandafter{\contentsname}}%
+              {\uppercase\expandafter{\contentsname}}}%
+      \@starttoc{toc}}}{}%
+
+\@ifundefined{listfigurename}%
+    {\def\listoffigures{\section*{\listfigurename\@mkboth%
+      {\uppercase\expandafter{\listfigurename}}%
+      {\uppercase\expandafter{\listfigurename}}}\@starttoc{lof}}}{}%
+
+\@ifundefined{listtablename}%
+    {\def\listoftables{\section*{\listtablename\@mkboth%
+      {\uppercase\expandafter{\listtablename}}%
+      {\uppercase\expandafter{\listtablename}}}\@starttoc{lot}}}{}%
+\@ifundefined{refname}%
+    {\def\thebibliography#1{\section*{\refname%
+      \@mkboth{\uppercase\expandafter{\refname}}%
+              {\uppercase\expandafter{\refname}}}%
+      \list{[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}
+        \leftmargin\labelwidth%
+        \advance\leftmargin\labelsep%
+        \usecounter{enumi}}%
+        \def\newblock{\hskip 0.11em plus 0.33em minus 0.07em}%
+        \sloppy\clubpenalty4000\widowpenalty4000%
+        \sfcode`\.=1000\relax}}{}%
+
+\@ifundefined{indexname}%
+    {\def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi%
+     \columnseprule \z@%
+     \columnsep 35pt\twocolumn[\section*{\indexname}]%
+       \@mkboth{\uppercase\expandafter{\indexname}}%
+               {\uppercase\expandafter{\indexname}}\thispagestyle{plain}%
+       \parindent\z@ \parskip\z@ plus 0.3pt\relax\let\item\@idxitem}}{}%
+\@ifundefined{abstractname}%
+    {\def\abstract{\if@twocolumn%
+    \section*{\abstractname}%
+    \else \small%
+    \begin{center}%
+    {\bf \abstractname\vspace{-0.5em}\vspace{0pt}}%
+    \end{center}%
+    \quotation%
+    \fi}}{}%
+\@ifundefined{partname}%
+{\def\@part[#1]#2{\ifnum \c@secnumdepth >\m@ne % IF secnumdepth > -1
+        \refstepcounter{part}                  %  THEN step part counter
+        \addcontentsline{toc}{part}{\thepart   %       add toc line
+        \hspace{1em}#1}\else                   %  ELSE add unnumbered line
+      \addcontentsline{toc}{part}{#1}\fi       % FI
+   { \parindent 0pt \raggedright
+    \ifnum \c@secnumdepth >\m@ne      % IF secnumdepth > -1
+      \Large \bf \partname{} \thepart %  THEN Print 'Part' and
+      \par \nobreak        %                  number in \Large boldface.
+    \fi                    %            FI
+    \huge \bf              % Select \huge boldface.
+    #2\markboth{}{}\par }  % Print title and set heading marks null.
+    \nobreak               % TeX penalty to prevent page break.
+    \vskip 3ex             % Space between title and text.
+   \@afterheading          % Routine called after part and
+    }                      %     section heading.
+}{}%
+\or
+\@ifundefined{contentsname}%
+    {\def\tableofcontents{\@restonecolfalse%
+      \if@twocolumn\@restonecoltrue\onecolumn%
+      \fi\chapter*{\contentsname%
+        \@mkboth{\uppercase\expandafter{\contentsname}}%
+                {\uppercase\expandafter{\contentsname}}}%
+      \@starttoc{toc}\if@restonecol\twocolumn\fi}}{}%
+
+\@ifundefined{listfigurename}
+    {\def\listoffigures{\@restonecolfalse%
+      \if@twocolumn\@restonecoltrue\onecolumn%
+      \fi\chapter*{\listfigurename%
+        \@mkboth{\uppercase\expandafter{\listfigurename}}%
+                {\uppercase\expandafter{\listfigurename}}}%
+      \@starttoc{lof}\if@restonecol\twocolumn\fi}}{}%
+
+\@ifundefined{listtablename}
+    {\def\listoftables{\@restonecolfalse%
+      \if@twocolumn\@restonecoltrue\onecolumn%
+      \fi\chapter*{\listtablename%
+        \@mkboth{\uppercase\expandafter{\listtablename}}%
+                {\uppercase\expandafter{\listtablename}}}%
+      \@starttoc{lot}\if@restonecol\twocolumn\fi}}{}%
+\@ifundefined{bibname}
+    {\def\thebibliography#1{\chapter*{\bibname%
+     \@mkboth{\uppercase\expandafter{\bibname}}%
+             {\uppercase\expandafter{\bibname}}}%
+     \list{[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}%
+     \leftmargin\labelwidth \advance\leftmargin\labelsep%
+     \usecounter{enumi}}%
+     \def\newblock{\hskip 0.11em plus 0.33em minus 0.07em}%
+     \sloppy\clubpenalty4000\widowpenalty4000%
+     \sfcode`\.=1000\relax}}{}%
+
+\@ifundefined{indexname}
+    {\def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi%
+    \columnseprule \z@%
+    \columnsep 35pt\twocolumn[\@makeschapterhead{\indexname}]%
+      \@mkboth{\uppercase\expandafter{\indexname}}%
+              {\uppercase\expandafter{\indexname}}%
+    \thispagestyle{plain}\parindent\z@%
+    \parskip\z@ plus 0.3pt\relax\let\item\@idxitem}}{}%
+\@ifundefined{abstractname}
+    {\def\abstract{\titlepage%
+    \null\vfil%
+    \begin{center}%
+    {\bf \abstractname}%
+    \end{center}}}{}%
+\@ifundefined{chaptername}{\def\@chapapp{\chaptername}}{}
+
+\@ifundefined{appendixname}
+    {\def\appendix{\par%
+      \setcounter{chapter}{0}%
+      \setcounter{section}{0}%
+      \def\@chapapp{\appendixname}%
+      \def\thechapter{\Alph{chapter}}}}{}%
+
+\@ifundefined{partname}
+    {\def\@part[#1]#2{\ifnum \c@secnumdepth >-2\relax% IF secnumdepth > -2
+            \refstepcounter{part}               %  THEN step part counter
+            \addcontentsline{toc}{part}{\thepart%       add toc line
+            \hspace{1em}#1}\else                %  ELSE add unnumbered line
+            \addcontentsline{toc}{part}{#1}\fi  % FI
+       \markboth{}{}
+       {\centering                      % %% added 19 Jan 88
+        \ifnum \c@secnumdepth >-2\relax % IF secnumdepth > -2
+          \huge\bf \partname{} \thepart %  THEN Print 'Part' and number
+        \par                            %        in \huge bold.
+        \vskip 20pt \fi                 %       Add space before title.
+        \Huge \bf                       % FI
+        #1\par}\@endpart}}{}            % Print Title in \Huge bold.
+\or
+\@ifundefined{ccname}%
+    {\def\cc#1{\par\noindent%
+     \parbox[t]{\textwidth}%
+     {\@hangfrom{\rm  \ccname : }\ignorespaces #1\strut}\par}}{}%
+
+\@ifundefined{enclname}%
+    {\def\encl#1{\par\noindent%
+     \parbox[t]{\textwidth}%
+     {\@hangfrom{\rm  \enclname : }\ignorespaces #1\strut}\par}}{}%
+\@ifundefined{headtoname}
+    {\def\ps@headings{%
+        \def\@oddhead{\sl \headtoname{} \ignorespaces\toname \hfil%
+                      \@date \hfil \headpagename{} \thepage}%
+        \def\@oddfoot{}}}{}%
+\fi
+\endinput
+%% 
+%% End of file `babel.sty'.

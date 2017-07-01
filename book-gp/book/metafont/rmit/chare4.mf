@@ -1,0 +1,25 @@
+beginthaichar("AI", "E4", "ai", 4thick# + 2dia# + thin#, normht# + uvgap# + uvht#, 0);
+	b_def(1, thick, 0);
+	penpos2(thick, 0);
+	penpos3(thin, 90);
+	penpos4(thin, 90);
+	penpos5(thick, 0);
+	penpos6(thin, 180);
+
+	x1rt = rightmost;
+	x1lft = x2l;
+	x5l = leftmost;
+	x3 = 3/4[x5r, x2l];
+	x6 = 2/4[x5r, x2l];
+	x4 = 1/4[x5r, x2l];
+	y1bot = 0;
+	y6 = y2 = 1/2[y3r, y4l];
+	y5 = y3r = normht + uvgap + uvht;
+	y4l = normht + uvgap;
+
+	filldraw b_path(1) -- z2r{up} .. z3r{left} ... {down}z6r{down}
+		... {left}z4r{left}
+		... {up}z5r -- z5l{down} ... {right}z4l{right} ... {up}z6l{up}
+		... {right}z3l .. z2l{down} -- cycle;
+	penlabels(1,2,3,4);
+endthaichar;

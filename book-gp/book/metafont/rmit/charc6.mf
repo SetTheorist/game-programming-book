@@ -1,0 +1,16 @@
+beginthaichar("LEU", "C6", "le", dia# + thin# + thick# + normwd#, normht#, lvgap# + lvht#);
+	d_def(1, thick, thick/2);
+	gor_def(2);
+	botcap_def(3);
+
+	lft x1lft = leftmost;
+	bot y1bot = 0;
+	x1l = x2lft;
+	x2rt = x3r;
+	rt x3r = rightmost;
+	bot y3bot = -lvht - lvgap;
+
+	filldraw d_path(1) -- gor_path_i(2) -- z3l
+		-- z3r -- reverse gor_path_o(2) -- cycle;
+	penlabels(1,2,3);
+endthaichar;

@@ -1,0 +1,15 @@
+Instructions on how to install the chess fonts can be found in the file
+chess12/INSTALLATION.
+
+The file chessdiag.mf allows to create the ``Mate in three'' problem
+in a separate window if your version of METAFONT supports it (it should
+do that!). There are two versions of this file:
+	chessdiag.mf 
+	chessdiag.Xmf
+
+The last one can be used to draw the board in a X-window. Here is how:
+   - setenv DISPLAY your_server:0
+   - mf "\mode:=localfont; mag:=magstep(0); screenchars; input chessdiag.Xmf"
+
+Oct. 1991
+Piet Tutelaers (rcpt@urc.tue.nl)

@@ -1,0 +1,17 @@
+beginthaichar("KAW RAH!-KAH!NG", "A6", "kr", 2thick# + kinkedcurlywd# + normwd#, normht#, 0);
+	kinkedcurly_def(1);
+	dd_def(2);
+	penpos3(thick, 0);
+	topcap_def(4);
+
+	lft x1lft = leftmost;
+	x1 = x2;
+	rt x4rt = rt x3r = rightmost;
+	bot y3 = 0;
+	top y4top = normht;
+
+	filldraw kinkedcurly_path(1) -- dd_path_o(2) .. z3r -- z3l 
+		.. reverse dd_path_i(2) -- cycle;
+	filldraw z3l -- z3r -- z4r -- z4l -- cycle;
+	penlabels(1,2,3,4);
+endthaichar;

@@ -1,0 +1,519 @@
+
+def newstyle =
+	if unknown slant:
+		slant := 0;
+		currenttransform := identity;
+	else:
+		currenttransform := identity slanted slant yscaled aspect_ratio;
+	fi;
+	define_pixels(thin, thick, overshoot, skinnywd);
+	define_pixels(normwd, normht, dia, jutout);
+	define_pixels(curveht, cupht, hatht, leftgap, rightgap);
+	define_pixels(lvgap, lvht, uvgap, uvht, tonegap, toneht, dotsize);
+	define_blacker_pixels(px, py);
+	def_curlywd;
+
+	pickup pencircle xscaled px yscaled py;
+	pickup pencircle;
+	thaipen := savepen;
+enddef;
+
+
+% redefinition of beginchar and endchar in case I want to add anything
+def beginthaichar(expr str, code, lig, wd, ht, dp) =
+	if wd = 0: wid := 0;
+	else: wid := leftgap# + wd + rightgap#; fi;
+	if proofing > 0:
+		beginchar(hex code, wid, ht, dp);
+	else:
+		beginchar(hex code, wid,
+			normht# + uvgap# + uvht# + toneht# + tonegap#,
+			lvgap# + lvht#);
+	fi;
+	pickup thaipen;
+	str & " (" & code & ": " & lig & ") ";
+	makelabel.lft("h", (0,h));
+	makelabel.lft("d", (0, -d));
+	leftmost := leftgap;
+	rightmost := w - rightgap;
+enddef;
+def endthaichar =
+	endchar;
+enddef;
+
+
+
+def dd_def(suffix $) =
+	penpos$(thick, 0);
+	x$a = x$d = x$c = x$f;
+	x$e + thin = x$b;
+	x$a = 1/2[x$b, x$l];
+	x$b + dia = x$l;
+	y$b = y$e;
+	y$ = y$f;
+	y$d + thin = y$a;
+	y$c + thin = y$f;
+	y$a + dia = y$c;
+	y$e = 1/2[y$a, y$c];
+	x$lft = x$e;
+	x$rt = x$r;
+	y$top = y$f;
+	bot y$bot = bot y$d = 0;
+enddef;
+
+def dd_path_i(suffix $) =
+	(z$l{down} .. {left}z$a .. {up}z$b .. {right}z$c)
+enddef;
+
+def dd_path_o(suffix $) =
+	(z$r{down} .. {left}z$d .. {up}z$e .. {right}z$f)
+enddef;
+
+
+def topcap_def(suffix $) =
+	x$l + thick = x$r;
+	y$l if known anglecut: + thick fi = y$r;
+	y$top = y$r;
+	z$ = 1/2[z$l, z$r];
+	x$lft = x$l; x$rt = x$r;
+enddef;
+
+def botcap_def(suffix $) =
+	x$l + thick = x$r;
+	y$l if known anglecut: + thick fi = y$r;
+	y$l = y$bot;
+	z$ = 1/2[z$l, z$r];
+	x$lft = x$l; x$rt = x$r;
+enddef;
+
+
+def gor_def(suffix $) =
+	if gorstyle = 1:
+		x$a + thick = x$e;
+		x$b + thick = x$h;
+		x$b = x$a - jutout;
+		x$j + thick = x$d;
+		x$c = x$i = 1/2[x$h, x$j];
+		x$f = x$g = 1/3[x$h, x$j];
+		y$a = y$b = y$e = y$f;
+		y$h = y$g = y$a + thin = y$j = y$d;
+		y$c = y$i + thin = normht + overshoot;
+		y$h + curveht = y$i;
+		x$lft = x$a;
+		x$rt = x$d;
+		y$top = y$c;
+		y$bot = y$a;
+	elseif gorstyle = 2:
+		x$a + thick = x$f;
+		x$b + thick = x$g;
+		x$c + thick = x$h;
+		x$d = x$i;
+		x$j + thick = x$e;
+		x$c = x$a - jutout;
+		x$g = 1/2[x$h, x$i];
+		x$i = 1/2[x$h, x$j];
+		y$a = y$f;
+		y$b = y$g;
+		y$c = y$h = y$j = y$e;
+		y$d = y$i + thin = normht + overshoot;
+		y$c + curveht = y$i;
+		y$f + curveht = y$h;
+		y$g = 1/2[y$f, y$h];
+		x$lft = x$a;
+		x$rt = x$e;
+		y$top = y$d;
+		y$bot = y$a;
+	else:
+		x$lft = x$a;
+		x$rt = x$f;
+		y$top = y$e;
+		y$bot = y$a;
+		x$a + thick = x$g;
+		x$c = x$d = x$a - jutout;
+		x$e = x$k = 1/2[x$g, x$l];
+		x$l + thick = x$f;
+		x$h = x$i = 1/3[x$g, x$l];
+		(x$h - x$g) = (y$h - y$g);
+		y$i = y$h + thin;
+		y$a = y$g;
+		% y$c = 1/5(x$i - x$c) + y$i;
+			y$c = y$i;
+		y$d = y$c + thin;
+		y$e = y$k + thin = normht + overshoot;
+		y$d = y$l = y$f = y$k - curveht;
+		% z$b = (z$a{up}..{right}z$i) intersectionpoint (z$h..z$c);
+		% z$j = (z$c..{right}z$k) intersectionpoint (z$d..z$i);
+		z$b = (x$i - thick, 1/2[y$i, y$h]);
+		z$j = (x$c + thin, 1/2[y$c, y$d]);
+	fi;
+enddef;
+
+def gor_path_i(suffix $) =
+	if gorstyle = 1:
+		(z$e -- z$f -- z$g -- z$h{up} .. z$i{right} .. z$j{down})
+	elseif gorstyle = 2:
+		(z$f{up}..{right}z$g & z$g{left}..z$h{up}..z$i{right}..{down}z$j)
+	else:
+		(z$g{up}..{right}z$h--z$i--z$j{dir 45}..{right}z$k..{down}z$l)
+	fi
+enddef;
+
+def gor_path_o(suffix $) =
+	if gorstyle = 1:
+		(z$a -- z$b{up} .. {right}z$c .. z$d{down})
+	elseif gorstyle = 2:
+		(z$a{up}..{right}z$b{left}..{up}z$c..{right}z$d..{down}z$e)
+	else:
+		(z$a{up}..{right}z$b--z$c--z$d{dir 45}..{right}z$e..{down}z$f)
+	fi
+enddef;
+
+
+def base_def(suffix $) =
+	x$a = x$e + thick = x$b;
+	x$d + thick = x$j;
+	x$i = x$c = 1/2[x$a, x$d];
+	x$e = x$f;
+	x$g = x$h = x$f - jutout;
+	y$a = y$e = y$d = y$j = y$c + cupht;
+	y$g = y$f = y$b = y$c = y$i + thin;
+	y$h = y$i;
+	x$lft = x$e;
+	x$rt = x$j;
+	y$top = y$e;
+	y$bot = y$i;
+enddef;
+
+def base_path_i(suffix $) =
+	(z$b -- z$c{right} .. {up}z$d)
+	% (z$a -- z$b -- z$c{right} .. {up}z$d)
+enddef;
+
+def base_path_o(suffix $) =
+	(z$f -- z$g -- z$h -- z$i{right} .. {up}z$j)
+	% (z$e -- z$f -- z$g -- z$h -- z$i{right} .. {up}z$j)
+enddef;
+
+
+def cup_def(suffix $) =
+	x$d + thick = x$a;
+	x$c + thick = x$f;
+	x$b = x$e = 1/2[x$a, x$c];
+	y$e + thin = y$b;
+	y$b + cupht = y$d = y$a = y$c = y$f;
+	bot y$e = -overshoot;
+	x$d = x$lft;
+	x$f = x$rt;
+	y$top = y$a;
+	y$bot = y$e;
+enddef;
+
+def cup_path_i(suffix $) =
+	(z$a{down} .. z$b{right} .. {up}z$c)
+enddef;
+
+def cup_path_o(suffix $) =
+	(z$d{down} .. z$e{right} .. {up}z$f)
+enddef;
+
+
+def def_curlywd =
+	if curlystyle = 1:
+		curlywd# := 2dia# + thin#;
+		kinkedcurlywd# := 3dia# + thin#;
+	else:
+		curlywd# := dia#;
+		kinkedcurlywd# := 2dia#;
+	fi;
+	define_pixels(curlywd, kinkedcurlywd);
+enddef;
+
+def curly_def(suffix $) =
+	if curlystyle = 1:
+		penpos$(thick, 0);
+		x$a = x$j = 1/2[x$b, x$l];
+		x$b = x$i + thin = x$l - 2dia;
+		x$c = x$h = x$e = x$f = 1/2[x$b, x$d];
+		x$d = x$b + dia;
+		x$g = x$d + thin;
+		top y$j = normht + overshoot;
+		y$a + thin = y$j;
+		y$b = y$i = y$d = y$g = 1/2[y$e, y$c] = y$;
+		y$c = y$e - dia;
+		y$e + dia = y$a;
+		y$f = y$e + thin;
+		y$h = y$c - thin;
+		x$lft = x$i;
+		x$rt = x$r;
+		y$top = y$j;
+		y$bot = y$h;
+	else:
+		penpos$(thick, 0);
+		x$a = x$j = 1/2[x$i, x$n];
+		x$b = x$i + thin = x$l - dia;
+		x$c = x$h = x$e = x$f = 1/2[x$b, x$d];
+		x$d = x$b + dia;
+		x$g = x$d + thin;
+		x$n = x$r;
+		x$m + thin = x$n;
+		top y$j = normht + overshoot;
+		y$a + thin = y$j;
+		y$b = y$i = y$d = y$g = 1/2[y$e, y$c] = y$m = y$n;
+		y$c = y$e - dia;
+		y$e + dia = y$a;
+		y$f = y$e + thin;
+		y$h = y$c - thin;
+		y$ + dia = y$n;
+		x$lft = x$i;
+		x$rt = x$r;
+		y$top = y$j;
+		y$bot = y$h;
+	fi;
+enddef;
+
+def curly_path(suffix $) =
+	if curlystyle = 1:
+		(z$l{up} .. z$a{left} .. z$b{down} .. z$c{right} .. z$d{up}
+			.. z$e{left} .. {down}z$b -- z$i{up} .. z$f{right}
+			.. z$g{down} .. z$h{left} .. z$i{up} .. z$j{right}
+			.. {down}z$r)
+	else:
+		(z$l .. z$m{up} .. z$a{left} .. z$b{down}
+			.. z$c{right} .. z$d{up}
+			.. z$e{left} .. {down}z$b -- z$i{up} .. z$f{right}
+			.. z$g{down} .. z$h{left} .. z$i{up} .. z$j{right}
+			.. z$n{down} .. {down}z$r)
+	fi
+enddef;
+
+
+def kinkedcurly_def(suffix $) =
+	if curlystyle = 1:
+		penpos$(thick, 0);
+		x$a = x$j = 1/2[x$b, x$l];
+		x$b = x$i + thin = x$l - 3dia;
+		x$c = x$h = x$e = x$f = 1/2[x$b, x$d];
+		x$d = x$b + dia;
+		x$g = x$d + thin;
+		x$s = x$t = 1/2[x$i, x$j];
+		x$u = x$v = 1/2[x$j, x$l];
+		top y$s = top y$u = normht;
+		y$j = y$s - (x$u - x$j);
+		y$s - thin = y$t;
+		y$u - thin = y$v;
+		y$a + thin = y$j;
+		y$b = y$i = y$d = y$g = 1/2[y$e, y$c] = y$;
+		y$c = y$e - dia;
+		y$e + dia = y$a;
+		y$f = y$e + thin;
+		y$h = y$c - thin;
+		x$lft = x$i;
+		x$rt = x$r;
+		y$top = y$j;
+		y$bot = y$h;
+	else:
+		penpos$(thick, 0);
+		x$a = x$j = 1/2[x$i, x$n];
+		x$b = x$i + thin = x$l - 2dia;
+		x$c = x$h = x$e = x$f = 1/2[x$b, x$d];
+		x$d = x$b + dia;
+		x$g = x$d + thin;
+		x$n = x$r;
+		x$m + thin = x$n;
+		x$s = x$t = 1/2[x$i, x$j];
+		x$u = x$v = 1/2[x$j, x$m];
+		top y$s = top y$u = normht;
+		y$j = y$s - (x$u - x$j);
+		y$s - thin = y$t;
+		y$u - thin = y$v;
+		y$a + thin = y$j;
+		y$b = y$i = y$d = y$g = 1/2[y$e, y$c] = y$m = y$n;
+		y$c = y$e - dia;
+		y$e + dia = y$a;
+		y$f = y$e + thin;
+		y$h = y$c - thin;
+		y$ + dia = y$n;
+		x$lft = x$i;
+		x$rt = x$r;
+		y$top = y$j;
+		y$bot = y$h;
+	fi;
+enddef;
+
+def kinkedcurly_path(suffix $) =
+	if curlystyle = 1:
+		(z$l{up} .. z$v{left} .. z$a{left} .. z$t{left}
+			.. z$b{down} .. z$c{right} .. z$d{up}
+			.. z$e{left} .. {down}z$b -- z$i{up} .. z$f{right}
+			.. z$g{down} .. z$h{left} .. z$i{up} 
+			.. z$s{right} .. z$j{right} .. z$u{right}
+			.. {down}z$r)
+	else:
+		(z$l{up} .. z$m{up} .. z$v{left} .. z$a{left} 
+			.. z$t{left} .. z$b{down}
+			.. z$c{right} .. z$d{up}
+			.. z$e{left} .. {down}z$b -- z$i{up} .. z$f{right}
+			.. z$g{down} .. z$h{left} .. z$i{up}
+			.. z$s{right} .. z$j{right} .. z$u{right}
+			.. z$n{down} .. {down}z$r)
+	fi
+enddef;
+
+
+def hat_def(suffix $)(expr linewd) =
+	penpos$(linewd, 0);
+	x$d = x$a = 1/2[x$b, x$l];
+	z$c = z$b + (-thin/2, thin/2);
+	y$b = y$l = y$bot;
+	y$a = y$c + hatht;
+	y$d = y$a + thin;
+	y$top = y$d;
+	x$lft = x$c;
+	x$rt = x$r;
+enddef;
+
+def hat_path(suffix $) =
+	(z$l{up} .. z$a{left} .. z$b{(-1,-3)} .. {(1,3)}z$c .. z$d{right}
+		.. {down}z$r)
+enddef;
+
+
+def b_def(suffix $)(expr linewd, embed) =
+	if embed > thick - thin: emb := thick - thin
+	else: emb := embed; fi;
+	penpos$(linewd, 0);
+	x$a = x$l;
+	x$f = x$r - emb;
+	x$h = x$f + dia;
+	x$b = x$i = x$g = x$d = 1/2[x$f, x$h];
+	x$c = x$h + thin;
+	x$e = x$f - thin;
+	y$a = y$e = y$f = y$h = y$c = 1/2[y$i, y$g];
+	y$b = y$i - thin;
+	y$d = y$g + thin;
+	y$g = y$i + dia;
+	y$top = y$d;
+	y$bot = y$b;
+	x$lft = x$a;
+	x$rt = x$c;
+	y$r = y$e + ( (dia/2) +-+ (dia/2-emb) );
+enddef;
+
+def b_path(suffix $) =
+	(z$l .. z$a{down} .. z$b{right} .. z$c{up} .. z$d{left} .. {down}z$e
+		-- z$f{up} .. z$g{right} .. z$h{down} .. z$i{left}
+		.. z$f{up} .. z$r)
+enddef;
+
+
+def d_def(suffix $)(expr linewd, embed) =
+	if embed > thick - thin: emb := thick - thin
+	else: emb := embed; fi;
+	penpos$(linewd, 0);
+	x$a = x$r;
+	x$f = x$l + emb;
+	x$h = x$f - dia;
+	x$b = x$i = x$g = x$d = 1/2[x$f, x$h];
+	x$c = x$h - thin;
+	x$e = x$f + thin;
+	y$a = y$e = y$f = y$h = y$c = 1/2[y$i, y$g];
+	y$b = y$i - thin;
+	y$d = y$g + thin;
+	y$g = y$i + dia;
+	y$top = y$d;
+	y$bot = y$b;
+	x$lft = x$c;
+	x$rt = x$a;
+	y$l = y$e + ( (dia/2) +-+ (dia/2-emb) );
+enddef;
+
+def d_path(suffix $) =
+	(z$l .. z$f{down} .. z$i{left} .. z$h{up} .. z$g{right} .. {down}z$f
+		-- z$e{up} .. z$d{left} .. z$c{down} .. z$b{right}
+		.. z$a{up} .. z$r)
+enddef;
+
+
+def p_def(suffix $)(expr linewd, embed) =
+	if embed > thick - thin: emb := thick - thin
+	else: emb := embed; fi;
+	penpos$(linewd, 0);
+	x$a = x$l;
+	x$f = x$r - emb;
+	x$h = x$f + dia;
+	x$b = x$i = x$g = x$d = 1/2[x$f, x$h];
+	x$c = x$h + thin;
+	x$e = x$f - thin;
+	y$a = y$e = y$f = y$h = y$c = 1/2[y$i, y$g];
+	y$b = y$i + thin;
+	y$d = y$g - thin;
+	y$g = y$i - dia;
+	y$top = y$b;
+	y$bot = y$d;
+	x$lft = x$a;
+	x$rt = x$c;
+	y$r = y$e - ( (dia/2) +-+ (dia/2-emb) );
+enddef;
+
+def p_path(suffix $) =
+	(z$l .. z$a{up} .. z$b{right} .. z$c{down} .. z$d{left} .. {up}z$e
+		-- z$f{down} .. z$g{right} .. z$h{up} .. z$i{left}
+		.. z$f{down} .. z$r)
+enddef;
+
+
+def q_def(suffix $)(expr linewd, embed) =
+	if embed > thick - thin: emb := thick - thin
+	else: emb := embed; fi;
+	penpos$(linewd, 0);
+	x$a = x$r;
+	x$f = x$l + emb;
+	x$h = x$f - dia;
+	x$b = x$i = x$g = x$d = 1/2[x$f, x$h];
+	x$c = x$h - thin;
+	x$e = x$f + thin;
+	y$a = y$e = y$f = y$h = y$c = 1/2[y$i, y$g];
+	y$b = y$i + thin;
+	y$d = y$g - thin;
+	y$g = y$i - dia;
+	y$top = y$b;
+	y$bot = y$d;
+	x$lft = x$c;
+	x$rt = x$a;
+	y$l = y$e - ( (dia/2) +-+ (dia/2-emb) );
+enddef;
+
+def q_path(suffix $) =
+	(z$l .. z$f{up} .. z$i{left} .. z$h{down} .. z$g{right} .. {up}z$f
+		-- z$e{down} .. z$d{left} .. z$c{up} .. z$b{right}
+		.. z$a{down} .. z$r)
+enddef;
+
+
+% must define left edge(x), right edge(x) and stem(x) as well as top(y)
+def rhat_def(suffix $) =
+	penpos$(thick, 0);
+
+	x$b = x$e = 1/3[x$a, x$c];
+	x$d = x$c - thick;
+	x$f = x$a + thin;
+	y$a = y$f - thin;
+	y$c = y$b - thick/3;
+	y$d = y$c - thick;
+	y$e = y$b - thick;
+	y$f = y$b - 1/4normht;
+	y$ = y$a - thick;
+	x$lft = x$a;
+	x$rt = x$c;
+	y$top = y$b;
+	y$bot = y$;
+	% needed for taw toh!ng
+	x$taw = x$a + dia;
+	y$taw = y$a;
+enddef;
+
+def rhat_path(suffix $) =
+	(z$l{up} ... {left}z$a & z$a .. tension 2 .. z$b .. tension 2 .. z$c
+		-- z$d .. tension 2 .. z$e .. tension 2 .. z$f & z$f{right}
+		... {down}z$r)
+enddef;

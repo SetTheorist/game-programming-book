@@ -1,0 +1,22 @@
+beginthaichar("EE!", "D4", "ih/see/shee", 0, normht# + uvgap# + uvht#, 0);
+	med := 1/2[thin, thick];
+	x1l + med = x1r;
+	y1l - thin = y1r;
+	z1 = 1/2[z1l, z1r];
+	x2t = x2b = 1/2[x1, x3];
+	y2t = y2b + med;
+	z2 = 1/2[z2t, z2b];
+	x3l + med = x3r;
+	y3l + thin = y3r;
+	z3 = 1/2[z3l, z3r];
+
+	x1r = - rightgap;
+	x3r = x1l - normwd;
+	y1r = normht + uvgap;
+	y2t = y1r + uvht - dia/2;
+	y3l = y1r + thin;
+
+	filldraw z1r -- z3l{up} .. z2t .. {down}cycle;
+	unfill z1l -- z3r{up} .. z2b .. {down}cycle;
+	penlabels(1,2,3);
+endthaichar;

@@ -1,0 +1,15 @@
+beginthaichar("AW AHNG", "CD", "aw", 2thick# + normwd#, normht#, 0);
+	p_def(1, thick, 1/3thick);
+	cup_def(2);
+	hat_def(3, thick);
+
+	x1lft = x2lft = x3lft + jutout;
+	x3lft = leftmost;
+	x2rt = x3rt = rightmost;
+	y1top + jutout = y3bot;
+	top y3top = normht + overshoot;
+
+	filldraw p_path(1) --- cup_path_i(2) --- hat_path(3) ---
+		reverse cup_path_o(2) --- cycle;
+	penlabels(1,2,3);
+endthaichar;

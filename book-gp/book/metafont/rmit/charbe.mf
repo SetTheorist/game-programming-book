@@ -1,0 +1,26 @@
+beginthaichar("PAW PAH!N", "BE", "pa", dia# + 2thick# + normwd#, normht#, 0);
+	q_def(1, thick, 1/4thick);
+	penpos2(thick, 0);
+	penpos3(thin ++ thin, 270);
+	penpos4(thin ++ thin, 270);
+	penpos5(thin ++ thin, 270);
+	penpos6(thick, 0);
+	penpos7(thick, 0);
+
+	lft x1lft = leftmost;
+	x1 = x2;
+	x6 = x7;
+	x3 = x2r;
+	x5 = x6l;
+	x4 = 1/2[x3,x5];
+	rt x7r = rightmost;
+	top y1top = top y7 = normht;
+	bot y2 = bot y6 = 0;
+	y3r = y2;
+	y5r = y6;
+	y4r + 2dia = y7;
+
+	filldraw q_path(1) -- z3l -- z4l -- z5l -- z7l -- z7r -- z6r
+		-- z6l -- z4r -- z2r -- z2l -- cycle;
+	penlabels(1,2,3,4,5,6,7);
+endthaichar;

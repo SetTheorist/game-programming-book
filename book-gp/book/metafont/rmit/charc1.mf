@@ -1,0 +1,19 @@
+beginthaichar("MAW MAH", "C1", "mm", dia# + 2thick# + normwd#, normht#, 0);
+	q_def(1, thick, 0);
+	dd_def(2);
+	penpos3(thick, 0);
+	penpos4(thick, 0);
+
+	lft x1lft = leftmost;
+	x1rt = x2rt;
+	rt x3r = rightmost;
+	x4 = x3;
+	top y1top = normht;
+	bot y3 = 0;
+	top y4 = normht;
+
+	filldraw q_path(1) -- dd_path_o(2) .. z3r
+		-- z3l .. reverse dd_path_i(2) -- cycle;
+	filldraw z3l -- z3r -- z4r -- z4l -- cycle;
+	penlabels(1,2,3,4);
+endthaichar;

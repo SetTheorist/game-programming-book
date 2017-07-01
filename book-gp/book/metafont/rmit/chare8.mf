@@ -1,0 +1,12 @@
+beginthaichar("MY TOH", "E8", "mt", 0, normht# + uvgap# + uvht#, 0);
+	penpos1(thick, 0);
+	penpos2(thin, 0);
+
+	x1r = -rightgap;
+	x1 = x2;
+	y1 = normht + uvgap + uvht;
+	y2 = normht + uvgap;
+
+	filldraw z1l -- z2l -- z2r -- z1r -- cycle;
+	penlabels(1,2);
+endthaichar;

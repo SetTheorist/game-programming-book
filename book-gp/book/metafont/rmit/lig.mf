@@ -1,0 +1,189 @@
+font_normal_space 1;
+font_quad normwd#;
+font_normal_stretch thick#;
+font_normal_shrink 0;
+
+%
+% define dummy chars - needed for ligtable to work
+%
+% CHANGE -dah 24/aug/90 added extra string as third argument of each
+% beginthaichar.
+beginthaichar("$00", "00", " ", 0, 0, 0); endthaichar;
+beginthaichar("$01", "01", " ", 0, 0, 0); endthaichar;
+beginthaichar("$02", "02", " ", 0, 0, 0); endthaichar;
+beginthaichar("$03", "03", " ", 0, 0, 0); endthaichar;
+beginthaichar("$04", "04", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII .", "2E", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 0", "30", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 1", "31", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 2", "32", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 3", "33", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 4", "34", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 5", "35", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 6", "36", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 7", "37", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 8", "38", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII 9", "39", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII a", "61", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII b", "62", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII c", "63", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII d", "64", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII e", "65", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII f", "66", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII g", "67", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII h", "68", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII i", "69", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII j", "6A", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII k", "6B", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII l", "6C", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII m", "6D", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII n", "6E", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII o", "6F", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII p", "70", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII q", "71", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII r", "72", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII s", "73", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII t", "74", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII u", "75", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII v", "76", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII w", "77", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII x", "78", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII y", "79", " ", 0, 0, 0); endthaichar;
+beginthaichar("ASCII z", "7A", " ", 0, 0, 0); endthaichar;
+
+ligtable "a" :	"a" =: hex"E1",  % sara aa
+		"i" =: hex"E4",  % sara ai (common)
+		"j" =: hex"E3",  % sara ai (20 words)
+		"y" =: hex"E0",  % sara eh/ay
+		"h" =: hex"D2",  % sara ah
+		"w" =: hex"CD",  % or ahng
+		"e" =: hex"E5";  % tall ah (used with leu/reu)
+
+ligtable "b" :	"b" =: hex"BA",  % bor
+		"p" =: hex"BB",  % bpor
+		"l" =: hex"A0";  % blank
+
+ligtable "c" :	"h" =: hex"00",  %   ch is 00
+		"i" =: hex"A9",  % chor ching
+		"a" =: hex"AA",  % chor chahng
+		"u" =: hex"AC";  % chor chuh
+
+ligtable hex"00" : % ch
+		"i" =: hex"A9",  % chor ching
+		"a" =: hex"AA",  % chor chahng
+		"u" =: hex"AC";  % chor chuh
+
+ligtable "d" :	"c" =: hex"AE",  % dor chah-dah
+		"k" =: hex"B4",  % dor dek
+		"e" =: hex"B4",  % dor dek
+		"d" =: hex"B4",  % dor dek
+		"b" =: hex"AF",  % dtor bpah! dtah!k
+		"w" =: hex"B5",  % dtor dtao (dtow)
+		"t" =: hex"B5";  % dtor dtao (dtow)
+
+ligtable "e" :	"e" =: hex"D5",  % sara ee
+		"u" =: hex"D7",  % sara eu
+		"h" =: hex"E0";  % sara eh/ay
+
+ligtable "f" :	"a" =: hex"BF",  % for fah   ?
+		"n" =: hex"BD";  % for fahn  ?
+
+ligtable "g" :	"g" =: hex"A1",  % gor gy
+		"y" =: hex"A1";  % gor gy
+
+ligtable "h" :	"e" =: hex"CB",  % hor heep
+		"n" =: hex"CE";  % hor nok hook
+
+ligtable "i" :	"h" =: hex"D4";  % sara ih
+
+ligtable "j" :	"j" =: hex"A8";  % jor jahn
+
+ligtable "k" :	"y" =: hex"A2",  % kor ky
+		"u" =: hex"A3",  % kor kuat
+		"w" =: hex"A4",  % kor kwai
+		"o" =: hex"A5",  % kor kon
+		"r" =: hex"A6";  % kor rakahng
+
+ligtable "l" :	"i" =: hex"C5",  % lor ling
+		"j" =: hex"CC",  % lor joo-lah
+		"e" =: hex"C6";  % leu
+
+ligtable "m" :	"m" =: hex"C1",  % mor mah
+		"k" =: hex"E7",  % my koo
+		"t" =: hex"E8",  % my toh
+		"e" =: hex"E9",  % my ehk
+		"d" =: hex"EA",  % my dtree
+		"j" =: hex"EB",  % my jutawah
+		"a" =: hex"D1";  % my hunagaht
+
+ligtable "n" :	"e" =: hex"B3",  % nor nehn
+		"o" =: hex"B9",  % nor noo
+		"g" =: hex"A7";  % ngor ngoo
+
+ligtable "o" :	"o" =: hex"D9",  % sara oo (long)
+		"h" =: hex"E2";  % sara oh
+
+ligtable "p" :	"e" =: hex"BC",  % por peung
+		"a" =: hex"BE",  % por pahn
+		"s" =: hex"C0",  % por sampow
+		"b" =: hex"BB",  % bpor
+		"y" =: hex"CF";  % pery yahn noy (?)
+
+ligtable "r" :	"r" =: hex"C3",  % ror reua
+		"e" =: hex"C4";  % reu (funny symbol)
+	
+ligtable "s" :	"c" =: hex"AB",  % sor chor (sor soo)
+		"k" =: hex"C8",  % sor kor
+		"r" =: hex"C9",  % sor reu see
+		"l" =: hex"CA",  % sor lor
+		"m" =: hex"01",  %   sm maps to 01
+		"o" =: hex"02",  %   so maps to 02
+		"e" =: hex"03",  %   se maps to 03
+		"h" =: hex"04",  %   sh maps to 04
+		"p" =: hex"A0";  % space/blank
+
+ligtable hex"04" : % sh
+		"e" =: hex"03",  % she... (shee, sheu) short vowels
+		"o" =: hex"02";  % sho... (shoo) short vowel
+
+ligtable hex"02" : % so
+		"o" =: hex"D8";  % (soo) sara oo (short)
+
+ligtable hex"03" : % se
+		"e" =: hex"D4",  % (see) sara ee (short)
+		"u" =: hex"D6";  % (seu) sara eu (short)
+
+ligtable hex"01" : % sm
+		"k" =: hex"87",  % (smk) small my koo
+		"t" =: hex"88",  % (smt) small my toh
+		"e" =: hex"89",  % (sme) small my ehk
+		"d" =: hex"8A",  % (smd) small my dtree
+		"j" =: hex"8B";  % (smj) small my jutawah
+
+ligtable "t" :	"a" =: hex"B0",  % tor tahn
+		"m" =: hex"B1",  % tor monto
+		"p" =: hex"B2",  % tor pootow
+		"u" =: hex"B6",  % tor too!ng (tung?)
+		"h" =: hex"B7",  % tor tahahn
+		"o" =: hex"B8";  % tor tohng
+
+ligtable "u" :	"m" =: hex"D3",  % sara um
+		"h" =: hex"D0";  % sara ah (short)
+
+ligtable "w" :	"w" =: hex"C7";  % wor 
+
+ligtable "y" :	"i" =: hex"AD",  % yor ying
+		"a" =: hex"C2",  % yor yahk
+		"m" =: hex"E6";  % yamok
+
+ligtable "." :	"." =: hex"DA";  % full stop
+		%"0" =: hex"F0",  % number 0
+		%"1" =: hex"F1",  % number 1
+		%"2" =: hex"F2",  % number 2
+		%"3" =: hex"F3",  % number 3
+		%"4" =: hex"F4",  % number 4
+		%"5" =: hex"F5",  % number 5
+		%"6" =: hex"F6",  % number 6
+		%"7" =: hex"F7",  % number 7
+		%"8" =: hex"F8",  % number 8
+		%"9" =: hex"F9";  % number 9

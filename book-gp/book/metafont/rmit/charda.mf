@@ -1,0 +1,7 @@
+beginthaichar("full stop", "DA", "..", dia#, dia#, 0);
+	filldraw (leftmost, 1/2dia){up}
+	.. (1/2[leftmost, rightmost], dia){right}
+	.. (rightmost, 1/2dia){down}
+	.. (1/2[leftmost, rightmost], 0){left}
+	.. cycle;
+endthaichar;

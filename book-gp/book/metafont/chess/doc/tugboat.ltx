@@ -1,0 +1,630 @@
+%
+% TUGboat.ltx
+% -----------
+% LaTeX source of TUGboat article
+% Author : Piet Tutelaers (internet: rcpt@urc.tue.nl)
+% Version: 1.2 (Dec 1991)
+%    Documents new features from chess.sty version 1.2 and reflects 
+%    changes. See header of chess.sty for a complete list.
+
+\documentstyle[chess,ltugboat]{article}
+\title{A Font and a Style for Typesetting Chess using \LaTeX\ or \TeX}
+\author{Piet Tutelaers}
+\address{Computer Center\\
+Eindhoven University of Technology\\
+\POBox 513\\
+5600 MB Eindhoven, NL}
+\netaddress[\network{internet}]{rcpt@urc.tue.nl}
+
+\begin{document}
+\maketitle
+
+\noindent
+The Berkeley Font Catalogue~\cite{Berkeley} demonstrates how a chess font
+in combination with troff can be used to typeset chess diagrams.  This
+article has inspired me to build a chess font with \MF\ from the nice
+font, see diagram~1, I once bought from Schaakhuis De Haan (Arnhem,
+The Netherlands).
+\begin{figure}
+\input{epsf.sty}
+\epsfxsize=7cm
+$$\epsffile{board.epsf}$$
+\centerline{Diagram~1: Original font}
+\centerline{(original size of board $9\times 9$ cm)}
+\end{figure}
+This `font' consists of a set of chess boards and separate sets of
+chess pieces.  The pieces have to be pasted on the board after pulling
+them from a sheet of paper.  This nowadays is still common practice
+for publishers.  Before I used \MF\ I made enlargements of the
+pieces on graph-paper using my stereo microscope for which I have a
+drawing prism.  This graph-paper makes it easy to read the coordinates
+of points that need to be given to \MF.  For the development of the
+font I have used Amiga\MF\ which has graphical support.  The design
+of the chess style has been done with Amiga\TeX.  Both programs run
+comfortably on my private Amiga1000 with 2.5 Megabytes of internal
+memory.
+
+A chess font consists of 26 characters, with one character for the empty
+light square and one for the empty dark square.  For each chess piece
+(Pawn, kNight, Bishop, Rook, Queen, King) there are four characters to
+represent that piece (White, Black) on both squares (light, dark).  The
+troff chess font has also extra characters for the border of the board. 
+These borders are added by the chess diagram macros as horizontal and
+vertical rules in my approach.  Table~1 shows all characters from font
+{\tt chess10} (the size of a square being 10 points). 
+\begin{table}
+\begin{flushleft}\tt
+\newfont{\CH}{chess10}
+\begin{tabular}{cccccccccc}
+P & \CH P & O & \CH O & p & \CH p & o & \CH o & 0 & \CH 0 \\
+N & \CH N & M & \CH M & n & \CH n & m & \CH m & Z & \CH Z \\
+B & \CH B & A & \CH A & b & \CH b & a & \CH a \\
+R & \CH R & S & \CH S & r & \CH r & s & \CH s \\
+Q & \CH Q & L & \CH L & q & \CH q & l & \CH l \\
+K & \CH K & J & \CH J & k & \CH k & j & \CH j
+\end{tabular}
+\end{flushleft}
+\caption{Character encodings of {\tt chess10}}
+\end{table}
+
+There is an extra font {\tt chessf10} that contains only the so-called
+chess figurines (King, Queen, Rook, Bishop, kNight). With this font the
+move 25.~N5|*|g3, in short algebraic notation, can be typeset as |25. N5*g3|.
+Next to {\tt chess10} there are {\tt chess20} and {\tt chess30}. The 20-point
+version is used in the chess style because the diagrams made with
+it fit nicely in a twocolumn A4 page. But it would be easy to make
+another size font by changing only one parameter. 
+
+The king has given me the biggest trouble to {\manual META}fy.  If you
+compare the original font with my {\manual META}imitation, you will see
+a few differences.  For one thing, the chess board has no labels for
+rows and lines.  These can be added to the diagram macros if desired. 
+The pieces in the original font use shadings to get a better contrast
+with the dark squares.  The rest of the differences have to be ascribed
+to my insufficient knowledge of \MF. 
+
+I have long hesitated to publish my {\manual META}copies of the chess
+font in \TUB.  I have seriously tried to find the designer or owner of
+the original font.  According to the Dutch firm that has taken over
+Schaakhuis De Haan, I could safely publish them because the fonts are
+not sold any longer.  I hope this article helps in finding the designer
+of this very nice chess font and that he is not upset with my {\manual
+META}copy of it. 
+
+Having a nice set of chess fonts is one thing; typesetting chess using
+them is another thing.  When I accepted the editorship of our
+`Schaakmaatje', as my chess club `Schaakclub Geldrop' calls its
+chess magazine, I used \TeX\ and some macros to typeset chess diagrams. 
+After giving the \LaTeX\ course at our Computer Center, I definitely
+wanted to move to this macro set.  Especially the many available styles,
+and the need to have a simple macro for typesetting tables, makes
+\LaTeX\ a lot simpler to use. 
+
+\begin{position}
+\White(Kc2,Bf8,Nb4,b3,g7)
+\Black(Ka3,b6)
+\end{position}
+
+\begin{figure}
+$$\showboard$$
+\centerline{Diagram~2: White mates in three moves}
+\end{figure}
+
+\subsubsection*{Chess playing macros}
+When some macros to play chess in \TeX{} appeared in \TUB~\cite{Appelt},
+I used the ideas presented to make my own chess style.  As a typical
+example of an annotated chess game I have used a part of the game Fisher
+played against Tal during the Candidates' Tournament of 1959.  In this
+tournament the sixteen aged Fisher lost four times from Tal who by
+winning this tournament earned the right to meet Botvinnik for the world
+championship. The game shows a real fight between two very offensive 
+players. The game itself is annotated by Fisher.  Both the input
+and the output are included on page~\pageref{chessgame}. 
+
+To typeset the main line with automatic updating of the chess position,
+{\tt chess.sty} has the macro \verb+\newgame+, which starts a new game, and
+the environment {\tt position}, to set up a position other than the
+initial one. The chess position after the 25th move in the game
+Fisher--Tal (see diagram~3 on page~\pageref{chessgame}) is defined with:
+\begin{quote}\small
+\begin{verbatim}
+\begin{position}
+\White(Kh1,Qe6,Re1,a2,b2,c2,g2,h2)
+\Black(Kf8,Qb8,Rd7,Rg8,Be7,a6,b4,h7)
+\global\Whitetrue\global\movecount=25
+\end{position}
+\end{verbatim}
+\end{quote}%
+\noindent
+\verb+\Whitetrue+ gives the turn to White; \verb+\Whitefalse+ gives it
+to Black.  Setting the move counter is achieved with
+\verb+\movecount=25+.  The \verb+\global+ is needed because both
+commands are used inside an environment. 
+
+{\samepage
+There exists another macro \verb+\board+ for defining a chess position in
+case automatic updating is not wanted. This macro is used for the mate in
+three problem (see diagram~2):
+\begin{quote}\small
+\begin{verbatim}
+\board{ * * B *}
+      {* * * P }
+      { p * * *}
+      {* * * * }
+      { N * * *}
+      {kP* * * }
+      { *K* * *}
+      {* * * * }
+\end{verbatim}
+\end{quote}}
+\begin{nochess} % prevent the `|' to become active!
+\noindent
+Notice that the user of {\tt chess.sty} doesn't need to know the character
+encodings from table~1! He only needs to know the abbreviations of pieces
+(uppercase for White and lowercase for Black) and that empty squares are
+represented by a \verb*+ + (light) or a \verb+*+ (dark).
+
+To show the board in either case, one needs to call the macro
+\verb+\showboard+ or \verb+$$\showboard$$+ if the board should be centered.
+
+To automatically update a position defined by the {\tt position}
+environment there are two macros: \verb+\ply+ and \verb+\move+. If
+White's move is not followed by some analysis, the macro \verb+\move+
+can be used. Otherwise the move has to be broken down into two plies
+(half moves) with \verb+\ply+. The argument(s) of \verb+\ply+ and
+\verb+\move+ contain the from square followed by the to square of the
+moving piece, or the King in case of castling. A square is represented
+as a column \verb+[a-h]+ followed by the row \verb+[1-8]+. In
+correspondence chess a similar notation is used except for the columns
+which are also denoted as decimals \verb+[1-8]+.  I think that using
+letters is less confusing and reflects the way at least in Europe
+chess players think.
+
+If a pawn arrives at its final destination, it becomes a Queen, Rook,
+Bishop or kNight \verb+{Q|R|B|N}+.  If the promotion piece is omitted a
+default Queen is taken.  Moves can also be commented with things like
+\verb+!+~for good moves, \verb+??+~for exceptional bad moves, and so
+on.  So the syntax, in a free style of Extended Backus Naur Form, of an
+argument for both \verb+\ply+ and \verb+\move+ can be described as:
+\begin{quote}\small
+\begin{verbatim}
+[a-h][1-8][a-h][1-8]{{Q|R|B|N}comment}
+\end{verbatim}
+\end{quote}
+\end{nochess}
+\noindent
+The translation of this move representation to long algebraic notation
+is carried out by the `invisible' macro \verb+\@ply+.  For example:
+\verb+\@ply g1f3+ will result in |Ng1-f3| in case square f3 is empty
+or |Ng1*f3| in case of a capture, \verb+\@ply e1c1+ will result in
+|0-0-0|.
+
+To update and query the chess board, represented by 64 macros
+(\verb+\a1+, \verb+\a2+,\dots\verb+\h8+), \verb+\@ply+ uses the
+private macros \verb+\@set+ and \verb+\@get+.  The value of a square
+can either be empty (letter \verb+E+), a White piece (\verb+Q+,
+\verb+R+, \verb+B+, \verb+N+, \verb+P+) or a Black piece (\verb+q+,
+\verb+r+, \verb+b+, \verb+n+, \verb+p+).  To update the chess position
+\verb+\@ply g1f3+ does a \verb+\@set[g1](E)+ to make the square g1
+empty and a \verb+\@set[f3](N)+ to move the kNight to f3.  The macro
+\verb+\@ply+ handles castling and the special pawn moves en passant
+capture and promotion.  Because of its length the macro \verb+\@ply+
+is not included.  Basically, it is just a set of nested conditionals
+to cover all cases.  Instead the macros \verb+\@set+ and \verb+\@get+,
+that might be of interest to other \TeX\ applications, are included
+here, together with \verb+\@showchar+ (the macro that maps a square
+value to the correct character encoding using \verb+\@get+) and
+\verb+\@emptyboard+ (a macro for clearing the chess board using
+\verb+\@set+).
+
+{\small
+\begin{verbatim}
+\def\@set[#1#2](#3){
+  %arguments: [a-h1-8](<letter>)
+  \expandafter
+  \xdef\csname#1#2\endcsname{#3}}
+
+\def\@get#1[#2#3]{%arguments:\cs[a-h1-8]
+  \edef#1{\csname#2#3\endcsname}}
+
+\newcount\@c   % column
+\newcount\@r   % row
+\newcount\@sum % row+column
+
+\def\@col{\ifcase\@c\or a\or b\or c\or 
+  d\or e\or f\or g\or h\fi}
+\def\@showchar{
+  \@get\piece[\@col\the\@r]
+  \if\piece E \ifodd\@sum 0\else Z\fi\else
+  \if\piece P \ifodd\@sum P\else O\fi\else
+  \if\piece p \ifodd\@sum p\else o\fi\else
+  \if\piece R \ifodd\@sum R\else S\fi\else
+  \if\piece B \ifodd\@sum B\else A\fi\else
+  \if\piece N \ifodd\@sum N\else M\fi\else
+  \if\piece r \ifodd\@sum r\else s\fi\else
+  \if\piece b \ifodd\@sum b\else a\fi\else
+  \if\piece n \ifodd\@sum n\else m\fi\else
+  \if\piece K \ifodd\@sum K\else J\fi\else
+  \if\piece Q \ifodd\@sum Q\else L\fi\else
+  \if\piece k \ifodd\@sum k\else j\fi\else
+  \if\piece q \ifodd\@sum q\else l\fi\else
+  \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi}
+
+% inner loop needs extra { ... }
+
+\def\@emptyboard{
+   \@r=1
+   \loop
+      {\@c=1
+       \loop
+         \@set[\@col\the\@r](E)
+         \ifnum\@c<8 \advance\@c by1
+       \repeat}
+       \ifnum\@r<8 \advance\@r by 1
+   \repeat
+}
+\end{verbatim}}
+
+\begin{nochess} % prevent the `|' to become active! 
+\subsubsection*{Analysis mode}
+In order to save space tournament bulletins often prefer short algebraic
+notation.  In this notation the from square of a piece is omitted.  If a
+move otherwise would be ambigious, because another piece can reach the
+same destination, the letter of the column or the number of the row from
+the originating square is added.  The short and long algebraic notation
+is also used in analysis mode when we annotate moves from the main line
+or a variation.  To make the typesetting of these move notations easy
+and compact, I have introduced a pair of \verb+|+\ldots\verb+|+ to
+activate the algebraic notation.  Unfortunately this character pair can
+not be used within arguments of macros.  But you can of course use the
+pair outside the macro like \verb+|\centerline{25.  Kf8!}|+.  Or if you
+prefer you can use the {\tt chess}-environment instead.  Because \LaTeX\
+uses this character in the {\tt tabular} environment to draw vertical
+rules I have made an environment {\tt nochess} that can be used to
+prevent that the \verb+|+ character will activate the analysing mode. 
+Within the {\tt nochess} environment you can use the environment {\tt
+chess} to get analysis mode again.  Here follow some examples to show
+how short and long algebraic notation can be generated in analysing
+mode:
+\begin{tabular}{ll}
+\multicolumn{1}{c}{\bf input} & \multicolumn{1}{c}{\bf output} \\[.2pt]
+\verb^|21. Nf3-e5??, 0-0!|^ & \begin{chess}21. Nf3-e5??, 0-0!\end{chess} \\
+\verb^|21.: Ke8*f8|^        & \begin{chess}21.: Ke8*f8       \end{chess} \\
+\verb^|21. Nfe5, K*f8|^     & \begin{chess}21. Nfe5, K*f8    \end{chess} \\
+\verb^|21.: f8Q+|^          & \begin{chess}21.: f8Q+         \end{chess} 
+\end{tabular}
+\end{nochess}
+\noindent
+In the analysing mode some characters have a special meaning. The
+`\verb+*+' becomes a `|*|' to denote a capture, the `\verb+-+' is
+mapped to `|-|' and the `\verb+:+' is used as an abbreviation for
+`|:|' as one need if the analysis starts with a Black move.
+
+The chess macros have also support for different languages thanks to the
+possibilities of the babel package from Johannes Braams~\cite{Braams}. 
+This package can be used within plain \TeX\ and \LaTeX\ in \TeX3.0 or in
+older versions.  The names of the chess pieces can be choosen according
+to their Dutch abbreviations by specifying the language {\tt dutch}
+before the {\tt chess} style:
+\begin{quote}\small
+\begin{verbatim}
+\documentstyle[dutch,chess]{...}
+\end{verbatim}
+\end{quote}
+\noindent
+In Dutch the letters K (`koning'), D (`dame'), T (`toren'), L (`loper')
+and P (`paard') are used to denote the king, queen, rook, bishop and
+knight respectivally.  These letters are used in the macros \verb+\move+
+and \verb+\ply+, only if you provide a promotion piece, within the
+analysis mode and in the {\tt position} environment.  In the
+\verb+\board+ macro we use the same letters to denote the White pieces
+and the corresponding lowercase letters to indicate the Black piece.  In
+this macro we need also a letter to represent the pawn.  Because both
+`pion' (pawn) and `paard' (knight) start with a `p' I have choosen the
+letter `I' for the `pIon'.
+
+Hopefully the examples above and the extract of the game Fisher--Tal on
+page~\pageref{chessgame} are further self explaining. 
+
+% Redefine chess.sty to get similar layout as in Informator
+\makeatletter
+\def\@dots{\ldots}
+\resetat
+%
+\subsubsection*{Tournament style}
+To illustrate the tournament style I have included the complete
+example game of Fisher against Tal from~\cite{Fisher} in the style
+that is used in the Chess Informant~\cite{informant}.  In this book
+special symbols are used for often used chess terminology.
+Table~\ref{symbols} shows the list of the symbols I needed in the
+Fisher game.  In ~\cite{Fisher} the moves |50: Kc7 51. Rb5| are
+omitted. But this is corrected in his later book~\cite{Fisher80}.
+
+\begin{table}\small
+\begin{tabular}{lll}
+               & \bf (La)TeX           & \bf meaning \\[.1cm]
+\wbetter       & \verb+\wbetter+       & White stands slightly better \\
+\bbetter       & \verb+\bbetter+       & Black stands slightly better \\
+\wupperhand    & \verb+\wupperhand+    & White has the upper hand \\
+\bupperhand    & \verb+\bupperhand+    & Black has the upper hand \\
+\wdecisive     & \verb+\wdecisive+     & White has a decisive advantage \\
+\bdecisive     & \verb+\bdecisive+     & Black has a decisive advantage \\
+\withattack    & \verb+\withattack+    & with attack \\
+\betteris      & \verb+\betteris+      & better is \\
+\seppawns      & \verb+\seppawns+      & separated pawns
+\end{tabular}
+\caption{Informant symbols}\label{symbols}
+\end{table}
+% Some macros to improve readability...
+\newenvironment{mainline}[2]{\bf\newcommand{\result}{#1}%
+   \newcommand{\commentator}{#2}\begin{chess}}%
+   {\end{chess}\finito{\result}{\commentator}}
+\newenvironment{variation}{[\begingroup\rm\ignorespaces}%
+   {\endgroup]\ignorespaces}
+\newcommand{\finito}[2]{{\bf\hfill#1\hfill[#2]\par}}
+%
+\centerline{\sc Bobby Fisher -- Mikhail Tal}
+\smallskip
+\centerline{Belgrade (ct/27) 1959}
+\smallskip
+%
+\begin{mainline}{0~:~1}{Fisher}
+1. e4  c5 
+2. Nf3 d6 
+3. d4  cd4 
+4. Nd4 Nf6 
+5. Nc3 a6 
+6. Bc4 e6 
+7. Bb3
+   \begin{variation} 
+   7. 0-0 Be7 8. Bb3 Qc7 9. f4 b5 10. f5 b4 11. fe6!? (11. Nce2 e5 12.
+   Nf3 Bb7\bbetter) bc3 12. ef7 Kf8 13 Bg5 Ng4!\bupperhand
+   \end{variation}
+       b5! 
+   \begin{variation} 
+   7: Be7? 8. f4 0-0 9. Qf3 Qc7 10. f5! (10. 0-0? b5 11. f5 b4! 12. Na4
+   e5 13. Ne2 Bb7\bbetter) e5 11. Nde2 b5 12. a3 Bb7 13.
+   g4\wupperhand\withattack 
+   \end{variation}
+8. f4!? b4! 
+9. Na4 Ne4 
+10. 0-0 g6?
+   \begin{variation}
+   \betteris 10: Bb7
+   \end{variation}
+11. f5! gf5
+   \begin{variation}
+   11: ef5? 12. Bd5 Ra7 13. Nf5! gf5 14. Qd4
+   \end{variation}
+12. Nf5! Rg8
+   \begin{variation}
+   \betteris 12: d5 13. Nh6 Bh6 14. Bh6;
+   12: ef5? 13. Qd5 Ra7 14. Qd4
+   \end{variation}
+13. Bd5! Ra7
+   \begin{variation}
+   13: ed5 14. Qd5 Bf5 15. Rf5 Ra7 16. Qe4 Re7 17. Qb4 Re2 18. Bg5! Rg5
+   19. Rg5 Qg5 20. Rb8\wdecisive \nochess PANOV \endnochess
+   \end{variation}
+14. Be4?
+   \begin{variation}
+   \betteris 14. Be3! Nc5 15. Qh5! Rg6 (15: Na4 16 Ba7 ed5 17 Rae1)
+   16. Rae1! \nochess KEVITZ\endnochess
+   \end{variation}
+        ef5 
+15. Bf5 Re7!
+16. Bc8 Qc8
+17. Bf4?
+   \begin{variation}
+   \betteris 17. c3! Qc6 18. Rf2;
+   17. Qd6? Rg2 18. Kg2 Re2 19. Kf3 Bd6 20. Ke2 Qc2\bdecisive
+    \end{variation}
+        Qc6!
+18. Qf3 Qa4
+   \begin{variation}
+   18: Qf3 19. Rf3 Re2 20. Rf2 Rf2 21. Kf2\wbetter\seppawns
+   \end{variation}
+19. Bd6 Qc6!
+20. Bb8 Qb6
+   \begin{variation}
+   20: Qf3? 21. Rf3 Bg7 22. c3\wdecisive
+   \end{variation}
+21. Kh1 Qb8
+22. Qc6
+   \begin{variation}
+   22. Rae1 Kd8! 23. Rd1 Kc7! (23: Kc8? 24. Qc6\wdecisive) 24. Qf4 
+     (24. Rd4 Qb7!) Kb7 25. Rd6 Qc7 26. Qb4 Kc8 27. Ra6 Qb7! 28. Qb7 Kb7 
+     29. Raf6 Rg7\equal;
+   22: Rg6? 23. Qf7 Kd7 24. Rd1! Rd6 25. Rd6 Kd6 26. Rf6!\wdecisive 
+   \end{variation}
+        Rd7
+23. Rae1
+   \begin{variation}
+   23. Rad1 Bd6 24. Rf7 (24. Rf6 Rg6 25. Rdd6 Qd6!) Qc7;
+   23. Rf7 Qd6
+   \end{variation}
+       Be7
+   \begin{variation}
+   23: Kd8? 24. Rf7! Be7 25. Rfe7 Re7 26. Rd1\wdecisive
+   \end{variation}
+24. Rf7 Kf7
+25. Qe6 Kf8!
+   \begin{variation}
+   25: Kg7? 26. Qd7\wdecisive
+   \end{variation}
+26. Qd7
+   \begin{variation}
+   26. Rf1? Kg7 27. Rf7 Kh8 (28. Qd7 Rd8 29. Qg4 Qe5\bdecisive)
+   \end{variation}
+        Qd6
+27. Qb7 Rg6
+28. c3! a5
+   \begin{variation}
+   28: bc3 29. Qc8 Bd8 30. Qc3\equal 
+   \end{variation}
+29. Qc8
+   \begin{variation}
+   \betteris 29. cb4! Qb4 (29: ab4 30. a3! ba3 31. ba3 Qa3\equal) 
+   30. Qf3 Kg7 31. Qe2\equal
+   \end{variation}
+        Kg7
+30. Qc4 Bd8
+31. cb4 ab4
+   \begin{variation}
+   31: Qb4 32. Qe2\equal
+   \end{variation}
+32. g3?
+   \begin{variation}
+   32. Qe4 (32: Bc7 33. Qe7 Kg8 34. Qe8 Qf8 35. Qe4)
+   \end{variation}
+        Qc6
+33. Re4 Qc4
+34. Rc4 Rb6!
+   \begin{variation}
+   34: Be7? 35. a3!
+   \end{variation}
+35. Kg2 Bf6
+36. Kf3 Ke5
+37. Ke3 Bg5
+38. Ke2 Kd5
+39. Kd3 Bf6
+40. Rc2? Be5
+41. Re2 Rf6
+42. Rc2 Rf3
+43. Ke2 Rf7
+44. Kd3 Bd4!
+45. a3
+   \begin{variation}
+   45. b3? Rf3 46. Ke2 Rf2 47. Qd3 Rc2 48. Kc2 Ke5\wdecisive
+   \end{variation}
+        b3
+46. Rc8
+   \begin{variation}
+   46. Re2 Rf3 47. Kd2 Bb2;
+   46. Rd2 Rf3 47. Ke2 Rf2
+   \end{variation}
+        Bb2
+47. Rd8 Kc6
+48. Rb8 Rf3
+49. Kc4 Rc3
+50. Kb4 Kc7 % The Black move and the next White move were forgotten in
+51. Rb5 Ba1 % Fisher's book ``My 60 Memorable Games'' and patiently copied
+52. a4  b2! % by some other authors (Bijl and Euwe)
+   \begin{variation}
+   53. Kc3 b1Q!
+   \end{variation}
+\end{mainline}
+\smallskip
+\noindent
+The \LaTeX\ input of the above game looks like:
+{\small
+\begin{verbatim}
+% Some macros to improve readability...
+\newcommand{\finito}[2]{%
+   {\bf\hfill#1\hfill[#2]\par}}
+\newenvironment{mainline}[2]{\bf
+   \newcommand{\result}{#1}%
+   \newcommand{\commentator}{#2}%
+   \begin{chess}}%
+   {\end{chess}\finito{\result}%
+    {\commentator}}
+\newenvironment{variation}{[\begingroup
+   \rm\ignorespaces}%
+   {\endgroup]\ignorespaces}
+...
+\begin{mainline}{0~:~1}{Fisher}
+1. e4  c5   2. Nf3 d6 3. d4  cd4 
+4. Nd4 Nf6  5. Nc3 a6 6. Bc4 e6 
+... 
+13. Bd5! Ra7
+   \begin{variation}
+   13: ed5 14. Qd5 Bf5 15. Rf5 Ra7 
+   16. Qe4 Re7  17. Qb4 Re2 
+   18. Bg5! Rg5 19. Rg5 Qg5 
+   20. Rb8\wdecisive 
+   \nochess PANOV \endnochess
+   \end{variation}
+14. Be4?
+...
+\end{mainline}
+\end{verbatim}}
+\smallskip
+\noindent
+The mainline is typeset in boldface and the variations in roman. When we
+need to typeset a name we have to avoid the analysis mode by using the
+{\tt nochess} environment. The {\tt nochess} environment can be used in
+\LaTeX\ style (\verb+\begin{nochess}+\ldots\verb+\end{nochess}+) or in
+the shorter \TeX\ style (\verb+\nochess+\ldots\verb+\endnochess+).
+
+\subsubsection*{Using plain \TeX}
+To use {\tt chess.sty} in plain \TeX\ you need the following line
+for including the chess macros:
+\begin{quote}\small
+\begin{verbatim}
+\input chess.sty
+\end{verbatim}
+\end{quote}
+
+\noindent
+The {\tt nochess} and {\tt position} environments from {\tt chess.sty}
+should be replaced by \verb+\nochess+ \ldots \verb+\endnochess+ and
+\verb+\position+ \ldots \verb+\endposition+ pairs. 
+
+\subsubsection*{Further wishes}
+The chess font and the chess style form a good basis for publishing
+about chess as is demonstrated by~\cite{Anjo,Rix}.  But there are
+still some wishes to make the writing really enjoyable.  My first wish
+would be a program with a chess board interface on which I can set up
+a position, play a variation and add text to the computer generated
+chess moves, go back to the main line, play another variation, and so
+on.  I have seen a X11-based chess interface using hyperbuttons which
+provides a good starting point to make such a program!
+
+Surely the chess style can be improved and other style conventions
+added.  If anybody does so, please let he send me his improvements. 
+
+\subsubsection*{Availability}
+This article, the chess fonts and the corresponding style file with the
+complete game of Fisher against Tal and other examples can be retrieved
+(files {\tt chess.tar.Z} and {\tt chess.README}) from the file server
+{\tt sol.cs.ruu.nl (131.211.80.5)} via anonymous ftp from the
+directory {\tt TEX}.
+
+\subsubsection*{Acknowledgements}
+I would like to thank Victor Eijkhout for his help and criticism he
+gave me to improve both the chess style and the readability of this
+article. My thanks go also to Hugo van der Wolf for polishing my
+English, and to the {\tt UseNet} users who have sent me bugreports and
+have reported inconveniences present in version 1.0.  Most of them are
+solved and will be made available in version 1.2.
+ 
+\begin{thebibliography}{9} 
+\bibitem{Anjo} 
+{\em Tournooimagazine van de Halve Finale Ned. Kam\-pioen\-schap Schaken},
+ed. by Anjo Anjowierden, Enschede. 1990.
+\bibitem{Appelt} 
+{\em Typesetting Chess}, by Wolfgang Appelt, \tubissue{9}{3}, December 1988. 
+\bibitem{Berkeley} 
+{\em Berkeley Font Catalogue}, Ultrix--32 Supplementary Documents,
+Digital Equipment Corporation, Merrimack, New Hamshire, 1984.
+\bibitem{Braams} 
+{\em Babel, a multilingual style-option system for use
+with \LaTeX's standard document styles}, by Johannes Braams,
+\tubissue{12}{2}, June 1991.
+\bibitem{Fisher} 
+{\em My 60 Memorable Games}, by Bobby Fischer,
+Faber and Faber, London.  1969.  ISBN 0-571-09312-4
+\bibitem{Fisher80} 
+{\em Fisher's Chess Games}, by Bobby Fischer,
+Oxford University Press, Oxford.  1980.  ISBN 0-19-217566-1
+\bibitem{informant} 
+{\em Chess Informant 51}, ed. by Aleksandar Ma\-ta\-novi\'c,
+\v{S}ahovski Informator, Belgrade.  1991.  ISBN 86-7297-024-1
+\bibitem{Rix} 
+{\em Dragon, The Bulletin of the Cambridge University Chess Club}, ed.
+by Steve Rix and John Wilson, December 1991. Cambridge.
+\end{thebibliography}
+
+\makesignature
+\input{TUGgame.ltx}
+\end{document}

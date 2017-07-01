@@ -1,0 +1,58 @@
+%% 
+%% This is file `latexhax.sty', generated 
+%% on <1991/7/5> with the docstrip utility (2.0i).
+%% 
+%% The original source files were:
+%% 
+%% latexhax.doc 
+%% 
+%% Copyright (C) 1989, 1990, 1991 
+%% by Johanes Braams. All rights reserved. 
+%% 
+%% IMPORTANT NOTICE: 
+%% 
+%% You are not allowed to change this file. You may however copy this file 
+%% to a file with a different name and then change the copy. 
+%% 
+%% You are NOT ALLOWED to distribute this file alone. You are NOT ALLOWED 
+%% to take money for the distribution or use of this file (or a changed 
+%% version) except for a nominal charge for copying etc. 
+%% 
+%% You are allowed to distribute this file under the condition that it is 
+%% distributed together with all files mentioned below. 
+%% 
+%% If you receive only some of these files from someone, complain! 
+%% 
+%% Error Reports in case of UNCHANGED versions to 
+%% 
+%% J. Braams 
+%% PTT Research, dr Neher Laboratorium 
+%% P.O. box 421 
+%% 2260 AK Leidschendam 
+%% The Netherlands 
+%% Internet: <JL_Braams@pttrnl.nl> 
+%% 
+\def\makeatletter{\catcode`\@=11\relax}
+\def\makeatother{\catcode`\@=12\relax}
+\ifcat/@
+  \makeatletter\let\resetat\makeatother
+\else
+  \let\resetat\relax
+\fi
+\long\def\@ifundefined#1#2#3{\expandafter\ifx\csname#1\endcsname\relax%
+    #2\else#3\fi}
+\newwrite\@unused
+\def\typeout#1{{\let\protect\string\immediate\write\@unused{#1}}}
+\let\protect\relax
+\newdimen\@savsk
+\newcount\@savsf
+\def\@bsphack{\@savsk\lastskip
+    \ifhmode\@savsf\spacefactor\fi}
+\def\@esphack{\relax\ifhmode\spacefactor\@savsf
+     {}\ifdim \@savsk >\z@ \ignorespaces
+  \fi \fi}
+\resetat
+
+\endinput
+%% 
+%% End of file `latexhax.sty'.

@@ -1,0 +1,15 @@
+beginthaichar("KAW KAI", "A2", "ky", 3/2thick# + curlywd# + skinnywd#, normht#, 0);
+	curly_def(1);
+	cup_def(2);
+	topcap_def(3);
+
+	lft x1lft = leftmost;
+	x1l = x2lft;
+	x3r = x2rt;
+	rt x3r = rightmost;
+	top y3top = normht;
+
+	filldraw curly_path(1) -- cup_path_i(2) -- z3l -- z3r
+		-- reverse cup_path_o(2) -- cycle;
+	penlabels(1,2,3);
+endthaichar;

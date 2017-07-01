@@ -1,0 +1,42 @@
+beginthaichar("DTAW DTAO!", "B5", "dt", 2thick# + jutout# + normwd#, normht#, 0 );
+	penpos1(thin, 180);
+	penpos2(thin, 90);
+	penpos3(thin, 0);
+	penpos4(thin, 270);
+	penpos5(thin, 135);
+	penpos6(thick, 0);
+	penpos7(thick, 0);
+	penpos8(thin, 0);
+	penpos9(thin, 270);
+	penpos10(thin, 270);
+	penpos11(thin, 270);
+	penpos12(thick, 180);
+	penpos13(thick, 180);
+
+	x1r = x3r + dia;
+	x2 = x4 = 1/2[x1, x3];
+	x2 = 1/2[leftmost, rightmost];
+	x6l = x7l = x8l + 1/2(thick - thin);
+	lft x8l = leftmost;
+	x10 = 1/2[x8, x12];
+	x9 = 1/2[x8, x10];
+	x11 = 1/2[x10, x12];
+	x12l = x13l = rightmost;
+	y1 = y3 = 1/2[y2, y4];
+	y4r = y2r + dia;
+	y3l = 2/3[0, y10r];
+	bot y6 = bot y13 = 0;
+	y7 = y2 - thick;
+	y8 = y12 = y9 - curveht;
+	top y9l = top y11l = normht + overshoot;
+	y10 = y9 - 0.5curveht;
+	z5r = 1/2[z1, z3] + dia/2 * dir 315;
+
+	filldraw z1r{down} .. z2r{left} .. z3r{up} .. z4r{right} .. z1r{down}
+		.. {dir 215}z5r --- z6l -- z6r --- z5l{dir 45} .. z1l{up}
+		.. z4l{left} .. z3l{down} .. z2l{right} .. z1l{up} -- cycle;
+	filldraw z6l{up} --- z7l .. z8l{up} .. z9l{right} .. z10l{right}
+		.. z11l{right} .. z12l --- z13l
+		-- z13r --- z12r .. z11r{left} .. z10r{left} .. z9r{left}
+		.. z8r{down} .. z7r --- {down}z6r -- cycle;
+endthaichar;

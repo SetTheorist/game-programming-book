@@ -1,0 +1,9 @@
+% 10pt should give 9 pixel
+proofing:=		0;
+fontmaking:=		1;
+tracingtitles:=		1;
+aspect_ratio:=		1;
+pixels_per_inch:=	9*72/10;
+blacker:=		.2;
+fillin:=		.1;
+o_correction:=		1;

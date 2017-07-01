@@ -2236,7 +2236,6 @@ change the value of that given node.  In fact, for different evaluation values, 
 may be different numbers ... blah blah....
 
 Standard example repeated {\it ad nauseum}:
-\iffalse
 \begin{center}
 \begin{tikzpicture}%
   %[level/.style={sibling distance=40mm/#1}]
@@ -2266,7 +2265,6 @@ where for node A we have
   6 & 2 & (D and E) or (F and G)
 \end{tabular}
 \end{center}
-\fi
 
 \subsection{Alpha-beta conspiracy search}
 
@@ -2438,70 +2436,76 @@ candidates.  Thus one of them would be the next node expanded in the search.  It
 expanded and the proof-numbers updated.
 
 ...
-\begin{verbatim}
-struct Node {
-  mut internal : bool;
-  mut children : [~Node];
-  mut pn : int;
-  mut dp : int;
+{\scriptsize\begin{verbatim}
+pub struct Node {
+    internal : boolean,
+    max_node : boolean,
+    children : Vec<Box<Node>>,
+    pn       : isize,
+    dp       : isize,
 }
-fn determine_most_proving_node(V : &Node) -> &Node {
-}
-\end{verbatim}
+\end{verbatim}}
 
-\begin{verbatim}
-func determine_most_proving_node(V) {
-  while (V is internal) {
-    if (V is max_node) {
-      V = leftmost child with equal proof number;
-    } else {
-      V = leftmost child with equal disproof number;
+{\scriptsize\begin{verbatim}
+pub fn determine_most_proving_node(v : &mut Box<Node>) -> &mut Box<Node> {
+    while v.internal {
+        if v.max_node {
+            // v = leftmost child with equal proof number;
+            v = v.find(|s|s.pn==v.pn).unwrap();
+        } else {
+            //v = leftmost child with equal disproof number;
+            v = v.find(|s|s.dp==v.dp).unwrap();
+        }
     }
-  }
-  return V;
+    return v;
 }
-\end{verbatim}
+\end{verbatim}}
 
-\begin{verbatim}
-func update(V) {
-  if (V is max_node) {
-    V.pn = minimum for S in children(V) of S.pn;
-    V.dp = sum for S in children(V) of S.dp;
-  } else {
-    V.pn = sum for S in children(V) of S.pn;
-    V.dp = minimum for S in children(V) of S.dp;
-  }
-  if (V has parent) {
-    update(parent(V));
-  }
+{\scriptsize\begin{verbatim}
+pub fn update(v: &mut Box<Node>) {
+    if v.max_node {
+        // pn = minimum of pn of children
+        v.pn = v.children.iter().map{|s|s.pn}.min();
+        // dp = sum of dp of children
+        v.dp = v.children.iter().map{|s|s.dp}.sum();
+    } else {
+        // pn = sum of pn of children
+        v.pn = v.children.iter().map{|s|s.pn}.sum();
+        // dp = minimum of dp of children
+        v.dp = v.children.iter().map{|s|s.dp}.min();
+    }
+    if (V has parent) {
+        update(parent(V));
+    }
 }
-\end{verbatim}
+\end{verbatim}}
 Note that we can actually stop this update procedure when
 the values stop changing --- and can begin the search
 for the most-proving node from this stopping point also!
 
-\begin{verbatim}
-func expand(V) {
-  children(V) = generate_children(V);
-  for all S in children(V) do {
-    create_node(S);
-    make_edge(V,S);
-    value = evaluation(S);
-    if (value=="Win") {
-      s.pn = 0; s.dp = infinity;
-    } else if (value=="Not win") {
-      s.pn = infinity; s.dp = 0;
-    } else {
-      s.pn = s.dp = 1;
+{\scriptsize\begin{verbatim}
+pub fn expand(v: &mut Box<Node>) {
+    children(V) = generate_children(V);
+    //for all S in children(V)
+    for s : v.children.iter() {
+        create_node(S);
+        make_edge(V,S);
+        value = evaluation(S);
+        if (value=="Win") {
+            s.pn = 0; s.dp = infinity;
+        } else if (value=="Not win") {
+            s.pn = infinity; s.dp = 0;
+        } else {
+            s.pn = s.dp = 1;
+        }
     }
-  }
 }
-\end{verbatim}
+\end{verbatim}}
 Could initialize leaves with other than 1/1 based on some heuristic
 (or even with the count of moves --- it may be faster to just count
 moves than to generate them...)
 
-\begin{verbatim}
+{\scriptsize\begin{verbatim}
 func pn_search(position) {
   root = create_root(position);
   while (root.pn!=0 && root.dp!=0) {
@@ -2512,7 +2516,7 @@ func pn_search(position) {
   if (root.pn==0) return "Win";
   else            return "Not win";
 }
-\end{verbatim}
+\end{verbatim}}
 
 
 ...
@@ -3512,16 +3516,40 @@ ultima, wa shogi, whale shogi, yari shogi
 %\newchessgame
 %\chessboard
 
+\newcommand{\boardthreebythree}[9]{
+\setlength{\unitlength}{1mm}
+\begin{picture}(15,15)(0,0)
+\put(0,5){\line(1,0){15}}
+\put(0,10){\line(1,0){15}}
+\put(5,0){\line(0,1){15}}
+\put(10,0){\line(0,1){15}}
+\thicklines
+\put(0,0){\line(1,0){15}}
+\put(0,0){\line(0,1){15}}
+\put(15,0){\line(0,1){15}}
+\put(0,15){\line(1,0){15}}
+\put(0,10){\makebox(5,5){#1}}
+\put(5,10){\makebox(5,5){#2}}
+\put(10,10){\makebox(5,5){#3}}
+\put(0,5){\makebox(5,5){#4}}
+\put(5,5){\makebox(5,5){#5}}
+\put(10,5){\makebox(5,5){#6}}
+\put(0,0){\makebox(5,5){#7}}
+\put(5,0){\makebox(5,5){#8}}
+\put(10,0){\makebox(5,5){#9}}
+\end{picture}
+}
+    \boardthreebythree{1}{2}{3}{4}{5}{6}{7}{8}{9}
 The pieces' basic movement is given as follows
 \begin{itemize}
 \item King - moves one step in any direction \\
-    $\begin{array}{||c|c|c||}\hline\hline \x & \x & \x \\\hline \x & \text{K} & \x \\\hline \x & \x & \x\\\hline\hline\end{array}$
+    \boardthreebythree{$\x$}{$\x$}{$\x$}{$\x$}{K}{$\x$}{$\x$}{$\x$}{$\x$}
 \item Queen - slides any number of steps in any direction \\ 
-    $\begin{array}{||c|c|c||}\hline\hline \nwarrow & \uparrow & \nearrow \\\hline \leftarrow & \text{Q} & \rightarrow \\\hline \swarrow & \downarrow & \searrow\\\hline\hline\end{array}$
+    \boardthreebythree{$\nwarrow$}{$\uparrow$}{$\nearrow$}{$\leftarrow$}{Q}{$\rightarrow$}{$\swarrow$}{$\downarrow$}{$\searrow$}
 \item Rook - slides any number of steps in an orthogonal direction \\ 
-    $\begin{array}{||c|c|c||}\hline\hline  & \uparrow &  \\\hline \leftarrow & \text{R} & \rightarrow \\\hline  & \downarrow & \\\hline\hline\end{array}$
+    \boardthreebythree{}{$\uparrow$}{}{$\leftarrow$}{R}{$\rightarrow$}{}{$\downarrow$}{}
 \item Bishop - slides any number of steps in a diagonal direction \\ 
-    $\begin{array}{||c|c|c||}\hline\hline \nwarrow & & \nearrow \\\hline & \text{B} &  \\\hline \swarrow & & \searrow\\\hline\hline\end{array}$
+    \boardthreebythree{$\nwarrow$}{}{$\nearrow$}{}{B}{}{$\swarrow$}{}{$\searrow$}
 \item Knight - jumps one orthogonal and one diagonal step \\ 
     $\begin{array}{||c|c|c|c|c||}\hline\hline
    & \x &          & \x &    \\\hline
@@ -3531,7 +3559,7 @@ The pieces' basic movement is given as follows
    & \x &          & \x &    \\\hline\hline
 \end{array}$
 \item Pawn - moves one step forward (without the right of capturing) or captures diagonally forward \\
-    $\begin{array}{||c|c|c||}\hline\hline c & m & c \\\hline    & \text{P} &    \\\hline    &    &   \\\hline\hline\end{array}$
+    \boardthreebythree{$c$}{$m$}{$c$}{}{P}{}{}{}{}
 \end{itemize}
 
 \section{Shogi}

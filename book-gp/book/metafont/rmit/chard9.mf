@@ -1,0 +1,20 @@
+beginthaichar("OO", "D9", "oo", 0, 0, lvgap# + lvht#);
+	q_def(1, thick, thick);
+	base_def(2);
+	penpos3(thick, 0);
+
+	% without this adjustment, sometimes the base def is too close
+	% to the q_def
+	oo_adj := lvht - (cupht + 3thin + dia);
+	oo_adj := lvht - (3thin + dia);
+	% message decimal oo_adj;
+	if oo_adj > 0: oo_adj := 0 fi;
+	x2lft = x1l = x2rt - dia - 2thick;
+	x2rt = x3r = -rightgap;
+	y1top + oo_adj = y3 = -lvgap;
+	y2bot = - lvgap - lvht;
+
+	filldraw q_path(1) -- base_path_i(2) -- z3l -- z3r
+		-- reverse base_path_o(2) -- cycle;
+	penlabels(1,2,3);
+endthaichar;

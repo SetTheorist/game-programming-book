@@ -1,0 +1,44 @@
+README for bartel-chess-fonts
+=============================
+
+The fonts contained in this package are originally distributed
+on CTAN in the
+	chess-problem-diagrams
+(in the directory CTAN/macros/latex/contrib/chess-problem-diagrams)
+as
+	CTAN/macros/latex/contrib/chess-problem-diagrams/fonts.zip
+
+The original README states:
+
+   The font sources by Elmar Bartel are published under conditions of the 
+   GNU General Public License.
+
+This package was create to ease installation, in this process tfm files
+for all fonts have been created (but fselch30 and fselch34 which are
+broken).
+
+To keep the namespace of metafont files sane, the following files have
+been renamed to less generic names:
+	bishop.mf	->	elch-bishop.mf
+	blackfield.mf	->	elch-blackfield.mf
+	chbase.mf	->	elch-chbase.mf
+	equi.mf		->	elch-equi.mf
+	geo.mf		->	elch-geo.mf
+	king.mf		->	elch-king.mf
+	knight.mf	->	elch-knight.mf
+	pawn.mf		->	elch-pawn.mf
+	queen.mf	->	elch-queen.mf
+	rook.mf		->	elch-rook.mf
+plus the respective input statements in fselch.mf adapted.
+
+Furthermore, the files in the original fonts.zip have been split
+into those that are actually needed by the fselch* pkelch* driver 
+sources in the root directory, and additional test files
+(in the subdirectory doc).
+
+Any complains should be send to 
+	tex-live@tug.org
+
+Norbert Preining
+for the TeX Live Team
+

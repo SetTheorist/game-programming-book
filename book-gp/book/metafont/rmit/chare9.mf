@@ -1,0 +1,24 @@
+beginthaichar("MY EHK", "E9", "me", 0, normht# + uvgap# + uvht#, 0);
+	penpos1(thin, 180);
+	penpos2(thin, 90);
+	penpos3(thin, 0);
+	penpos4(thin, 270);
+	penpos5(thin, 90);
+	penpos6(thin, 0);
+
+	x6r = -rightgap;
+	x1l = x6l - dia;
+	x1r - dia = x3r;
+	x3l = x5;
+	x2 = x4  = 1/2[x1, x3];
+	y4l = y6 = normht + uvgap + uvht;
+	y2r + dia = y4r;
+	y1 = y3 = 1/2[y2, y4];
+	y5l = normht + uvgap;
+
+	filldraw z1l{down} .. z2l{left} .. z3l{up} .. z4l{right} .. z1l{down}
+		.. {left}z5l -- z5r{right} .. z1r{up} .. z4r{left}
+		.. z3r{down} .. z2r{right} .. z1r{up} -- cycle;
+	filldraw z5r{right} .. {up}z6l -- z6r{down} .. z5l{left} -- cycle;
+	penlabels(1,2,3,4,5,6);
+endthaichar;

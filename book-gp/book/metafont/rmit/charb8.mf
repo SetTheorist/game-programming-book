@@ -1,0 +1,17 @@
+beginthaichar("TAW TOH!NG", "B8", "to", jutout# + 2thick# + normwd#, normht#, 0);
+	penpos1(thick, 0);
+	cup_def(2);
+	rhat_def(3);
+
+	z1l = z3taw;
+	z2lft = z1l;
+	z2rt = z3r;
+	y3top = normht;
+	x3lft = leftmost;
+	x3rt = rightmost;
+	x3r = rightmost;
+
+	filldraw z1l -- cup_path_o(2) -- reverse rhat_path(3)
+		-- reverse cup_path_i(2) -- z1r -- cycle;
+	penlabels(1,2,3);
+endthaichar;

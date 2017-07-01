@@ -1,0 +1,13 @@
+beginthaichar("Tall AH", "E5", "ae", thick# + normwd#, normht#, lvgap# + lvht#);
+	penpos1(thick, 0);
+	hat_def(2, thick);
+
+	lft x2lft = leftmost;
+	x1r = x2rt;
+	rt x2rt = rightmost;
+	bot y1 = -lvgap - lvht;
+	top y2top = normht + overshoot;
+
+	filldraw hat_path(2) -- z1r -- z1l -- cycle;
+	penlabels(1,2);
+endthaichar;

@@ -1,0 +1,17 @@
+beginthaichar("AA", "E1", "aa", 2thick# + 2dia# + 3thin#, normht#, 0);
+	b_def(1, thick, 0);
+	penpos2(thick, 0);
+	b_def(3, thick, 0);
+	penpos4(thick, 0);
+
+	x1lft = x2l = leftmost;
+	y1bot = 0;
+	y2 = normht;
+	x3lft = x4l = x1rt + thin;
+	y3bot = 0;
+	y4 = normht;
+
+	filldraw b_path(1) -- z2r -- z2l -- cycle;
+	filldraw b_path(3) -- z4r -- z4l -- cycle;
+	penlabels(1,2);
+endthaichar;

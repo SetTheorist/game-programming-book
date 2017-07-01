@@ -1,0 +1,9 @@
+font_size 10pt#;
+vpt# := 10pt#/10;
+mode_setup;
+input thaibase;
+input i;
+newstyle;
+input all;
+input lig;
+bye;

@@ -1,0 +1,17 @@
+beginthaichar("BPAW BPLAH", "BB", "bp/pb", dia# + 2thick# + normwd#, normht# + uvgap#, 0);
+	q_def(1, thick, 0);
+	base_def(2);
+	topcap_def(3);
+
+	lft x1lft = leftmost;
+	x1l = x2lft;
+	x2rt = x3r;
+	rt x3r = rightmost;
+	top y1top = normht;
+	top y3 = normht + uvgap;
+	y2bot = 0;
+
+	filldraw q_path(1) -- base_path_i(2) -- z3l -- z3r
+		-- reverse base_path_o(2) -- cycle;
+	penlabels(1,2,3);
+endthaichar;

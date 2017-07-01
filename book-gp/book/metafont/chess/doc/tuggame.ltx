@@ -1,0 +1,108 @@
+%
+% TUGgame.ltx
+% -----------
+% LaTeX source of example in TUGboat article (part of the game Fisher
+% lost against Tal), input'ted by TUGboat.ltx.
+% Author : Piet Tutelaers (internet: rcpt@urc.tue.nl)
+% Version: 1.2 ( 8 Jun 1991)
+%    Reflects changes in chess.sty version 1.2
+% Version: 1.1 (30 Nov 1990)
+%    Improvements over version 1.0:
+%     - two typos corrected, thanks Hugo
+
+\clearpage
+\label{chessgame}
+\parindent=0pt
+\subsubsection*{Example of the LaTeX-input and output of an annotated 
+chess game using {\tt chess.sty}}
+\begin{nochess} % prevent the `|' to become active!
+\begin{verbatim}
+\begin{position}
+\White(Kh1,Qe6,Re1,a2,b2,c2,g2,h2)
+\Black(Kf8,Qb8,Rd7,Rg8,Be7,a6,b4,h7)
+\global\Whitetrue\global\movecount=25
+\end{position}
+\begin{figure}
+\centerline{Diagram~3: Fisher--Tal 
+ after 25.~\ldots, {\Fig K}f8!}
+$$\showboard$$
+\end{figure}
+
+(See diagram~3.)
+
+\ply  e6d7
+Not |26. Rf1+, Kg7; 27. Rf7+, Kh8;
+and if 28. Q*d7, Rd8; 29. Qg4, Qe5|
+wins. 
+
+\ply       b8d6
+\move d7b7 g8g6
+Within a handful of moves the game
+has changed its complexion. Now it
+is White who must fight for a draw!
+
+\ply  c2c3!
+Black's extra piece means less with
+each pawn that's exchanged.
+
+\ply       a6a5
+On |28.: b*c3; 29. Qc8+, Bd8;
+30. Q*c3|=. 
+
+\ply  b7c8+
+On the wrong track. Right is
+|29. c*b4!, Q*b4 (if 29.: a*b4;
+30. a3!, b*a3; 31. b*a3, Q*a3 draws);
+30. Qf3+, Kg7; 31. Qe2| draws, since
+Black can't possibly build up a
+winning K-side attack and his own
+king is to exposed.
+
+\ply       f8g7
+\move c8c4 e7d8
+\move c3b4 a5b4
+On |31.: Q*b4; 32. Qe2| White should
+draw with best play.
+$$\showboard$$
+\end{verbatim}
+\end{nochess}
+
+\begin{position}
+\White(Kh1,Qe6,Re1,a2,b2,c2,g2,h2)
+\Black(Kf8,Qb8,Rd7,Rg8,Be7,a6,b4,h7)
+\global\Whitetrue\global\movecount=25
+\end{position}
+
+\begin{figure}
+\centerline{Diagram~3: Fisher--Tal after 25.~\ldots, {\Fig K}f8!}
+$$\showboard$$
+\end{figure}
+
+(See diagram~3.)
+
+\ply  e6d7
+Not |26. Rf1+, Kg7; 27. Rf7+, Kh8; and if 28. Q*d7, Rd8; 29. Qg4, Qe5|
+wins. 
+
+\ply       b8d6
+\move d7b7 g8g6
+Within a handful of moves the game has changed its complexion. Now
+it is White who must fight for a draw!
+
+\ply  c2c3!
+Black's extra piece means less with each pawn that's exchanged.
+
+\ply       a6a5
+On |28.: b*c3; 29. Qc8+, Bd8; 30. Q*c3|=. 
+
+\ply  b7c8+
+On the wrong track. Right is |29. c*b4!, Q*b4 (if 29.: a*b4; 30. a3!,
+b*a3; 31. b*a3, Q*a3 draws); 30. Qf3+, Kg7; 31. Qe2| draws, since Black
+can't possibly build up a winning K-side attack and his own king is to
+exposed.
+
+\ply       f8g7
+\move c8c4 e7d8
+\move c3b4 a5b4
+On |31.: Q*b4; 32. Qe2| White should draw with best play.
+$$\showboard$$

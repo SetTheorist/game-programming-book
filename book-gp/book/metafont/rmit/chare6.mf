@@ -1,0 +1,34 @@
+beginthaichar("YAMOK", "E6", "ym", thin# + normwd# + thick#, normht#, lvgap# + lvht#);
+	penpos1(thin, 0);
+	penpos2(thin, 270);
+	penpos3(thin, 180);
+	penpos4(thin, 90);
+	penpos5(thin, 270);
+	penpos6(thin, 270);
+	penpos7(thin, 270);
+	penpos8(thick, 0);
+	penpos9(thick, 0);
+
+	x1l = leftmost;
+	x2 = x4 = 1/2[x1r, x3r];
+	x3r = x1r + dia;
+	x5 = 1/2[x1r, x6];
+	x6 = 1/2[x1r, x8l];
+	x7 = 1/2[x6, x8l];
+	x8r = x9r = rightmost;
+	y1 = y3 = 1/2[y2, y4];
+	y2r = y4r+dia;
+	y2r = y6r - thin;
+	y5l = y7l = normht;
+	y6l = y5r - thin;
+	y8 = y7r - curveht;
+	y9 = -lvgap - lvht;
+
+	filldraw z1l{up} .. z2l{right} .. z3l{down} .. z4l{left}
+		.. z1l{up} .. z5l{right} .. {dir -45}z6l{dir 45}
+		.. z7l{right} .. z8r{down} -- z9r -- z9l -- z8l{up}
+		.. z7r{left} .. {dir 225}z6r{dir 135} .. z5r{left}
+		.. z1r{down} .. z4r{right} .. z3r{up} .. z2r{left}
+		.. {down}z1r --  cycle;
+	penlabels(1,2,3,4,5,6,7,8,9);
+endthaichar;

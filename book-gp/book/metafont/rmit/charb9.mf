@@ -1,0 +1,23 @@
+beginthaichar("NAW NOO", "B9", "no", 2dia# + 2thick# + normwd#, normht#, 0);
+	q_def(1, thick, 0);
+	penpos3(thick, 0);
+	penpos4(thin, 270);
+	b_def(5, thick, thick - thin);
+	topcap_def(6);
+
+	lft x1lft = leftmost;
+	x1rt = x3r;
+	rt x5rt = rightmost;
+	x4 = x5l;
+	x6 = x5;
+	top y1top = normht;
+	bot y3 = 0;
+	bot y5bot = 0;
+	top y6top = normht;
+	y4l = y5top;
+
+	filldraw q_path(1) -- z3r -- z3l -- cycle;
+	filldraw z3l .. {right}z4l -- z4r{left} .. z3r -- cycle;
+	filldraw b_path(5) -- z6r -- z6l -- cycle;
+	penlabels(1,2,3,4,5,6);
+endthaichar;

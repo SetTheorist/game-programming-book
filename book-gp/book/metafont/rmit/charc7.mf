@@ -1,0 +1,13 @@
+beginthaichar("WAW WAAN", "C7", "ww", thick# + normwd#, normht#, 0);
+	d_def(1, thick, 0);
+	hat_def(2, thick);
+
+	y2top = normht + overshoot;
+	y1bot = 0;
+	x2lft = leftmost;
+	x2rt = rightmost;
+	x1 = x2;
+
+	filldraw hat_path(2) --- reverse d_path(1) --- cycle;
+	penlabels(1,2);
+endthaichar;

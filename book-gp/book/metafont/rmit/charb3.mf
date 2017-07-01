@@ -1,0 +1,26 @@
+beginthaichar("NAW NEHN", "B3", "ne", jutout# + 3thick# + 2normwd#, normht#, 0);
+	b_def(1, thick, thick - thin);
+	gor_def(2);
+	penpos3(thick, 0);
+	penpos4(thin, 270);
+	b_def(5, thick, thick - thin);
+	topcap_def(6);
+
+	lft x1lft = lft x2lft = leftmost + jutout;
+	x2rt = x3r;
+	rt x5rt = rightmost;
+	x4 = x5l;
+	x6 = x5;
+	x3l = 1/2[x1,x6];
+	bot y1bot = 0;
+	bot y3 = 0;
+	bot y5bot = 0;
+	top y6top = normht;
+	y4l = y5top;
+
+	filldraw b_path(1) -- gor_path_i(2) -- z3l -- z3r
+		-- reverse gor_path_o(2) -- cycle;
+	filldraw z3l .. {right}z4l -- z4r{left} .. z3r -- cycle;
+	filldraw b_path(5) -- z6r -- z6l -- cycle;
+	penlabels(1,2,3,4,5,6);
+endthaichar;

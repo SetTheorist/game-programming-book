@@ -1,0 +1,99 @@
+%
+% dutch-tt.ltx
+% ----------------
+% A LaTeX test for the chess.sty style in combination with dutch. 
+% Author : Piet Tutelaers (internet: rcpt@urc.tue.nl)
+% Version: 1.2 (11 Jun 1991)
+%
+\documentstyle[twocolumn,dutch,chess]{article}
+\tracinglostchars=1
+\begin{document}
+
+\subsection*{Torture test for \verb|chess.sty|}
+
+\newgame
+
+Let's play the first moves of Mestel's opening:
+\move e2e4 c7c6
+\move e4e5 d7d5  
+\move g1f3 d8d6
+\ply  e5d6
+
+This capture is not longer treated as an `enpassant' Queen capture (thanks
+Jonathan).
+
+$$\showboard$$
+
+Check if language support for Dutch is working:
+\board{tpldklpt}
+      {iiiiiiii}
+      { * * * *}
+      {* * * * }
+      { * * * *}
+      {* * * * }
+      {IIIIIIII}
+      {TPLDKLPT}
+
+$$\showboard$$
+
+\begin{position}
+\White(Ke1,Th1,h7,b2)
+\Black(Ke8,Ta8,a5,c2)
+\global\movecount=50
+\global\Whitefalse
+\end{position}
+
+$$\showboard$$
+
+The castling test:
+\ply         e8c8!?
+\ply  e1g1
+
+Both players have castled.
+\ply         c8e8?
+\ply  g1e1?
+
+They move back their kings... Chess.sty does not check the
+validity of moves.
+\ply         e8c8
+\ply  e1g1??
+
+But now these moves are not typeset as castling moves because the kings have
+moved.
+
+And now the `en passant' test:
+\ply         a5a4
+\move b2b4+  a4b3ep
+
+A short analysis test: |54. b3+ a*b3| and White looses his pawn.
+Better seems |54.Pf7 but not 54.Pg6 because then 54:Tg8!|.
+And the promotion test (comment thanks to Jaap Sprey!):
+\move  h7h8	c2c1L!?
+
+$$\showboard$$
+
+Activation of analysis mode does not work inside arguments of macros but
+you can group them around the macro!
+
+|\centerline{55.Pf3 Pc6}|
+
+Sometimes you want to use the {\tt \char124} character for other
+purposes than to trigger the analysis mode.  Use then the {\tt nochess}
+environment.  Within this environment you can reactivate the analysis
+mode with the {\tt chess} environment. 
+
+\begin{nochess}
+\begin{tabular}{|c|}
+no analysis mode!
+\end{tabular}
+
+\begin{chess}
+\centerline{55.Pf3 Pc6}
+\end{chess}
+
+|55.Pf3 Pc6|
+\end{nochess}
+
+|KRQDRTBLFPCS| that's it!
+\end{document}
+

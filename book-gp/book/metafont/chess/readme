@@ -1,0 +1,99 @@
+
+
+		      Chess fonts and a chess style
+                      -----------------------------
+                       (Version 1.2 / Febr. 1992)
+
+This is version 1.2 of my chessmacros for typesetting chess with LaTeX
+and/or TeX.  This new version contains an improved chess style file
+(chess.sty) complete with documentation and example files.  The
+documentation is the article as it will appear in TUGboat.  You will
+also find examples of complete chess games and a list of all available
+Informator symbols in the directory `doc':
+  - TUGboat.ltx		TUGboat article (tugboat macros not included
+  - TUGgame.ltx		in this package)
+  - tal.ltx		Tal-Fisher in LaTeX
+  - tal.tex		Tal-Fisher in TeX
+  - Kasparov.ltx	Kasparov-Karpov in Informator style
+  - Symbols.ltx		Informator symbols in LaTeX
+  - Symbols.tex		Informator symbols in TeX
+  - SchaakMaatje.ltx    example of chess magazine (Dutch!)
+
+File CHANGES12 contains a summary of the differences between this
+version and version 1.1. The main differences are:
+  a) improved plain TeX interface
+  b) language support using the babel package from Johannes Braams
+  c) nochess-environment replaces chess-environment
+  d) font chessfig10 renamed into chessf10 (MSDOS)
+  e) handling of promotion improved
+  f) `en passant capture' bug solved
+  g) added Informator symbols
+Note that b), c) and d) makes this version incompatible with the older
+versions. Read the file INSTALLATION how to upgrade from 1.1 to 1.2.
+
+For UNIX people I have added a Makefile:
+  - make (generates the fonts and the documentation)
+      --> change `localfont' into whatever your mode is (ex.: imagen)
+          if localfont is not properly set at your system. The command:
+             mf "\mode=localfont; input chess20"
+          should generate a font suitable for your local printer.
+      --> if you don't use a PostScript printer or don't use dvips
+          you have to adapt the Makefile to your local situation
+
+  - make install (installs the fonts and the style: check the path's!).
+
+Have a lot of chess writing and playing fun!
+
+Piet Tutelaers			
+rcpt@urc.tue.nl
+
+Here is an overview of the files in chess12.tar.Z (and chess12.zoo):
+--------------------------------------------------------------------
+chess12/CopyRight		my name and copyright notice
+chess12/README			this file
+chess12/CHANGES12		Changes from version 1.1 to 1.2
+chess12/INSTALLATION		installation instructions
+chess12/Makefile		Makefile for UNIX
+chess12/doc/board.epsf		Original font (in EPSF format)
+chess12/doc/boards.ltx		LaTeX source demonstrating the 3 chess fonts
+chess12/doc/dutch-tt.ltx	dutch torture test for chess.sty in LaTeX
+chess12/doc/dutch-tt.tex	dutch torture test for chess.sty in plain TeX
+chess12/doc/Kasparov.ltx	Kasparov-Karpov in Informator style
+chess12/doc/SchaakMaatje.ltx	our chess club magazine (Dutch!)
+chess12/doc/Symbols.ltx		Informator symbols (LaTeX)
+chess12/doc/Symbols.tex		Informator symbols (TeX)
+chess12/doc/tal.ltx		Fisher vs. Tal (LaTeX source)
+chess12/doc/tal.tex		Fisher vs. Tal (TeX source)
+chess12/doc/TUGboat.ltx		TUGboat article (LaTeX main-source)
+chess12/doc/TUGgame.ltx		TUGboat article (LaTeX inputted-source)
+chess12/fonts/chess10.tfm	TeX font metric files
+chess12/fonts/chess20.tfm	    ...
+chess12/fonts/chess30.tfm	    ...
+chess12/fonts/chessf10.tfm	    ...
+chess12/inputs/babel.sty	Part of the Babel-3.0b package 
+chess12/inputs/babel32.switch	    ...
+chess12/inputs/babel22.switch	    ...
+chess12/inputs/babel.switch	    ...
+chess12/inputs/dutch.sty	    ...
+chess12/inputs/english.sty	    ...
+chess12/inputs/french.sty	    ...
+chess12/inputs/german.sty	    ...
+chess12/inputs/2side.tex	used by tal.tex to produce twocolumn output
+chess12/inputs/a4.sty		style for A4 paper
+chess12/inputs/a4wide.sty	style for a A4 paper with narrow margins
+chess12/inputs/chess.sty	Chess style
+chess12/inputs/epsf.sty		Style file for `Encapsulated PostScript'
+chess12/inputs/fancyheadings.sty  used in SchaakMaatje.ltx
+chess12/mf/README		Explains chessdiag.Xmf
+chess12/mf/chess10.mf		METAFONT sources
+chess12/mf/chess20.mf		    ...
+chess12/mf/chess30.mf		    ...
+chess12/mf/chessbase.mf		    ...
+chess12/mf/chessdiag.mf		    ...
+chess12/mf/chessdiag.Xmf	    ... (X-window version)
+chess12/mf/chessf10.mf		    ...
+chess12/mf/chesspieces.mf	    ...
+chess12/pkfonts/chess10.300pk	ready to go Canon engine fonts
+chess12/pkfonts/chess20.300pk	    ...
+chess12/pkfonts/chess30.300pk	    ...
+chess12/pkfonts/chessf10.300pk	    ...

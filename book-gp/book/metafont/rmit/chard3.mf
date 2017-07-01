@@ -1,0 +1,25 @@
+beginthaichar("AH!M", "D3", "um", thick# + normwd#, normht# + uvgap# + uvht#, 0);
+	penpos1(thick, 0);
+	hat_def(2, thick);
+	penpos3(thin, 180);
+	penpos4(thin, 270);
+	penpos5(thin, 0);
+	penpos6(thin, 90);
+
+	lft x2lft = leftmost;
+	x1r = x2rt;
+	rt x2rt = rightmost;
+	bot y1 = 0;
+	top y2top = normht + overshoot;
+	x5r = - rightgap;
+	x3l + dia = x5l;
+	x4 = x6 = 1/2[x3, x5];
+	y4r = normht + uvgap;
+	y6l = y4l + dia;
+	y3 = y5 = 1/2[y4, y6];
+
+	filldraw hat_path(2) -- z1r -- z1l -- cycle;
+	filldraw z3r{down} .. z4r{right} .. z5r{up} .. z6r{left} .. cycle;
+	unfill z3l{down} .. z4l{right} .. z5l{up} .. z6l{left} .. cycle;
+	penlabels(1,2,3,4,5,6);
+endthaichar;

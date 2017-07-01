@@ -1,0 +1,55 @@
+% This is turnboard.mf
+%
+% This file contains only the definition of one charachter
+% which can be used to show, that you want to turn the board
+%
+mode_setup;
+%
+% Define the size of the character
+%
+qs#:=12pt#;
+%
+%
+define_pixels(qs);
+beginchar(0,1qs#,1qs#,0);
+pickup pencircle scaled 1/32qs;
+%
+% Define some points of the character
+%
+% This are the points for the 3/4 circle
+%
+z1=(1/8qs,1/8qs);
+z2=(1/8qs,7/8qs);
+z3=(7/8qs,7/8qs);
+z4=(7/8qs,1/8qs);
+%
+%  Tip of the circled arrow
+%
+z5=(13/16qs,1/16qs);
+z6=(7/8qs,2/8qs);
+z7=(1qs,1/8qs);
+%
+% A small chessboard inside the arrow
+%
+z8=(1/4qs,1/4qs);
+z9=(1/4qs,1/2qs);
+z10=(1/4qs,3/4qs);
+z11=(1/2qs,1/4qs);
+z12=(1/2qs,1/2qs);
+z13=(1/2qs,3/4qs);
+z14=(3/4qs,1/4qs);
+z15=(3/4qs,1/2qs);
+z16=(3/4qs,3/4qs);
+%
+% Show the 3/4 circled arrow around the board
+%
+draw z1{-1,1}..{1,1}z2{1,1}..{1,-1}z3{1,-1}..{-1,-1}z4;
+fill z5--z6--z7--cycle;
+draw z8--z10--z16--z14--cycle;
+fill z8--z9--z12--z11--cycle;
+fill z12--z13--z16--z15--cycle;
+endchar;
+%
+% Thats all
+%
+end;

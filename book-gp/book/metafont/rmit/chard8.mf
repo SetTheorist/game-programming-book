@@ -1,0 +1,11 @@
+beginthaichar("OO!", "D8", "shoo/soo", 0, 0, lvgap# + lvht#);
+	q_def(1, thick, thick);
+	penpos2(thick, 0);
+
+	x2r = x1rt = -rightgap;
+	y1top = -lvgap;
+	y2 = - lvgap - lvht;
+
+	filldraw q_path(1) -- z2r -- z2l -- cycle;
+	penlabels(1,2);
+endthaichar;

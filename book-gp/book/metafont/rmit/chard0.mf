@@ -1,0 +1,40 @@
+beginthaichar("SARA AH!", "D0", "uh", normwd# + thick#, normht#, 0);
+	penpos1(thin, 180);
+	penpos2(thin, 270);
+	penpos3(thin, 0);
+	penpos4(thin, 90);
+	penpos5(thin, 270);
+	penpos6(thick, 0);
+	penpos11(thin, 180);
+	penpos12(thin, 270);
+	penpos13(thin, 0);
+	penpos14(thin, 90);
+	penpos15(thin, 270);
+	penpos16(thick, 0);
+
+	x1r = leftmost;
+	x2 = x4 = 1/2[x1, x3];
+	x3l = x1r + dia;
+	x5 = 1/2[x1, x6];
+	x6r = rightmost;
+	y1 = y3 = 1/2[y4, y2];
+	y2l = y4l - dia;
+	y4r = y6 = normht;
+	y5r = 6/10normht;
+
+	x11r = leftmost;
+	x12 = x14 = 1/2[x11, x13];
+	x13l = x11r + dia;
+	x15 = 1/2[x11, x16];
+	x16r = rightmost;
+	y11 = y13 = 1/2[y14, y12];
+	y12l = y14l - dia;
+	bot y15r = 0;
+	y14r = y16 = 4/10normht;
+
+	penstroke z1e{down} .. z2e{right} .. z3e{up} .. z4e{left} .. z1e{down}
+		.. z5e{right} .. {up}z6e;
+	penstroke z11e{down} .. z12e{right} .. z13e{up} .. z14e{left}
+		.. z11e{down} .. z15e{right} .. {up}z16e;
+	penlabels(1,2,3,4,5,6,11,12,13,14,15,16);
+endthaichar;

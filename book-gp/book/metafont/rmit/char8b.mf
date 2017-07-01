@@ -1,0 +1,17 @@
+beginthaichar("small MY JUTAWAH", "8B", "smj", 0, normht# + uvgap# + uvht# + tonegap# + toneht#, 0);
+	penpos1(thin, 0);
+	penpos2(thin, 0);
+	penpos3(thin, 270);
+	penpos4(thin, 270);
+
+	x1 = x2 = 1/2[x3, x4];
+	x4 = -rightgap;
+	x3 = x4 - toneht;
+	y1 = normht + uvgap + uvht + tonegap + toneht;
+	y2 = normht + uvgap + uvht + tonegap;
+	y3 = y4 = 1/2[y1, y2];
+
+	filldraw z1l -- z2l -- z2r -- z1r -- cycle;
+	filldraw z3l -- z4l -- z4r -- z3r -- cycle;
+	penlabels(1,2,3,4);
+endthaichar;

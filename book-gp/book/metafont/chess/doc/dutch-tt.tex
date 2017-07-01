@@ -1,0 +1,88 @@
+%
+% dutch-tt.tex
+% ----------------
+% A plain TeX torture test for the chess.sty style in combination with 
+% dutch.sty. 
+% Author : Piet Tutelaers (internet: rcpt@urc.tue.nl)
+% Version: 1.2 (June 1991)
+%
+\input dutch.sty
+\input chess.sty
+
+\tracinglostchars=1
+
+{\bf Torture test for {\tt chess.sty}}
+
+Check if language support for Dutch is working:
+\board{tpldklpt}
+      {iiiiiiii}
+      { * * * *}
+      {* * * * }
+      { * * * *}
+      {* * * * }
+      {IIIIIIII}
+      {TPLDKLPT}
+
+$$\showboard$$
+
+Let's define a position:
+\position
+\White(Ke1,Th1,h7,b2)
+\Black(Ke8,Ta8,a5,c2)
+\global\movecount=50
+\global\Whitefalse
+\endposition
+
+$$\showboard$$
+
+The castling test:
+\ply         e8c8!?
+\ply  e1g1
+
+Both players have castled.
+\ply         c8e8?
+\ply  g1e1?
+
+They move back their kings... Chess.sty does not check the
+validity of moves.
+\ply         e8c8
+\ply  e1g1??
+
+But now these moves are not typeset as castling moves because the kings have
+moved.
+
+And now the `en passant' test:
+\ply         a5a4
+\move b2b4+  a4b3ep
+
+A short analysis test: |54. b3+ a*b3| and White looses his pawn.
+Better seems |54.Pf7 but not 54.Pg6 because then 54:Tg8!|.
+And the promotion test (comment thanks to Jaap Sprey!):
+
+\move  h7h8	c2c1L!?
+
+$$\showboard$$
+
+Activation of analysis mode does not work inside arguments of macros but
+you can group them around the macro!
+
+|\centerline{55.Pf3 Pc6}|
+
+Sometimes you want to use the {\tt \char124} character for other
+purposes than to trigger the analysis mode.  Use then the {\tt nochess}
+environment.  Within this environment you can reactivate the analysis
+mode with the {\tt chess} environment. 
+
+\nochess
+|55.Pf3 Pc6|
+
+\chess
+\centerline{55.Pf3 Pc6}
+\endchess
+
+|55.Pf3 Pc6|
+\endnochess
+
+|KRQDRTBLFPCS| that's it!
+\bye
+

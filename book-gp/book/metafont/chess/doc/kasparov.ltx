@@ -1,0 +1,128 @@
+\documentstyle[a4wide,chess,12pt]{article}
+
+% Redefine chess.sty to get similar layout as in Informator
+\makeatletter
+\gdef\@dots{\ldots}
+\resetat
+
+% Some macros to improve readability...
+\newenvironment{mainline}[2]{\bf\newcommand{\result}{#1}%
+   \newcommand{\commentator}{#2}\begin{chess}}%
+   {\end{chess}\finito{\result}{\commentator}}
+\newenvironment{variation}{[\begingroup\rm\ignorespaces}%
+   {\endgroup]\ignorespaces}
+\newenvironment{diagram}{\begin{nochess}}{$$\showboard$$\end{nochess}}
+\newcommand{\finito}[2]{{\bf\hfill#1\hfill[#2]\par}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\twocolumn[
+\begin{center}
+{\Large\bf Best game award 1990}\\
+\vspace{.3cm}
+{\small(From: \v{S}ahovski Informator~51--1991)}
+\end{center}
+Next game was selected by a jury consisting of a selection of
+the editorial board of Chess Informant as the best game of 1990.
+\vspace{.5cm}
+]
+
+{\bf 50/388 \hfill C~92}\\
+\centerline{\sc Kasparov 2800 -- An.~Karpov 2730}\\
+\centerline{New York/Lyon (m/2) 1990}\\
+\begin{mainline}{1~:~0}{Kasparov}
+1. e4 e5 2.  Nf3 Nc6 3.  Bb5 a6 4.  Ba4 Nf6 5.  0-0 Be7 6.  Re1 b5 7. 
+Bb3 d6 8.  c3 0-0 9.  h3 Bb7 10.  d4 Re8 11.  Nbd2 Bf8 12.  a4 h6 13. 
+Bc2 ed4 14.  cd4 Nb4 15.  Bb1 ba4 16.  Ra4 a5 17.  Ra3 Ra6 18.  Nh2 g6
+\begin{diagram}
+\board{ * qrbk*}
+      {*bp *p* }
+      {r* p npp}
+      {p * * * }
+      { n PP* *}
+      {R * * *P}
+      { P N PPN}
+      {*BBQR K }
+\end{diagram}%
+19. f3! \novelty
+   \begin{variation} 
+   19. f4 \see~47/435; 19. Ng4 \see~47/434
+   \end{variation}
+Qd7?! 
+   \begin{variation}
+   19: c5 20. d5\wbetter; 19: Bg7 20. Nc4 Qa8 21. d5 Rd8\unclear
+   \end{variation}
+20. Nc4 Qb5 21. Rc3! Bc8 
+   \begin{variation}
+   21: d5 22. Na3 \withidea e5\wupperhand;
+   21: Rc6 22. Na3 Qb6 23. Be3\wupperhand
+   \end{variation}
+22. Be3 c6?! 
+  \begin{variation}
+  22: Qb8!? \withidea d5
+  \end{variation}
+23. Qc1 
+  \begin{variation}
+  \withidea Na3; 23. Qd2!?
+  \end{variation}
+Kh7 24. Ng4! Ng8?!
+   \begin{variation}
+   24: Bg4 25 hg4 d5 26. Na3\wupperhand; 
+   24: Ng4 25 hg4 d5 
+          (25: Be6 26. Na3 Qb8 27. Kf2 Bg7 28. Qd2) 
+   26. Ne5 de4 
+  (26: Be6 27. Kf2 de4 28.Bh6 Bh6 29. Rh1\wdecisive) 
+   27. Nf7 
+   {\sl a)} 27: Nd5 28. Bh6\wdecisive;
+   {\sl b)} 27: ef3 28. gf3 
+                   (28. Bh6? Re1 29. Qe1 Qe2; 28. Ne5? c5!) 
+                Nd5 29. Bh6 Re1 30. Qe1 Qb2 31. Bf8 Qc3 32. Qh4 Kg8 
+                33. Qh8 Kf7 34. Bg6!\wdecisive; 
+   {\sl c)} 27: Nd3 28. Bd3 ed3 29. Ne5\wdecisive
+   \end{variation}
+\begin{diagram}
+\board{ *b*rbn*}
+      {* * *p*k}
+      {r*pp *pp}
+      {pq* * * }
+      { nNPP*N*}
+      {* R BP*P}
+      { P * *P*}
+      {*BQ R K }
+\end{diagram}
+25. Bh6! 
+   \begin{variation}
+   25. Bf4\wupperhand
+   \end{variation}
+Bh6 26. Nh6 Nh6 27. Nd6 Qb6 28. Ne8 
+   \begin{variation}
+   28. Rc5!? Rd8 29. e5\wupperhand\withattack
+   \end{variation}
+Qd4 29. Kh1 Qd8 Rd1! Qe8 31. Qg5 Ra7 
+   \begin{variation}
+   31: Bd7 32. f4 f5 33. Rc5!\wdecisive
+   \end{variation}
+32. Rd8 Qe6 33. f4 Ba6 
+   \begin{variation}
+   33: Rd7 34. f5 gf5 35. ef5 Qe1 36. Kh2 Qe5 37. Rg3\wdecisive; 
+   33: f6 34. Qc5! Rd7 35. Rd7 Qd7 36. Qa5\wdecisive
+   \end{variation}
+34. f5 Qe7 35. Qd2! Qe5 
+   \begin{variation}
+   35: Nd5 36. fg6 fg6 37. ed5 Qd8 38. Bg6!\wdecisive; 
+   33: Rd7 34. f5 gf5 35. ef5 Qe1 36. Kh2 Qe5 37. Rg3\wdecisive; 
+   35: Ng8 36. Qd4 Rc7 37. e5 Nd5 38. fg6 fg6 39. Bg6! Kg7 40. Rd5 cd5 
+      41. Rg3\wdecisive
+   \end{variation}
+36. Qf2 Qe7 
+   \begin{variation}
+   36: Re7 37. Rc5\wdecisive
+   \end{variation}
+37. Qd4 Ng8 38. e5 Nd5 39. fg6 fg6 40. Rc6 Qd8 41. Qa7 
+   \begin{variation}
+   41. Rg6 Kh8 42. Qa7\wdecisive
+   \end{variation}
+Nde7 42. Ra6 Qd1 43. Qg1 Qd2 44. Qf1
+\end{mainline}
+\end{document}

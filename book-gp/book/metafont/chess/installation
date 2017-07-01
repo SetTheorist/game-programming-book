@@ -1,0 +1,249 @@
+
+		Installation of the chess macros
+		--------------------------------
+
+If you are already using the chess1.1 package then proceed with
+`Upgrading to 1.2' otherwise proceed with `Installation of the fonts and
+the chess-style'.
+
+1. Upgrading to 1.2
+-------------------
+To use version 1.2 of the chess macros you must:
+  - install the babel package
+  - install the new chess.sty file
+  - rename font chessfig10 into chessf10 (both the tfm-file and the pk-file)
+  - read the CHANGES12 file.
+
+1.1 Install the babel package
+-----------------------------
+I have included only those parts of the babel-3.0b package that are used by
+the chess macros and example files. You can get the complete babel-package 
+from one of the following sources:
+	bitnet: 
+	  * LISTSERV@HEARN.BITNET   (Europe)
+		To get a list of all available files send the following
+		message:
+			get tex-nl filelist
+		To get the babel package send the message (you will need
+		`uudecode' and `zoo' in order to unpack the archive):
+			send babel zoouue
+	  * ymir.claremont.edu      (USA)
+	internet: sol.cs.ruu.nl     (Europe)
+	   via anonymous ftp 
+	     from TEX/NTG/babel.zoo
+	
+In order to use the new chess macros you will need:
+	babel.switch
+	chess12/inputs/babel[22|33].switch
+	chess12/inputs/babel.sty
+	chess12/inputs/latexhax.sty
+	chess12/inputs/english.sty
+	chess12/inputs/dutch.sty
+[	chess12/inputs/german.sty
+	chess12/inputs/french.sty
+	chess12/inputs/YOUR-LANGUAGE.sty ]
+
+Babel.switch is the file that handles language switching. If you use an
+old version of TeX (pre 3.0) then you have to use babel22.switch otherwise
+you will need babel33.switch. Only in the last case you will have full
+language support. Install the above files by copying them to a directory
+which is in your TEXINPUTS path. Copy either babel22.switch or
+babel33.switch as babel.switch to the same directory.
+
+1.2 Install the new chess.sty file
+----------------------------------
+Copy chess12/inputs/chess.sty to a directory which is in your TEXINPUTS path.
+
+1.3 Rename font chessfig10 into chessf10
+----------------------------------------
+Rename your chessfig10.tfm into chessf10.tfm and your chessfig10.300pk
+into chessf10.300pk. This change is a service for our MSDOS users
+(including the TUGboat editors).
+
+You are ready to use the new macros. Read the file CHANGES12 to know
+what changes might be of importance to you.
+
+
+2. Installing the fonts and the chess-style
+-------------------------------------------
+Lots of people have a laserprinter with a Canon Engine (300dpi, write
+black).  For those people I have included the pkfonts and the tfm-files. 
+Installation of the chess-style and chessfonts, in this case, consists of
+the following steps (otherwise proceed with 3.):
+
+Installation of the chess macros should be very simple. The package consists 
+of four different parts:
+   A) style files:
+	chess12/inputs/chess.sty		(chess)
+	chess12/inputs/babel22.switch		(babel)
+	chess12/inputs/babel33.switch		(babel)
+	chess12/inputs/babel.sty		(babel)
+	chess12/inputs/latexhax.sty		(babel)
+	chess12/inputs/english.sty		(babel)
+	chess12/inputs/dutch.sty		(babel)
+      [ chess12/inputs/a4.sty			(optional)
+        chess12/inputs/a4wide.sty		(optional)
+        chess12/inputs/fancyheadings.sty	(optional)
+        chess12/inputs/2side.tex		(optional) ]
+
+     These files consists of the chess macros and part of the babel
+     package (see 1.2 how the full package can be obtained). Find out
+     where your style (.sty) files are kept. (If you don't have
+     permission to put the files on that place then you can put them 
+     where you like. But in this case you have to add that place to the 
+     TEXINPUTS search path so that TeX and LaTeX can locate them. Try to 
+     find out how that works for your system.)
+      
+     If you use an old version of TeX (before 3.0) then you must copy 
+     babel22.switch otherwise babel33.switch as babel.switch to the
+     place you have choosen. The rest of the files can be copied 
+     straight away. If you have already babel then you only need to
+     copy chess.sty. The files between [ ... ] are optional. I have 
+     included them for completeness because they are used somewhere 
+     in the example files. 
+
+===> step a) install chess and babel style files
+	     [eventually adapt your TEXINPUTS search path]
+
+   B) TeX font metric files:
+	chess12/fonts/chess20.tfm		(chess)
+       	chess12/fonts/chessf10.tfm		(chess)
+      [ chess12/fonts/chess10.tfm		(chess)
+	chess12/fonts/chess30.tfm		(chess) ]
+
+     This part is needed by TeX and LaTeX too because they contain the
+     metrics and kerning information of the fonts. Put the files in the
+     same directory as where the other .tfm files are kept. (If you 
+     don't have permission to put the files there then you can put them 
+     where you like. But in this case you have to add that place to the 
+     TEXFONTS search path so that TeX and LaTeX can locate them. Try to 
+     find out how that works for your system.)
+
+     The files between [ ... ] are not used by the chess.sty macros. If 
+     you want to use them you may copy them also to the destination you 
+     have choosen. The file chess12/doc/boards.ltx shows how you can use 
+     them in LaTeX.
+      
+===> step b) install .tfm files
+	     [eventually adapt your TEXFONTS search path]
+
+   C) TeX packed font files:
+	chess12/pkfonts/chess20.300pk		(chess)
+       	chess12/pkfonts/chessf10.300pk		(chess)
+      [	chess12/pkfonts/chess10.300pk		(chess)
+	chess12/pkfonts/chess30.300pk		(chess) ]
+
+     This is perhaps the most cumbersome step in the installation. Not
+     because it is really difficult but because there are so many 
+     different printers, previewers and drivers. Not to speak of the
+     bloody limit of the three character extension of MSDOS.
+     
+     Try to find out how and where the pk-files are kept on your system
+     (if you use the old fashioned pxl or gf-files you are really out of
+     date!). If your system keeps the pk-files in directories ordered 
+     by fontsize the above fonts have perhaps to be renamed into:
+     	/usr/local/lib/tex/pkfonts/chess20.300pk (UNIX)
+     	TEX_ROOT:[fonts.300]chess20.pk		 (VAX-VMS/DECUS-TeX)
+     	TeX:pk/300/chess20.300pk		 (??AmigaTeX??)
+     	emtex\pixel.lj\300dpi\chess20.pk	 (emTeX)
+     	
+     If you don't have permission to put the files on the place where the 
+     other pk-files are kept then you can put them where you like. But in
+     this case you have to add that place to the search path of your 
+     favourite driver (TEXPKS for the PostScript driver `dvips' available on
+     almost every system--recommended!) and previewer (XDVIFONTS for
+     xdvi, this previewer runs on X-based terminals). Try to find out how 
+     that works on your system. 
+
+===> step c) install pk-files
+             [eventually adapt your driver and previewer search paths]
+
+   D) Documentation and example files
+	chess12/doc/boards.ltx	LaTeX source demonstrating the 3 chess fonts
+	chess12/doc/TUGboat.ltx		TUGboat article (LaTeX main-source)
+	chess12/doc/TUGgame.ltx		TUGboat article (LaTeX inputted-source)
+	chess12/doc/tal.ltx		Fisher vs. Tal (LaTeX source)
+	chess12/doc/tal.tex		Fisher vs. Tal (TeX source)
+	chess12/doc/Symbols.tex		Informator symbols (TeX-version)
+	chess12/doc/Symbols.ltx		Informator symbols (LaTeX-version)
+	chess12/doc/Kasparov.ltx	Informator style example
+	chess12/doc/SchaakMaatje.ltx	our chess club magazine (Dutch!)
+	chess12/doc/dutch-tt.ltx	dutch LaTeX torture test
+	chess12/doc/dutch-tt.tex	dutch TeX torture test
+
+===> step d) print documentation
+             [eventually adapt your TEXINPUTS search path so chess12/inputs
+              is temporary included]
+             
+     You are now ready to use the chess macros. Print the documentation 
+     available in chess12/doc. The main documentation consists of the 
+     article (TUGboat.ltx and TUGgame.ltx) that will appear in TUGboat 
+     and the complete game of Fisher against Tal (tal.ltx and tal.tex).
+     For testing the chessfonts on your printer or previewer I have 
+     included boards.ltx with its dvi-file and its PostScript output (.ps).
+     For those who are not afraid to read Dutch there is a SchaakMaatje.ltx 
+     the magazine I made for our chess club. This example shows how the 
+     language support for Dutch is used.
+     For testing new versions of chess.sty you may use the torture tests.
+
+3. Generating the fonts.
+------------------------
+To generate the chess fonts you need METAFONT (the actual program needed
+is `mf').
+
+To install font <font> (ex. chess20) you must:
+ a) generate `<font>.tfm' and `<font>.<dpi>gf' (<dpi> is 
+    a number depending on the resolution of your output device: 100 for 
+    the AmigaTeX previewer, 300 for most popular laserprinters):
+    
+       mf "\mode:=<mode>; mag:=magstep(<magstep>); input <font>"
+    
+    Here <mode> should be:
+      localfont  if METAFONT is installed properly and localfont has been
+                 set to the parameters needed for your local printer
+      amiga      if you want to generate fonts for the AmigaTeX previewer.
+    
+    Anyway <mode> should have a value that guarantees that you use the
+    optimal settings when METAFONT generates fonts for YOUR printer or
+    previewer.
+      
+    Here <magstep> should be a suitable value to generate the wanted
+    magnification. Zero (0) generates a true sized font, 1 a font that
+    is 1.2 times and -1 a font that is 1/1.2 times magnified. Normally
+    you do need only true sized fonts (<magstep>=0) but with the
+    AmigaTeX previewer it is handy to have magsteps -0.5, 0 and 1.
+
+ b) Although some printer drivers accept gf-files and pxl-files, pk-files
+    are preferred because they occupy less disk space. To convert from
+    gf to pk format you need the program `gftopk':
+
+       gftopk <font>.<dpi>gf
+
+ c) Proceed with 2.
+
+4.  Other remarks 
+-----------------
+If you use xdvi (UNIX and VAX-VMS) as previewer, as I do on my NCD16
+terminal at work, you don't need extra previewer fonts.  To get nice
+chessdiagrams with this previewer you need to set the density (S) to 33. 
+
+To get optimal convenience with the previewer of your AmigaTeX, in case
+you don't have a hard disk as I do, you can make an extra font disk (ex. 
+Black.Myfonts), thanks to the unique font cashing scheme implemented by
+Tomas Rokicki.  Consult your AmigaTeX manual. 
+    
+The chessdiag.mf METAFONT source in chess12/mf draws a `mate in three
+problem' on the screen if your `mf' has graphical support. To draw on
+the screen you need the following command:
+   mf "\mode=localfont; mag=magstep(2); screenchars; input chessdiag"
+    	
+If you like to make a nice T-shirt or magnified chessboard, try:
+   mf "\mode=proof; mag=magstep(0); input chess20"
+   gftodvi chess20.2600gf
+   dvips chess20
+    	
+Success!
+
+Geldrop, Oct 1991
+Piet Tutelaers
+internet: rcpt@urc.tue.nl

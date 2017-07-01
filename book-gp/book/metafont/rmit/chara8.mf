@@ -1,0 +1,17 @@
+beginthaichar("JAW JAHN", "A8", "jj", jutout# + 2thick# + dia# + skinnywd#, normht#, 0);
+	q_def(1, thick, 0);
+	cup_def(2);
+	hat_def(3, thick);
+
+	lft x1lft = leftmost + jutout;
+	lft x3lft = leftmost;
+	x1l = x2lft;
+	x2rt = x3rt;
+	rt x2rt = rightmost;
+	top y1top + jutout = y3bot;
+	top y3top = normht + overshoot;
+
+	filldraw q_path(1) .. cup_path_i(2) .. hat_path(3)
+		.. reverse cup_path_o(2) .. cycle;
+	penlabels(1,2,3);
+endthaichar;

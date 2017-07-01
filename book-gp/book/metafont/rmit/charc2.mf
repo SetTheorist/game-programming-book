@@ -1,0 +1,24 @@
+beginthaichar("YAW YAH!K", "C2", "ya", 2thick# + normwd#, normht#, 0);
+	p_def(1, thick, 0);
+	penpos2(thin, 270);
+	penpos3(thick, 0);
+	cup_def(4);
+	penpos5(thick, 0);
+
+	lft x1lft = lft x4lft = leftmost;
+	rt x4rt = rt x5r = rightmost;
+	x2 = x1rt;
+	x3l = x4lft;
+	top y1top = normht;
+	%y2l = y1bot - dia - thin;
+	%y3 = y2r - dia - thin;
+	y2 = 1/2normht;
+	y3 = y4top;
+	top y5 = normht;
+
+	filldraw p_path(1){down} .. {right}z2l -- z2r{left} .. {up}cycle;
+	filldraw z2r{left} .. {down}z3r -- cup_path_i(4)
+		-- z5l -- z5r -- (reverse cup_path_o(4)) -- z3l{up}
+		.. {right}z2l -- cycle;
+	penlabels(1,2,3,4,5);
+endthaichar;

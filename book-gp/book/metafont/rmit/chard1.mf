@@ -1,0 +1,22 @@
+beginthaichar("MY HUNAGAHT", "D1", "ma", 0, uvht#, 0);
+	penpos1(thin, 180);
+	penpos2(thin, 270);
+	penpos3(thin, 0);
+	penpos4(thin, 90);
+	penpos5(thin, 270);
+	penpos6(thick, 0);
+
+	x1r = -1/2normwd;
+	x2 = x4 = 1/2[x1, x3];
+	x3l = x1r + dia;
+	x5 = 1/2[x1, x6l];
+	x6l = 1/2normwd;
+	y1 = y3 = 1/2[y4, y2];
+	y2l = y4l - dia;
+	y4r = y6 = normht + uvgap + uvht;
+	y5r = normht + uvgap;
+
+	penstroke z1e{down} .. z2e{right} .. z3e{up} .. z4e{left} .. z1e{down}
+		.. z5e{right} .. {up}z6e;
+	penlabels(1,2,3,4,5,6);
+endthaichar;
