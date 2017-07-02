@@ -2,9 +2,10 @@
 \usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
 \usepackage{piece}
 %\usepackage{tabularx}
-%\usepackage{multirow}
+\usepackage{multirow}
 \usepackage{color}
 %\usepackage{colorx}
+\usepackage{longtable}
 
 \let\x=\times
 
@@ -300,238 +301,430 @@ King ({\it gyokush\=o}/{\it \=osh\=o})
 %\piece{8}{8}{\FU}%
 }
 
-Go-between ({\it ch\=unin}) \Chu \Chunin
+\begin{center}\begin{longtable}{lclc}
+\multicolumn{2}{c}{\bf Piece} & \multicolumn{2}{c}{\bf Promotes} \endhead
+Go-between
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {,,,,}%
         {,,$\x$,,}%
         {,,\Chu,,}%
         {,,$\x$,,}%
         {,,,,}
-\\
-Pawn ({\it fuhy\=o}) \Fu
+    } &
+Drunk elephant
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\color{red}\Zo,$\x$,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+    } \\
+{\it ch\=unin} & & {\it suiz\=o} & \\
+\Chu , \Chunin & & \color{red}\Zo , \Suizo & \\
+\\ \\ \\ \\
+Pawn
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {,,,,}%
         {,,$\x$,,}%
         {,,\Fu,,}%
         {,,,,}%
         {,,,,}
-\\
-Side mover ({\it \=ogy\=o}) \Ko
+    } &
+Tokin 
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\color{red}\To,$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+    } \\
+{\it fuhy\=o} & & {\it tokin} & \\
+\Fu, \Fugyo & & \color{red}\To & \\
+\\ \\ \\ \\
+Side mover
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {,,,,}%
         {,,$\x$,,}%
         {$\leftarrow$,$\leftarrow$,\Ko,$\rightarrow$,$\rightarrow$}%
         {,,$\x$,,}%
         {,,,,}
-\\
-Vertical mover ({\it shugy\=o}) \Ken \Kengyo
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,,$\uparrow$,,}%
-        {,$\x$,\Ken,$\x$,}%
-        {,,$\downarrow$,,}%
-        {,,$\downarrow$,,}
-\\
-Bishop ({\it kakugy\=o}) \Kaku \Kakugyo
-    \movediagramfivexfive%
-        {$\nwarrow$,,,,$\nearrow$}%
-        {,$\nwarrow$,,$\nearrow$,}%
-        {,,\Kaku,,}%
-        {,$\swarrow$,,$\searrow$,}%
-        {$\swarrow$,,,,$\searrow$}
-\\
-Rook ({\it hisha}) \Hi \Hisha
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,,$\uparrow$,,}%
-        {$\leftarrow$,$\leftarrow$,\Hi,$\rightarrow$,$\rightarrow$}%
-        {,,$\downarrow$,,}%
-        {,,$\downarrow$,,}
-\\
-Dragon horse ({\it ry\=uma}) \Ma \Ryume
-    \movediagramfivexfive%
-        {$\nwarrow$,,,,$\nearrow$}%
-        {,$\nwarrow$,$\x$,$\nearrow$,}%
-        {,$\x$,\Ma,$\x$,}%
-        {,$\swarrow$,$\x$,$\searrow$,}%
-        {$\swarrow$,,,,$\searrow$}
-\\
-Dragon king ({\it ry\=u\=o}) \Ryu \Ryuo
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,$\x$,$\uparrow$,$\x$,}%
-        {$\leftarrow$,$\leftarrow$,\Ryu,$\rightarrow$,$\rightarrow$}%
-        {,$\x$,$\downarrow$,$\x$,}%
-        {,,$\downarrow$,,}
-\\
-Lance ({\it ky\=osha}) \Kyo \Kyosha
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,,$\uparrow$,,}%
-        {,,\Kyo,,}%
-        {,,,,}%
-        {,,,,}
-\\
-Reverse chariot ({\it hensha}) \Han \Hansha
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,,$\uparrow$,,}%
-        {,,\Han,,}%
-        {,,$\downarrow$,,}%
-        {,,$\downarrow$,,}
-\\
-Blind tiger ({\it m\=oko}) \Koii \Moko
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,,$\x$,}%
-        {,$\x$,\Koii,$\x$,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,,,}
-\\
-Ferocious leopard ({\it m\=ohy\=o}) \Hyo \Mohyo
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,\Hyo,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,,,}
-\\
-Copper general ({\it d\=osh\=o}) \Do \Dosho
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,\Do,,}%
-        {,,$\x$,,}%
-        {,,,,}
-\\
-Silver general ({\it ginsh\=o}) \Gin \Ginsho
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,\Kin,,}%
-        {,$\x$,,$\x$,}%
-        {,,,,}
-\\
-Gold general ({\it kinsh\=o}) \Kin \Kinsho
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,$\x$,\Gin,$\x$,}%
-        {,,$\x$,,}%
-        {,,,,}
-\\
-Drunk elephant ({\it suiz\=o}) \Zo \Suizo
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,$\x$,\Zo,$\x$,}%
-        {,$\x$,,$\x$,}%
-        {,,,,}
-\\
-Kirin/kylin ({\it kirin}) \Ki \Kirin
-    \movediagramfivexfive%
-        {,,$\x$,,}%
-        {,$\x$,,$\x$,}%
-        {$\x$,,\Ki,,$\x$}%
-        {,$\x$,,$\x$,}%
-        {,,$\x$,,}
-\\
-Phoenix ({\it h\=o\=o}) \Ho \Hoo
-    \movediagramfivexfive%
-        {$\x$,,,,$\x$}%
-        {,,$\x$,,}%
-        {,$\x$,\Ho,$\x$,}%
-        {,,$\x$,,}%
-        {$\x$,,,,$\x$}
-\\
-Queen ({\it honn\=o}) \Hon \Hono
-    \movediagramfivexfive%
-        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
-        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
-        {$\leftarrow$,$\leftarrow$,\Hon,$\rightarrow$,$\rightarrow$}%
-        {,$\swarrow$,$\downarrow$,$\searrow$,}%
-        {$\swarrow$,,$\downarrow$,,$\searrow$}
-\\
-King \Gyokusho/\Oosho ({\it gyokush\=o/\=osh\=o}) \Gyoku/\Oo \Gyokusho/\Oosho
-    \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,$\x$,\Oo,$\x$,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,,,}
-\\
-Lion \Shishi ({\it shishi}) \Shi \Shishi
-    \movediagramfivexfive%
-        {$\x$,$\x$,$\x$,$\x$,$\x$}%
-        {$\x$,!,!,!,$\x$}%
-        {$\x$,!,\Shi,!,$\x$}%
-        {$\x$,!,!,!,$\x$}%
-        {$\x$,$\x$,$\x$,$\x$,$\x$}
-\\
-Flying stag \Hiroku ({\it hiroku})
-    \movediagramfivexfive%
-        {,,$\uparrow$,,}%
-        {,$\x$,$\uparrow$,$\x$,}%
-        {,$\x$,{\color{red}\Roku},$\x$,}%
-        {,$\x$,$\downarrow$,$\x$,}%
-        {,,$\downarrow$,,}
-\\
-Flying ox \Higyu ({\it higy\=u})
-    \movediagramfivexfive%
-        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
-        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
-        {,,{\color{red}\Gyu},,}%
-        {,$\swarrow$,$\downarrow$,$\searrow$,}%
-        {$\swarrow$,,$\downarrow$,,$\searrow$}
-\\
-Free boar \Honcho ({\it honcho})
+    } &
+Free boar *
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {$\nwarrow$,,,,$\nearrow$}%
         {,$\nwarrow$,,$\nearrow$,}%
         {$\leftarrow$,$\leftarrow$,{\color{red}\Cho},$\rightarrow$,$\rightarrow$}%
         {,$\swarrow$,,$\searrow$,}%
         {$\swarrow$,,,,$\searrow$}
+    } \\
+{\it \=ogy\=o} & & {\it honcho} & \\
+\Ko , \Ogyo & & \color{red} \Cho , \Honcho & \\
 \\
-Whale \Keii \Keigei ({\it keigei})
+\\ \\ \\ \\
+Vertical mover
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {,,$\uparrow$,,}%
         {,,$\uparrow$,,}%
-        {,,{\color{red}\Keii},,}%
-        {,$\swarrow$,$\downarrow$,$\searrow$,}%
-        {$\swarrow$,,$\downarrow$,,$\searrow$}
-\\
-White horse \Ku \Hakku ({\it hakku})
+        {,$\x$,\Ken,$\x$,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    } &
+Flying ox *
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
         {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
-        {,,{\color{red}\Ku},,}%
+        {,,{\color{red}\Gyu},,}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+    } \\
+{\it shugy\=o} & & {\it higy\=u} & \\
+\Ken , \Kengyo & & \color{red} \Gyu, \Higyu & \\
+\\ \\ \\ \\
+Bishop
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {,,\Kaku,,}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    } &
+Dragon horse
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,$\x$,$\nearrow$,}%
+        {,$\x$,\color{red}\Ma,$\x$,}%
+        {,$\swarrow$,$\x$,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    } \\
+{\it kakugy\=o} & & {\it ry\=uma} & \\
+\Kaku , \Kakugyo & & \color{red} \Ma , \Ryume & \\
+\\ \\ \\ \\
+Rook
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {$\leftarrow$,$\leftarrow$,\Hi,$\rightarrow$,$\rightarrow$}%
         {,,$\downarrow$,,}%
         {,,$\downarrow$,,}
-\\
-Prince \Taishi ({\it taishi})
+    } &
+Dragon king
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
-        {,,,,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,$\x$,{\color{red}\Tai},$\x$,}%
-        {,$\x$,$\x$,$\x$,}%
-        {,,,,}
-\\
-Horned falcon \Kakuo ({\it kaku\=o})
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {$\leftarrow$,$\leftarrow$,\color{red}\Ryu,$\rightarrow$,$\rightarrow$}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+    } \\
+{\it hisha} & & {\it ry\=u\=o} & \\
+\Hi , \Hisha & & \color{red} \Ryu , \Ryuo & \\
+\\ \\ \\ \\
+Dragon horse
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,$\x$,$\nearrow$,}%
+        {,$\x$,\Ma,$\x$,}%
+        {,$\swarrow$,$\x$,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    } &
+Horned falcon *
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {$\nwarrow$,,$\x$,,$\nearrow$}%
         {,$\nwarrow$,!,$\nearrow$,}%
         {$\leftarrow$,$\leftarrow$,{\color{red}\Kuo},$\rightarrow$,$\rightarrow$}%
         {,$\swarrow$,$\downarrow$,$\searrow$,}%
         {$\swarrow$,,$\downarrow$,,$\searrow$}
-\\
-Soaring eagle \Hiju ({\it hij\=u})
+    } \\
+{\it ry\=uma} & & {\it kaku\=o} \\
+\Ma , \Ryume & & \color{red} \Kuo , \Kakuo & \\
+\\ \\ \\ \\
+Dragon king
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {$\leftarrow$,$\leftarrow$,\Ryu,$\rightarrow$,$\rightarrow$}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+    } &
+Soaring eagle *
+    & \multirow{5}{*}{%
     \movediagramfivexfive%
         {$\x$,,$\uparrow$,,$\x$}%
         {,!,$\uparrow$,!,}%
         {$\leftarrow$,$\leftarrow$,{\color{red}\Ju},$\rightarrow$,$\rightarrow$}%
         {,$\swarrow$,$\downarrow$,$\searrow$,}%
         {$\swarrow$,,$\downarrow$,,$\searrow$}
-\\
+    } \\
+{\it ry\=u\=o} & & {\it hij\=u} \\
+\Ryu , \Ryuo & & \color{red} \Ju , \Hiju & \\
+\\ \\ \\ \\
+Lance
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,\Kyo,,}%
+        {,,,,}%
+        {,,,,}
+    } &
+White horse *
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {,,{\color{red}\Ku},,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    } \\
+{\it ky\=osha} & & {\it hakku} & \\
+\Kyo , \Kyosha & & \color{red} \Ku , \Hakku & \\
+\\ \\ \\ \\
+Reverse chariot
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,\Han,,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    } &
+Whale *
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,{\color{red}\Keii},,}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+    } \\
+{\it hensha} & & {\it keigei} & \\
+\Han , \Hansha & & \color{red} \Keii , \Keigei & \\
+\\ \\ \\ \\
+Blind tiger
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,,$\x$,}%
+        {,$\x$,\Koii,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    } &
+Flying stag *
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {,$\x$,{\color{red}\Roku},$\x$,}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+    } \\
+{\it m\=oko} & & {\it hiroku} & \\
+\Koii , \Moko & & \color{red} \Roku , \Hiroku & \\
+\\ \\ \\ \\
+Ferocious leopard
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Hyo,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    } &
+Bishop
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {,,\color{red}\Kaku,,}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    } \\
+{\it m\=ohy\=o} & & {\it kakugy\=o} & \\
+\Hyo , \Mohyo & & \color{red} \Kaku , \Kakugyo & \\
+\\ \\ \\ \\
+Copper general
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Do,,}%
+        {,,$\x$,,}%
+        {,,,,}
+    } &
+Side mover
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {$\leftarrow$,$\leftarrow$,\color{red}\Ko,$\rightarrow$,$\rightarrow$}%
+        {,,$\x$,,}%
+        {,,,,}
+    } \\
+{\it d\=osh\=o} & & {\it \=ogy\=o} & \\
+\Do , \Dosho & & \color{red}\Ko , \Ogyo & \\
+\\ \\ \\ \\
+Silver general
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Kin,,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+    } &
+Vertical mover
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,$\x$,\color{red}\Ken,$\x$,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    } \\
+{\it ginsh\=o} & & {\it shugy\=o} & \\
+\Gin , \Ginsho & & \color{red} \Ken , \Kengyo & \\
+\\ \\ \\ \\
+Gold general
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Gin,$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+    } &
+Rook
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {$\leftarrow$,$\leftarrow$,\color{red}\Hi,$\rightarrow$,$\rightarrow$}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    } \\
+{\it kinsh\=o} & & {\it hisha} & \\
+\Kin , \Kinsho & & \color{red} \Hi , \Hisha & \\
+\\ \\ \\ \\
+Drunk elephant
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Zo,$\x$,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+    } &
+Prince *
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\Tai},$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    } \\
+{\it suiz\=o} & & {\it taishi} & \\
+\Zo , \Suizo & & \color{red} \Tai , \Taishi & \\
+\\ \\ \\ \\
+Kirin/kylin
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,$\x$,,}%
+        {,$\x$,,$\x$,}%
+        {$\x$,,\Ki,,$\x$}%
+        {,$\x$,,$\x$,}%
+        {,,$\x$,,}
+    } &
+Lion
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,!,\color{red}\Shi,!,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}
+    } \\
+{\it kirin} & & {\it shishi} & \\
+\Ki , \Kirin & & \color{red} \Shi , \Shishi & \\
+\\ \\ \\ \\
+Phoenix
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\x$,,,,$\x$}%
+        {,,$\x$,,}%
+        {,$\x$,\Ho,$\x$,}%
+        {,,$\x$,,}%
+        {$\x$,,,,$\x$}
+    } &
+Queen
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {$\leftarrow$,$\leftarrow$,\color{red}\Hon,$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+    } \\
+{\it h\=o\=o}) & & {\it honn\=o} & \\
+\Ho , \Hoo & & \color{red} \Hon , \Hono & \\
+\\ \\ \\ \\
+Queen
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {$\leftarrow$,$\leftarrow$,\Hon,$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+    } &
+    & \multirow{5}{*}{%
+    } \\
+{\it honn\=o} & & & \\
+\Hon , \Hono & & & \\
+\\ \\ \\ \\
+King
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Oo,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    } &
+    & \multirow{5}{*}{%
+    } \\
+{\it gyokush\=o/\=osh\=o} & & & \\
+\Gyoku , \Gyokusho / \Oo , \Oosho & & & \\
+\\ \\ \\ \\
+Lion 
+    & \multirow{5}{*}{%
+    \movediagramfivexfive%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,!,\Shi,!,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}
+    } &
+    & \multirow{5}{*}{%
+    } \\
+{\it shishi} & & & \\
+\Shi , \Shishi & & & \\
+\\ \\ \\ \\
+\end{longtable}\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

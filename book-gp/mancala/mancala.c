@@ -948,7 +948,8 @@ int main(int argc, char* argv[]) {
   int  depths[2] = {800,800};
   move  ml[6];
   state s[256];
-#define  MAXW  16
+//#define  MAXW  16
+#define  MAXW  8
 #define  MAXB  4
   colort  results[MAXW][MAXB];
   int  dw, db;
