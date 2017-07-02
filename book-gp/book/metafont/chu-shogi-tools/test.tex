@@ -1,0 +1,965 @@
+\documentclass[10pt]{article}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{piece}
+%\usepackage{tabularx}
+%\usepackage{multirow}
+\usepackage{color}
+%\usepackage{colorx}
+
+\let\x=\times
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\makeatletter
+\newcount\mdfxf@x
+\newcount\mdfxf@y
+\newcommand\mdfxf@putrow[1]{\@for\tmp:=#1\do{\put(\mdfxf@x,\mdfxf@y){\makebox(85,100){\tmp}}\advance\mdfxf@x by 85}}
+\newcommand{\movediagramfivexfive}[5]{%
+\unitlength=.005truecm
+\begin{picture}(425,500)\small
+% draw the board first
+\linethickness{.1mm}
+\put(0,0){\grid(425,500)(85,100)}
+%
+\linethickness{.3mm}%
+\put(0,0){\line(0,1){500}}
+\put(0,0){\line(1,0){425}}
+\put(425,0){\line(0,1){500}}
+\put(0,500){\line(1,0){425}}
+%
+\mdfxf@x=0
+\mdfxf@y=400
+\mdfxf@putrow{#1}
+%
+\mdfxf@x=0
+\mdfxf@y=300
+\mdfxf@putrow{#2}
+%
+\mdfxf@x=0
+\mdfxf@y=200
+\mdfxf@putrow{#3}
+%
+\mdfxf@x=0
+\mdfxf@y=100
+\mdfxf@putrow{#4}
+%
+\mdfxf@x=0
+\mdfxf@y=0
+\mdfxf@putrow{#5}
+\end{picture}}
+\makeatother
+
+%\if\next G\global\advance\yboard by -100 \put(\xboard,\yboard){\Kin}\else
+%\if\next S\global\advance\yboard by -100 \put(\xboard,\yboard){\Gin}\else
+%\if\next N\global\advance\yboard by -100 \put(\xboard,\yboard){\Kei}\else
+%\if\next L\global\advance\yboard by -100 \put(\xboard,\yboard){\Kyo}\else
+%\if\next P\global\advance\yboard by -100 \put(\xboard,\yboard){\Fu}\else
+%\if\next R\global\advance\yboard by -100 \put(\xboard,\yboard){\Hi}\else
+%\if\next B\global\advance\yboard by -100 \put(\xboard,\yboard){\Kaku}\else
+
+\section{Sh\=ogi}
+
+Sh\=ogi starting diagram:
+\begin{center}
+\myshodiag{%
+\myshogirow{1}{\KYO,\KEI,\GIN,\KIN,\OO,\KIN,\GIN,\KEI,\KYO}
+\myshogirow{2}{,\HI,,,,,,\KAKU,}
+\myshogirow{3}{\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU}
+% % %
+\myshogirow{7}{\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu}
+\myshogirow{8}{,\Kaku,,,,,,\Hi,}
+\myshogirow{9}{\Kyo,\Kei,\Gin,\Kin,\Gyoku,\Kin,\Gin,\Kei,\Kyo}
+}
+\qquad
+or
+\qquad
+\myshodiag{%
+\myshogirow{1}{\KYOSHA,\KEIMA,\GINSHO,\KINSHO,\OOSHO,\KINSHO,\GINSHO,\KEIMA,\KYOSHA}
+\myshogirow{2}{,\HISHA,,,,,,\KAKUGYO,}
+\myshogirow{3}{\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO}
+% % %
+\myshogirow{7}{\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo}
+\myshogirow{8}{,\Kakugyo,,,,,,\Hisha,}
+\myshogirow{9}{\Kyosha,\Keima,\Ginsho,\Kinsho,\Gyokusho,\Kinsho,\Ginsho,\Keima,\Kyosha}
+}\\
+\end{center}
+
+\begin{center}\begin{tabular}{llclclc} %how to get top alignment?
+%%%%%%%%%%
+&\multicolumn{2}{l}{Sente (black)}&\multicolumn{2}{l}{Gote (white)}&\multicolumn{2}{l}{Promotes to}\\
+Pawn ({\it fuhy\=o})
+    & \Fu , \Fugyo , \shortstack{\Fu\\\Hei} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {,,\Fu,,}%
+        {,,,,}%
+        {,,,,}
+    & \FU , \FUGYO , \shortstack{\HEI\\\FU} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,,,}%
+        {,,\FU,,}%
+        {,,$\x$,,}%
+        {,,,,}
+    & {\color{red}\To} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\To},$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+%%%%%%%%%%
+Knight ({\it keima})
+    & \Kei , \Keima , \shortstack{\Kei\\\Ma} &
+    \movediagramfivexfive%
+        {,$\x$,,$\x$,}%
+        {,,,,}%
+        {,,\Kei,,}%
+        {,,,,}%
+        {,,,,}
+    & \KEI , \KEIMA , \shortstack{\MA\\\KEI} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,,,}%
+        {,,\KEI,,}%
+        {,,,,}%
+        {,$\x$,,$\x$,}
+    & {\color{red}\Narikei} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\Kin},$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+%%%%%%%%%%
+Lance ({\it ky\=osha})
+    & \Kyo , \Kyosha , \shortstack{\Kyo\\\Sha} & 
+    \movediagramfivexfive
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,\Kyo,,}%
+        {,,,,}%
+        {,,,,}
+    & \KYO , \KYOSHA , \shortstack{\SHA\\\KYO} & 
+    \movediagramfivexfive
+        {,,,,}%
+        {,,,,}%
+        {,,\KYO,,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    & {\color{red}\Narikyo} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\Kin},$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+%%%%%%%%%%
+Silver general ({\it ginsh\=o})
+    & \Gin , \Ginsho , \shortstack{\Gin\\\Sho} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Gin,,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+    & \GIN , \GINSHO , \shortstack{\SHO\\\GIN} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,,$\x$,}%
+        {,,\GIN,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    & {\color{red}\Narigin} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\Kin},$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+%%%%%%%%%%
+Gold general ({\it kinsh\=o})
+    & \Kin , \Kinsho , \shortstack{\Kin\\\Sho} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Kin,$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+    & \KIN , \KINSHO , \shortstack{\SHO\\\KIN} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {,$\x$,\KIN,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    & &
+\\
+%%%%%%%%%%
+Bishop ({\it kakugy\=o})
+    & \Kaku , \Kakugyo , \shortstack{\Kaku\\\Gyo} &
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {,,\Kaku,,}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    & \KAKU , \KAKUGYO , \shortstack{\GYO\\\KAKU} &
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {,,\KAKU,,}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+    & {\color{red}\Ryume} &
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,$\x$,$\nearrow$,}%
+        {,$\x$,{\color{red}\Ma},$\x$,}%
+        {,$\swarrow$,$\x$,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+\\
+%%%%%%%%%%
+Rook ({\it hisha})
+    & \Hi , \Hisha , \shortstack{\Hi\\\Sha} &
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {$\leftarrow$,$\leftarrow$,\Hi,$\rightarrow$,$\rightarrow$}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    & \HI , \HISHA , \shortstack{\SHA\\\HI} &
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {$\leftarrow$,$\leftarrow$,\HI,$\rightarrow$,$\rightarrow$}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+    & {\color{red}\Ryuo} &
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {$\leftarrow$,$\leftarrow$,{\color{red}\Ryu},$\rightarrow$,$\rightarrow$}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+\\
+%%%%%%%%%%
+King ({\it gyokush\=o}/{\it \=osh\=o})
+    & \Gyoku , \Gyokusho , \shortstack{\Gyoku\\\Sho} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Gyoku,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    & \OO , \OOSHO , \shortstack{\SHO\\\OO} &
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\OO,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+    & &
+\\
+%%%%%%%%%%
+\end{tabular}\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Ch\=u Sh\=ogi}
+
+\mychudiag{%
+\myshogirow{1}{\KYO,\HYO,\DO,\GIN,\KIN,\ZO,\OO,\KIN,\GIN,\DO,\HYO,\KYO}
+\myshogirow{2}{\HAN,,\KAKU,,\KOII,\HO,\KI,\KOII,,\KAKU,,\HAN}
+\myshogirow{3}{\KO,\KEN,\HI,\MA,\RYU,\HON,\SHI,\RYU,\MA,\HI,\KEN,\KO}
+\myshogirow{4}{\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU}
+\myshogirow{5}{,,,\CHU,,,,,\CHU,,,}
+%
+%
+\myshogirow{8}{,,,\Chu,,,,,\Chu,,,}
+\myshogirow{9}{\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu}
+\myshogirow{10}{\Ko,\Ken,\Hi,\Ma,\Ryu,\Shi,\Hon,\Ryu,\Ma,\Hi,\Ken,\Ko}
+\myshogirow{11}{\Han,,\Kaku,,\Koii,\Ki,\Ho,\Koii,,\Kaku,,\Han}
+\myshogirow{12}{\Kyo,\Hyo,\Do,\Gin,\Kin,\Gyoku,\Zo,\Kin,\Gin,\Do,\Hyo,\Kyo}
+%\myshogirow{8}{,,,GB,,,,,GB,,,}
+%\myshogirow{9}{P,P,P,P,P,P,P,P,P,P,P,P}
+%\myshogirow{10}{SM,VM,R,DH,DK,Ln,Q,DK,DH,R,VM,SM}
+%\myshogirow{11}{RC,,B,,BT,Kr,Ph,BT,,B,,RC}
+%\myshogirow{12}{L,FL,C,S,G,\OO,DE,G,S,C,FL,L}
+%
+%
+%\piece{7}{7}{\Shahei}%
+%\piece{8}{8}{\FU}%
+}
+
+Go-between ({\it ch\=unin}) \Chu \Chunin
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {,,\Chu,,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+Pawn ({\it fuhy\=o}) \Fu
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {,,\Fu,,}%
+        {,,,,}%
+        {,,,,}
+\\
+Side mover ({\it \=ogy\=o}) \Ko
+    \movediagramfivexfive%
+        {,,,,}%
+        {,,$\x$,,}%
+        {$\leftarrow$,$\leftarrow$,\Ko,$\rightarrow$,$\rightarrow$}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+Vertical mover ({\it shugy\=o}) \Ken \Kengyo
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,$\x$,\Ken,$\x$,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+\\
+Bishop ({\it kakugy\=o}) \Kaku \Kakugyo
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {,,\Kaku,,}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+\\
+Rook ({\it hisha}) \Hi \Hisha
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {$\leftarrow$,$\leftarrow$,\Hi,$\rightarrow$,$\rightarrow$}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+\\
+Dragon horse ({\it ry\=uma}) \Ma \Ryume
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,$\x$,$\nearrow$,}%
+        {,$\x$,\Ma,$\x$,}%
+        {,$\swarrow$,$\x$,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+\\
+Dragon king ({\it ry\=u\=o}) \Ryu \Ryuo
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {$\leftarrow$,$\leftarrow$,\Ryu,$\rightarrow$,$\rightarrow$}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+\\
+Lance ({\it ky\=osha}) \Kyo \Kyosha
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,\Kyo,,}%
+        {,,,,}%
+        {,,,,}
+\\
+Reverse chariot ({\it hensha}) \Han \Hansha
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,\Han,,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+\\
+Blind tiger ({\it m\=oko}) \Koii \Moko
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,,$\x$,}%
+        {,$\x$,\Koii,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+\\
+Ferocious leopard ({\it m\=ohy\=o}) \Hyo \Mohyo
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Hyo,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+\\
+Copper general ({\it d\=osh\=o}) \Do \Dosho
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Do,,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+Silver general ({\it ginsh\=o}) \Gin \Ginsho
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,\Kin,,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+\\
+Gold general ({\it kinsh\=o}) \Kin \Kinsho
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Gin,$\x$,}%
+        {,,$\x$,,}%
+        {,,,,}
+\\
+Drunk elephant ({\it suiz\=o}) \Zo \Suizo
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Zo,$\x$,}%
+        {,$\x$,,$\x$,}%
+        {,,,,}
+\\
+Kirin/kylin ({\it kirin}) \Ki \Kirin
+    \movediagramfivexfive%
+        {,,$\x$,,}%
+        {,$\x$,,$\x$,}%
+        {$\x$,,\Ki,,$\x$}%
+        {,$\x$,,$\x$,}%
+        {,,$\x$,,}
+\\
+Phoenix ({\it h\=o\=o}) \Ho \Hoo
+    \movediagramfivexfive%
+        {$\x$,,,,$\x$}%
+        {,,$\x$,,}%
+        {,$\x$,\Ho,$\x$,}%
+        {,,$\x$,,}%
+        {$\x$,,,,$\x$}
+\\
+Queen ({\it honn\=o}) \Hon \Hono
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {$\leftarrow$,$\leftarrow$,\Hon,$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+\\
+King \Gyokusho/\Oosho ({\it gyokush\=o/\=osh\=o}) \Gyoku/\Oo \Gyokusho/\Oosho
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,\Oo,$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+\\
+Lion \Shishi ({\it shishi}) \Shi \Shishi
+    \movediagramfivexfive%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,!,\Shi,!,$\x$}%
+        {$\x$,!,!,!,$\x$}%
+        {$\x$,$\x$,$\x$,$\x$,$\x$}
+\\
+Flying stag \Hiroku ({\it hiroku})
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,$\x$,$\uparrow$,$\x$,}%
+        {,$\x$,{\color{red}\Roku},$\x$,}%
+        {,$\x$,$\downarrow$,$\x$,}%
+        {,,$\downarrow$,,}
+\\
+Flying ox \Higyu ({\it higy\=u})
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {,,{\color{red}\Gyu},,}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+\\
+Free boar \Honcho ({\it honcho})
+    \movediagramfivexfive%
+        {$\nwarrow$,,,,$\nearrow$}%
+        {,$\nwarrow$,,$\nearrow$,}%
+        {$\leftarrow$,$\leftarrow$,{\color{red}\Cho},$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,,$\searrow$,}%
+        {$\swarrow$,,,,$\searrow$}
+\\
+Whale \Keii \Keigei ({\it keigei})
+    \movediagramfivexfive%
+        {,,$\uparrow$,,}%
+        {,,$\uparrow$,,}%
+        {,,{\color{red}\Keii},,}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+\\
+White horse \Ku \Hakku ({\it hakku})
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\uparrow$,,$\nearrow$}%
+        {,$\nwarrow$,$\uparrow$,$\nearrow$,}%
+        {,,{\color{red}\Ku},,}%
+        {,,$\downarrow$,,}%
+        {,,$\downarrow$,,}
+\\
+Prince \Taishi ({\it taishi})
+    \movediagramfivexfive%
+        {,,,,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,$\x$,{\color{red}\Tai},$\x$,}%
+        {,$\x$,$\x$,$\x$,}%
+        {,,,,}
+\\
+Horned falcon \Kakuo ({\it kaku\=o})
+    \movediagramfivexfive%
+        {$\nwarrow$,,$\x$,,$\nearrow$}%
+        {,$\nwarrow$,!,$\nearrow$,}%
+        {$\leftarrow$,$\leftarrow$,{\color{red}\Kuo},$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+\\
+Soaring eagle \Hiju ({\it hij\=u})
+    \movediagramfivexfive%
+        {$\x$,,$\uparrow$,,$\x$}%
+        {,!,$\uparrow$,!,}%
+        {$\leftarrow$,$\leftarrow$,{\color{red}\Ju},$\rightarrow$,$\rightarrow$}%
+        {,$\swarrow$,$\downarrow$,$\searrow$,}%
+        {$\swarrow$,,$\downarrow$,,$\searrow$}
+\\
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Tenjiku Sh\=ogi}
+
+\mytenjikudiag{%
+%\piece{1}{1}{\Shi}%
+%\piece{2}{3}{\SHI}%
+\myshogirow{1}{L,N,FL,I,C,S,G,DE,\OO,G,S,C,I,FL,N,L}%
+\myshogirow{2}{RC,,CS,CS,,BT,Ph,Q,Ln,Kr,BT,,CS,CS,,RC}%
+\myshogirow{3}{SS,VS,B,DH,DK,WB,FD,FE,LH,FD,WB,DK,DH,B,VS,SS}%
+\myshogirow{4}{SM,VM,R,HF,SE,BG,RG,VG,GG,RG,BG,SE,HF,R,VM,SM}%
+\myshogirow{5}{\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU,\FU}%
+\myshogirow{6}{,,,,\INU,,,,,,,\INU,,,,}%
+ % % % %
+\myshogirow{11}{,,,,\Inu,,,,,,,\Inu,,,,}%
+\myshogirow{12}{\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu,\Fu}%
+\myshogirow{13}{\Ko,\Ken,\Hi,\Kuo,SE,BG,RG,GG,VG,RG,BG,SE,\Kuo,\Hi,\Ken,\Ko}%
+\myshogirow{14}{SS,VS,\Kaku,DH,DK,WB,FD,LH,FE,FD,WB,DK,DH,\Kaku,VS,SS}%
+\myshogirow{15}{\Han,,\Sha,\Sha,,\Koii,\Ki,\Shi,\Hon,\Ho,\Koii,,\Sha,\Sha,,\Han}%
+\myshogirow{16}{\Kyo,\Kei,\Hyo,\Tesu,\Do,\Gin,\Kin,\Gyoku,\Zo,\Kin,\Gin,\Do,\Tesu,\Hyo,\Kei,\Kyo}%
+%
+%\myshogirow{11}{,,,,D,,,,,,,D,,,,}%
+%\myshogirow{12}{P,P,P,P,P,P,P,P,P,P,P,P,P,P,P,P}%
+%\myshogirow{13}{SM,VM,R,HF,SE,BG,RG,GG,VG,RG,BG,SE,HF,R,VM,SM}%
+%\myshogirow{14}{SS,VS,B,DH,DK,WB,FD,LH,FE,FD,WB,DK,DH,B,VS,SS}%
+%\myshogirow{15}{RC,,CS,CS,,BT,Kr,Ln,Q,Ph,BT,,CS,CS,,RC}%
+%\myshogirow{16}{L,N,FL,I,C,S,G,K,DE,G,S,C,I,FL,N,L}%
+}
+
+\mytenjikudiag{%
+%\piece{1}{1}{\Shi}%
+%\piece{2}{3}{\SHI}%
+\myshogirow{1}{\KYOSHA,\KEIMA,\MOHYO,\TESSHO,\DOSHO,\GINSHO,\KINSHO,\SUIZO,\OOSHO,\KINSHO,\GINSHO,\DOSHO,\TESSHO,\MOHYO,\KEIMA,\KYOSHA}%
+\myshogirow{2}{\HANSHA,,\SHAHEI,\SHAHEI,,\MOKO,\HOO,\HONO,\SHISHI,\KIRIN,\MOKO,,\SHAHEI,\SHAHEI,,\HANSHA}%
+\myshogirow{3}{\KOHEI,\KENHEI,\KAKUGYO,\RYUME,\RYUO,\SUIGYU,\KAKI,\HONJU,\SHIYO,\KAKI,\SUIGYU,\RYUO,\RYUME,\KAKUGYO,\KENHEI,\KOHEI}%
+\myshogirow{4}{\OGYO,\KENGYO,\HISHA,\KAKUO,\HIJU,\KAKUSHO,\HISHO,\FUKUSHO,\TAISHO,\HISHO,\KAKUSHO,\HIJU,\KAKUO,\HISHA,\KENGYO,\OGYO}%
+\myshogirow{5}{\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO,\FUGYO}%
+\myshogirow{6}{,,,,\INU,,,,,,,\INU,,,,}%
+ % % % %
+\myshogirow{11}{,,,,\Inu,,,,,,,\Inu,,,,}%
+\myshogirow{12}{\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo,\Fugyo}%
+\myshogirow{13}{\Ogyo,\Kengyo,\Hisha,\Kakuo,\Hiju,\Kakusho,\Hisho,\Taisho,\Fukusho,\Hisho,\Kakusho,\Hiju,\Kakuo,\Hisha,\Kengyo,\Ogyo}%
+\myshogirow{14}{\Kohei,\Kenhei,\Kakugyo,\Ryume,\Ryuo,\Suigyu,\Kaki,\Shiyo,\Honju,\Kaki,\Suigyu,\Ryuo,\Ryume,\Kakugyo,\Kenhei,\Kohei}%
+\myshogirow{15}{\Hansha,,\Shahei,\Shahei,,\Moko,\Kirin,\Shishi,\Hono,\Hoo,\Moko,,\Shahei,\Shahei,,\Hansha}%
+\myshogirow{16}{\Kyosha,\Keima,\Mohyo,\Tessho,\Dosho,\Ginsho,\Kinsho,\Gyokusho,\Suizo,\Kinsho,\Ginsho,\Dosho,\Tessho,\Mohyo,\Keima,\Kyosha}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Piece macros}
+Fu=\Fu\   
+FU=\FU\   
+nFu=\nFu\   
+nFU=\nFU\   
+To=\To\   
+TO=\TO\   
+
+Hei=\Hei\   
+HEI=\HEI\   
+nHei=\nHei\   
+nHEI=\nHEI\   
+
+Han=\Han\   
+HAN=\HAN\   
+nHan=\nHan\   
+nHAN=\nHAN\   
+
+Sha=\Sha\   
+SHA=\SHA\   
+nSha=\nSha\   
+nSHA=\nSHA\   
+
+Tai=\Tai\   
+TAI=\TAI\   
+nTai=\nTai\   
+nTAI=\nTAI\   
+
+Inu=\Inu\   
+INU=\INU\   
+
+Sho=\Sho\   
+SHO=\SHO\   
+nSho=\nSho\   
+nSHO=\nSHO\   
+
+Gyo=\Gyo\   
+GYO=\GYO\   
+nGyo=\nGyo\   
+nGYO=\nGYO\   
+
+Kaku=\Kaku\   
+KAKU=\KAKU\   
+nKaku=\nKaku\   
+nKAKU=\nKAKU\   
+
+Kin=\Kin\   
+KIN=\KIN\   
+nKin=\nKin\   
+nKIN=\nKIN\   
+
+Gin=\Gin\   
+GIN=\GIN\   
+nGin=\nGin\   
+nGIN=\nGIN\   
+
+Do=\Do\   
+DO=\DO\   
+nDo=\nDo\   
+nDO=\nDO\   
+
+Tesu=\Tesu\   
+TESU=\TESU\   
+nTesu=\nTesu\   
+nTESU=\nTESU\   
+
+Ma=\Ma\   
+MA=\MA\   
+nMa=\nMa\   
+nMA=\nMA\   
+
+Oo=\Oo\   
+OO=\OO\   
+nOo=\nOo\   
+nOO=\nOO\   
+
+Gyoku=\Gyoku\   
+GYOKU=\GYOKU\   
+nGyoku=\nGyoku\   
+nGYOKU=\nGYOKU\   
+
+Hon=\Hon\   
+HON=\HON\   
+nHon=\nHon\   
+nHON=\nHON\   
+
+Shii=\Shii\   
+SHII=\SHII\   
+nShii=\nShii\   
+nSHII=\nSHII\   
+
+Gyu=\Gyu\   
+GYU=\GYU\   
+nGyu=\nGyu\   
+nGYU=\nGYU\   
+
+Kyo=\Kyo\   
+KYO=\KYO\   
+nKyo=\nKyo\   
+nKYO=\nKYO\   
+
+Kei=\Kei\   
+KEI=\KEI\   
+nKei=\nKei\   
+nKEI=\nKEI\   
+
+Hi=\Hi\   
+HI=\HI\   
+nHi=\nHi\   
+nHI=\nHI\   
+
+Nari=\Nari\   
+NARI=\NARI\   
+nari=\nari\   
+nARI=\nARI\   
+
+Ryu=\Ryu\   
+RYU=\RYU\   
+nRyu=\nRyu\   
+nRYU=\nRYU\   
+
+Ko=\Ko\   
+KO=\KO\   
+nKo=\nKo\   
+nKO=\nKO\   
+
+Taii=\Taii\   
+TAII=\TAII\   
+nTaii=\nTaii\   
+nTAII=\nTAII\   
+
+Ken=\Ken\   
+KEN=\KEN\   
+nKen=\nKen\   
+nKEN=\nKEN\   
+
+Fuku=\Fuku\   
+FUKU=\FUKU\   
+nFuku=\nFuku\   
+nFUKU=\nFUKU\   
+
+Nin=\Nin\   
+NIN=\NIN\   
+nNin=\nNin\   
+nNIN=\nNIN\   
+
+Chu=\Chu\   
+CHU=\CHU\   
+nChu=\nChu\   
+nCHU=\nCHU\   
+
+Shi=\Shi\   
+SHI=\SHI\   
+nShi=\nShi\   
+nSHI=\nSHI\   
+
+Mo=\Mo\   
+MO=\MO\   
+nMo=\nMo\   
+nMO=\nMO\   
+
+Hyo=\Hyo\   
+HYO=\HYO\   
+nHyo=\nHyo\   
+nHYO=\nHYO\   
+
+Kuo=\Kuo\   
+KUO=\KUO\   
+nKuo=\nKuo\   
+nKUO=\nKUO\   
+
+Ku=\Ku\   
+KU=\KU\   
+nKu=\nKu\   
+nKU=\nKU\   
+
+Haku=\Haku\   
+HAKU=\HAKU\   
+nHaku=\nHaku\   
+nHAKU=\nHAKU\   
+
+Ju=\Ju\   
+JU=\JU\   
+nJu=\nJu\   
+nJU=\nJU\   
+
+Cho=\Cho\   
+CHO=\CHO\   
+nCho=\nCho\   
+nCHO=\nCHO\   
+
+Suii=\Suii\   
+SUII=\SUII\   
+nSuii=\nSuii\   
+nSUII=\nSUII\   
+
+Ho=\Ho\   
+HO=\HO\   
+nHo=\nHo\   
+nHO=\nHO\   
+
+Ten=\Ten\   
+TEN=\TEN\   
+nTen=\nTen\   
+nTEN=\nTEN\   
+
+Shiii=\Shiii\   
+SHIII=\SHIII\   
+nShiii=\nShiii\   
+nSHIII=\nSHIII\   
+
+Ooii=\Ooii\   
+OOII=\OOII\   
+nOoii=\nOoii\   
+nOOII=\nOOII\   
+
+Ka=\Ka\   
+KA=\KA\   
+nKa=\nKa\   
+nKA=\nKA\   
+
+Zo=\Zo\   
+ZO=\ZO\   
+nZo=\nZo\   
+nZO=\nZO\   
+
+Suiii=\Suiii\   
+SUIII=\SUIII\   
+nSuiii=\nSuiii\   
+nSUIII=\nSUIII\   
+
+Roku=\Roku\   
+ROKU=\ROKU\   
+nRoku=\nRoku\   
+nROKU=\nROKU\   
+
+Ki=\Ki\   
+KI=\KI\   
+nKi=\nKi\   
+nKI=\nKI\   
+
+Rin=\Rin\   
+RIN=\RIN\   
+nRin=\nRin\   
+nRIN=\nRIN\   
+
+Sui=\Sui\   
+SUI=\SUI\   
+nSui=\nSui\   
+nSUI=\nSUI\   
+
+Moii=\Moii\   
+MOII=\MOII\   
+nMoii=\nMoii\   
+nMOII=\nMOII\   
+
+Koii=\Koii\   
+KOII=\KOII\   
+nKoii=\nKoii\   
+nKOII=\nKOII\   
+
+Kii=\Kii\   
+KII=\KII\   
+nKii=\nKii\   
+nKII=\nKII\   
+
+Keii=\Keii\   
+KEII=\KEII\   
+nKeii=\nKeii\   
+nKEII=\nKEII\   
+
+Gei=\Gei\   
+GEI=\GEI\   
+nGei=\nGei\   
+nGEI=\nGEI\   
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Shahei=\Shahei\   
+SHAHEI=\SHAHEI\   
+Keigei=\Keigei\   
+KEIGEI=\KEIGEI\   
+Kaki=\Kaki\   
+KAKI=\KAKI\   
+Suizo=\Suizo\   
+SUIZO=\SUIZO\   
+Moko=\Moko\   
+MOKO=\MOKO\   
+Hoo=\Hoo\   
+HOO=\HOO\   
+Kirin=\Kirin\   
+KIRIN=\KIRIN\   
+Suisho=\Suisho\   
+SUISHO=\SUISHO\   
+Shiteno=\Shiteno\   
+SHITENO=\SHITENO\   
+Suigyu=\Suigyu\   
+SUIGYU=\SUIGYU\   
+Hakku=\Hakku\   
+HAKKU=\HAKKU\   
+Honcho=\Honcho\   
+HONCHO=\HONCHO\   
+Ryuo=\Ryuo\   
+RYUO=\RYUO\   
+Ryume=\Ryume\   
+RYUME=\RYUME\   
+Keima=\Keima\   
+KEIMA=\KEIMA\   
+Mohyo=\Mohyo\   
+MOHYO=\MOHYO\   
+Narikyo=\Narikyo\   
+NARIKYO=\NARIKYO\   
+Narikei=\Narikei\   
+NARIKEI=\NARIKEI\   
+Narigin=\Narigin\   
+NARIGIN=\NARIGIN\   
+Hiroku=\Hiroku\   
+HIROKU=\HIROKU\   
+Hansha=\Hansha\   
+HANSHA=\HANSHA\   
+Kyosha=\Kyosha\   
+KYOSHA=\KYOSHA\   
+Ogyo=\Ogyo\   
+OGYO=\OGYO\   
+Fugyo=\Fugyo\   
+FUGYO=\FUGYO\   
+Kohei=\Kohei\   
+KOHEI=\KOHEI\   
+Hono=\Hono\   
+HONO=\HONO\   
+Honju=\Honju\   
+HONJU=\HONJU\   
+Kakusho=\Kakusho\   
+KAKUSHO=\KAKUSHO\   
+Kakugyo=\Kakugyo\   
+KAKUGYO=\KAKUGYO\   
+Kakuo=\Kakuo\   
+KAKUO=\KAKUO\   
+Hisha=\Hisha\   
+HISHA=\HISHA\   
+Higyu=\Higyu\   
+HIGYU=\HIGYU\   
+Hisho=\Hisho\   
+HISHO=\HISHO\   
+Hiju=\Hiju\   
+HIJU=\HIJU\   
+Taisho=\Taisho\   
+TAISHO=\TAISHO\   
+Tessho=\Tessho\   
+TESSHO=\TESSHO\   
+Dosho=\Dosho\   
+DOSHO=\DOSHO\   
+Ginsho=\Ginsho\   
+GINSHO=\GINSHO\   
+Kinsho=\Kinsho\   
+KINSHO=\KINSHO\   
+Oosho=\Oosho\   
+OOSHO=\OOSHO\   
+Gyokusho=\Gyokusho\   
+GYOKUSHO=\GYOKUSHO\   
+Taishi=\Taishi\   
+TAISHI=\TAISHI\   
+Shishi=\Shishi\   
+SHISHI=\SHISHI\   
+Shiyo=\Shiyo\   
+SHIYO=\SHIYO\   
+Kenhei=\Kenhei\   
+KENHEI=\KENHEI\   
+Kengyo=\Kengyo\   
+KENGYO=\KENGYO\   
+Fukusho=\Fukusho\   
+FUKUSHO=\FUKUSHO\   
+Chunin=\Chunin\   
+CHUNIN=\CHUNIN\   
+bHand=\bHand\   
+wHand=\wHand\   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
