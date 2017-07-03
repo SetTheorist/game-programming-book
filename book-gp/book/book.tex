@@ -19,9 +19,8 @@
 %\usepackage{diagram}
 %%%%%
 \usepackage{epic}
-
-
-\usepackage[all]{xy}
+\usepackage{color}
+%\usepackage[all]{xy}
 
 \makeindex
 
@@ -87,6 +86,51 @@ USE TikZ package for graphs/trees?
 
 \section{Overview}
 
+The goal of this book is to be an encyclopedic tutorial on the programming techniques for
+traditional games.  That is, how to program the ``artificial intelligence'' to allow
+a computer to play games such as chess, shogi, go (weiqi).  These are games that have no hidden
+information and no randomness.
+
+We will discuss games such as backgammon and poker that differ in critical ways.  We will give
+a brief introduction to techniques and research on these games.
+
+We may discuss ``wargames'' (so called hex and chit games), though there is very little
+literature written on programming for them.
+
+We will {\em not} be discussing ``video games''.
+
+We aim to be tutorial in that we will explain the ideas behind the various techniques as well
+as giving explicit implementations for specific games.  (Sometimes it can be less than obvious
+how to proceed from an academic paper written in a theoretical style to an actual implementation
+in code.)
+
+We will be encyclopedic in that we will cover a wide range of techniques.
+
+Note that though we will be giving implementations for specific games, the goal is not to
+dive too deeply into any specific game.  (For example, we will provide a limited discussion of
+position evaluation for chess, rather giving a few elements as representative of what might
+be used.)  No doubt readers of this book will be able to improve on the provided systems, which will
+be reasonable but by no means ``world champion'' level game systems.  Our goal is to provide
+tools and examples for readers to be able to develop their own games, hopefully giving them
+a speedier route to ``cutting edge'' of games development and research.
+
+Some people may be wondering what interest there might be in developing players for
+games outside of the major and well-known ones such as chess, shogi, or go.  And even for those,
+there may not seem to be much of a demand that isn't already satisfied.
+However, there are many games for which there are no programs developed.
+Additionally, one finds that even in typical video games there can be embedded ``mini games''
+which sometimes take the form of board games.  Instead of just using a typical chess player,
+one could use the techniques from this book to develop a player for a unique game,
+thus potentially giving better flavor --- why should an alien creature from a far off star-system
+play an identical game to chess (even if the pieces are renamed)?  Much more interesting if
+they play an unknown game with the same depth and complexity as chess, but unique for that game!
+Perhaps they could play Edgar Rice Bourrough's Jetan from his Mars ... or perhaps they could play
+a three- or four-dimensional game.  The techniques in this book should give you the tools to implement
+programs to play all of this at a solid level.
+
+(Indeed, the targeted level of play for all implemented systems is that they should, at a minimum,
+be able to beat the author...)
+
 \section{Games}
 
 vocabulary for move / board / game / state / evaluation / etc.
@@ -114,27 +158,28 @@ is a simple child's game which is well-known.
 
 \section{Rules}
 
-For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
-\newcommand{\tictactoeboard}[9]{{
+\makeatletter
+\newcount\ttt@x
+\newcount\ttt@y
+\newcommand{\ttt@putrow}[1]{\@for\tmp:=#1\do{\put(\ttt@x,\ttt@y){\makebox(5,5){\tmp}}\advance\ttt@x by 5}}
+\newcommand{\tictactoeboard}[3]{{
 \setlength{\unitlength}{1mm}
-\begin{picture}(21,21)(0,0)
+\begin{picture}(15,15)(0,0)
 \thicklines
-\put(0,7){\line(1,0){21}}
-\put(0,14){\line(1,0){21}}
-\put(7,0){\line(0,1){21}}
-\put(14,0){\line(0,1){21}}
-\put(0,14){\makebox(7,7){#1}}
-\put(7,14){\makebox(7,7){#2}}
-\put(14,14){\makebox(7,7){#3}}
-\put(0,7){\makebox(7,7){#4}}
-\put(7,7){\makebox(7,7){#5}}
-\put(14,7){\makebox(7,7){#6}}
-\put(0,0){\makebox(7,7){#7}}
-\put(7,0){\makebox(7,7){#8}}
-\put(14,0){\makebox(7,7){#9}}
+\put(0,5){\line(1,0){15}}
+\put(0,10){\line(1,0){15}}
+\put(5,0){\line(0,1){15}}
+\put(10,0){\line(0,1){15}}
+\ttt@x=0\ttt@y=10\ttt@putrow{#1}
+\ttt@x=0\ttt@y=5\ttt@putrow{#2}
+\ttt@x=0\ttt@y=0\ttt@putrow{#3}
 \end{picture}
 }}
-\begin{center}\tictactoeboard{}{}{}{}{}{}{}{}{}\end{center}
+\makeatother
+
+For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
+
+\begin{center}\tictactoeboard{,,}{,,}{,,}\end{center}
 by two players ``X'' and ``O''.  Players alternate (with ``X'' moving first)
 selecting an empty cell and claiming it by marking it with {\bf X} or {\bf O}, respectively.
 When a player has claimed three cells in a straight line (horizontally, vertically, or diagonally),
@@ -145,15 +190,15 @@ For example, here is a sample play, where the O player slips up on the first mov
 and allows X to set up a winning combination (it was necessary for O to respond to X's
 central play by playing to a corner.)  (We mark immediate threats with a dot.)
 \begin{center}
-\tictactoeboard{}{}{}{}{}{}{}{}{}
-\tictactoeboard{}{}{}{}{\underline X}{}{}{}{}
-\tictactoeboard{}{}{}{\underline O}{X}{}{}{}{}
-\tictactoeboard{}{}{.}{O}{X}{}{\underline X}{}{}
-\tictactoeboard{}{}{\underline O}{O}{X}{}{X}{}{}
-\tictactoeboard{}{.}{O}{O}{X}{}{X}{\underline X}{.}
-\tictactoeboard{}{.}{O}{O}{X}{}{X}{X}{\underline O}
-\tictactoeboard{}{\underline X}{O}{O}{X}{}{X}{X}{O}
-\tictactoeboard{}{\bf X}{O}{O}{\bf X}{}{X}{\bf X}{O}
+\tictactoeboard{,,}{,,}{,,}
+\tictactoeboard{,,}{,{\underline X},}{,,}
+\tictactoeboard{,,}{{\underline O},X,}{,,}
+\tictactoeboard{,,{\color{red}.}}{O,X,}{{\underline X},,}
+\tictactoeboard{,,{\underline O}}{O,X,}{X,,}
+\tictactoeboard{,{\color{red}.},O}{O,X,}{X,{\underline X},{\color{red}.}}
+\tictactoeboard{,{\color{red}.},O}{O,X,}{X,X,{\underline O}}
+\tictactoeboard{,{\underline X},O}{O,X,}{X,X,O}
+\tictactoeboard{,{\color{blue}X},O}{O,{\color{blue}X},}{X,{\color{blue}X},O}
 \end{center}
 And X has won with a line down the center.
 
@@ -202,7 +247,7 @@ Then we'll create a board struct to hold a representation of the board using
 the most obvious approach where we simply make a three-by-three array to hold the
 state of each cell in the \g{tic-tac-toe} grid.  The co\"ordinates corresponding to cells in our array
 are as follows:
-{\scriptsize\tictactoeboard{(0,0)}{(0,1)}{(0,2)}{(1,0)}{(1,1)}{(1,2)}{(2,0)}{(2,1)}{(2,2)}}
+{\tiny\tictactoeboard{{(0,0)},{(0,1)},{(0,2)}}{{(1,0)},{(1,1)},{(1,2)}}{{(2,0)},{(2,1)},{(2,2)}}}
 We define a Square type as an alias for the ordered pair and define a couple of accessor functions.
 {\scriptsize\begin{verbatim}
 #[derive(Clone,Copy,Debug,Move)]
@@ -635,7 +680,7 @@ A slight variation, which is sometimes convenient, is to collapse the two-dimens
 to a one-dimensional array.  Although it is less convenient to access a cell by row and column
 (though it is easy enough to write helper functions, if one really wants), it often turns out to
 be more convenient to have a single integer index denoting each 
-\tictactoeboard{0}{1}{2}{3}{4}{5}{6}{7}{8}
+\tictactoeboard{0,1,2}{3,4,5}{6,7,8}
 {\scriptsize
 \begin{verbatim}
 pub struct Board_array : Board {
