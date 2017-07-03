@@ -271,6 +271,80 @@ impl Board {
         self.to_move = self.to_move.other();
         return MoveResult::OtherSide;
     }
+
+    #[inline]
+    fn add_moves_from_pawn(&mut self, ml: &mut Vec<Move>, f: usize) {
+        let tm = self.to_move;
+        let ot = tm.other();
+        let step = if self.to_move==Color::Black{5}else{-5};
+        match self.cells[f+step] {
+            None => {
+            }
+            Some((c,p)) if c==ot {
+            }
+            _ => { }
+        }
+    }
+    #[inline]
+    fn add_moves_from_gold(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_silver(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_bishop(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_rook(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_king(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_tokin(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_nari(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_horse(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+    #[inline]
+    fn add_moves_from_dragon(&mut self, ml: &mut Vec<Move>, f: usize) {
+    }
+
+    #[inline]
+    fn add_moves_from(&mut self, ml: &mut Vec<Move>, f: usize, p: Piece) {
+        match p {
+            Piece::Pawn    => self.add_moves_from_pawn(ml, f),
+            Piece::Gold    => self.add_moves_from_gold(ml, f),
+            Piece::Silver  => self.add_moves_from_silver(ml, f),
+            Piece::Bishop  => self.add_moves_from_bishop(ml, f),
+            Piece::Rook    => self.add_moves_from_rook(ml, f),
+            Piece::King    => self.add_moves_from_king(ml, f),
+            Piece::Tokin   => self.add_moves_from_tokin(ml, f),
+            Piece::Nari    => self.add_moves_from_nari(ml, f),
+            Piece::Horse   => self.add_moves_from_horse(ml, f),
+            Piece::Dragon  => self.add_moves_from_dragon(ml, f),
+        }
+    }
+
+    pub fn moves(&self) -> Vec<Move> {
+        let mut ml = Vec::new();
+        let tm = self.to_move;
+        let ot = tm.other();
+        for (f,x) in self.cells.iter().enumerate() {
+            match x {
+                None => {}
+                Some((c,_)) if c==ot => {}
+                Some((_,p)) => {
+                    self.add_moves_from(&mut ml, f, p);
+                }
+            }
+        }
+    }
+    ml
+    }
 }
 
 

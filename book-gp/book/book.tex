@@ -1392,6 +1392,14 @@ looking for pieces to move --- we've got the pieces directly accessible and read
 If we organize the lists correctly, we can also get the advantage of generating moves for certain
 kinds of pieces before or after other kinds of pieces.
 
+For example, in 5x6 minichess there are 30 squares on the board and the starting position has
+20 pieces, for a starting density of $\frac{20}{30} = 0.\bar6$, about~67\%.
+On the other hand, in 10x10 amazons, there are 100 squares on the board and there are
+only 8 active pieces on the board, with a density of only $\frac{8}{100} = 0.08$, exactly~8\%.
+Thus, it would be quite wasteful in amazons for move generation to scan through 100 squares to find the
+mere 4 pieces for that side out of the full 100 squares on the board.  Better would be to simply
+store directly the locations of the queens for each side in a short list.
+
 %%%%%%%%%%%%%%%%%%%%
 \section{0x88}
 This is a trick which works for $8\x8$ boards but does not
@@ -1402,6 +1410,20 @@ and that when generating moves for chess, any putative moves that would take a p
 of the board would take them to a coordinate which sets the fourth (or ``8'') bit.
 Thus, if we represent an x-y coordinate in bits as ``0rrr0ccc'' then we can detect an
 illegal coordinate simply by xor'ing with 0x88 = b10001000.
+
+Note that if we then use a grid of cells of size 8x16 = 128, then the valid squares lie on
+the ``left hand'' 8x8 grid, so we can use the bit representation as direct index into the array.
+
+For example, using 8-bit integer arithmetic, we have the following, (we mark any invalid squares as **):
+\begin{center}\begin{tabular}{c|cccccc}
+Square = 0x88 & right 1     & left 1    & down 1      & up 1       & knight (up 2, left 1) \\\hline\hline
+$\Delta$      &  +1 = 0x01   &  -1 = 0xFF & -16 = 0xF0  & +16 = 0x10 & +31 = 0x1F            \\\hline
+a1 = 0x00     &  b1 = 0x01   &\it ** = 0xFF &\it ** = 0xF0  &  a2 = 0x10 &\it ** = 0x1F            \\
+b7 = 0x61     &  c7 = 0x62   &  a7 = 0x60 &  b6 = 0x51  &  b8 = 0x71 &\it ** = 0x80            \\
+g2 = 0x16     &  h2 = 0x17   &  f2 = 0x15 &  g1 = 0x06  &  g3 = 0x26 &  f4 = 0x35            \\
+h8 = 0x77     &\it ** = 0x78   &  g8 = 0x76 &  h7 = 0x67  &\it ** = 0x87 &\it ** = 0x96            \\
+\end{tabular}\end{center}
+Notice that all invalid moves end up with an index with highest bit set in one of its two nibbles (4-bit segment).
 
 
 %%%%%%%%%%%%%%%%%%%%
