@@ -1,10 +1,16 @@
 
 
 
-all: book.ind book.bbl book.dvi book.pdf
+all: book.ind book.bbl book.dvi book.pdf minishogi chapter-1-tictactoe
 
 touch:
-	touch book.tex
+	touch book.tex *.rs
+
+minishogi: minishogi.rs
+	rustc minishogi.rs
+
+chapter-1-tictactoe: chapter-1-tictactoe.rs
+	rustc chapter-1-tictactoe.rs
 
 book.pdf: book.dvi
 	dvipdfm book.dvi

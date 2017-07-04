@@ -164,13 +164,13 @@ impl Move {
     pub fn t(self) -> u32 { ((self.0>>5) & 0b011111) }
     #[inline]
     pub fn p(self) -> Option<Piece> {
-        let t = ((self.0>>10)&0b01111);
+        let t = (self.0>>10)&0b01111;
         if 1<=t && t<=10 { Some(Piece::from(t)) }
         else { None }
     }
     #[inline]
     pub fn k(self) -> Option<Piece> {
-        let t = ((self.0>>14)&0b01111);
+        let t = (self.0>>14)&0b01111;
         if 1<=t && t<=10 { Some(Piece::from(t)) }
         else { None }
     }
@@ -185,7 +185,7 @@ impl Move {
     #[inline]
     pub fn n(self) -> bool { ((self.0 & (1<<30)) != 0) }
     #[inline]
-    pub fn s(self) -> Color { if ((self.0 & (1<<31)) != 0) {Color::Black} else {Color::White} }
+    pub fn s(self) -> Color { if (self.0 & (1<<31)) != 0 {Color::Black} else {Color::White} }
 
     #[inline]
     pub fn new_null(s:Color) -> Move {
@@ -273,48 +273,49 @@ impl Board {
     }
 
     #[inline]
-    fn add_moves_from_pawn(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_pawn(&self, ml: &mut Vec<Move>, f: isize) {
         let tm = self.to_move;
         let ot = tm.other();
         let step = if self.to_move==Color::Black{5}else{-5};
-        match self.cells[f+step] {
+        match self.cells[(f+step) as usize] {
             None => {
             }
-            Some((c,p)) if c==ot {
+            Some((c,p)) if c==ot => {
             }
-            _ => { }
+            _ => {
+            }
         }
     }
     #[inline]
-    fn add_moves_from_gold(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_gold(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_silver(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_silver(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_bishop(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_bishop(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_rook(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_rook(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_king(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_king(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_tokin(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_tokin(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_nari(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_nari(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_horse(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_horse(&self, ml: &mut Vec<Move>, f: isize) {
     }
     #[inline]
-    fn add_moves_from_dragon(&mut self, ml: &mut Vec<Move>, f: usize) {
+    fn add_moves_from_dragon(&self, ml: &mut Vec<Move>, f: isize) {
     }
 
     #[inline]
-    fn add_moves_from(&mut self, ml: &mut Vec<Move>, f: usize, p: Piece) {
+    fn add_moves_from(&self, ml: &mut Vec<Move>, f: isize, p: Piece) {
         match p {
             Piece::Pawn    => self.add_moves_from_pawn(ml, f),
             Piece::Gold    => self.add_moves_from_gold(ml, f),
@@ -333,17 +334,16 @@ impl Board {
         let mut ml = Vec::new();
         let tm = self.to_move;
         let ot = tm.other();
-        for (f,x) in self.cells.iter().enumerate() {
+        for (f,&x) in self.cells.iter().enumerate() {
             match x {
                 None => {}
                 Some((c,_)) if c==ot => {}
                 Some((_,p)) => {
-                    self.add_moves_from(&mut ml, f, p);
+                    self.add_moves_from(&mut ml, f as isize, p);
                 }
             }
         }
-    }
-    ml
+        ml
     }
 }
 

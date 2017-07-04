@@ -207,16 +207,7 @@ pub fn fullsearch_v3(b: &mut Board) -> (GameResult,usize) {
 
 pub fn main() {
     let mut board = Board::new();
+    println!("board = {:?}", board);
 }
-
-
-
-
-
-
-
-
-
-
 
 

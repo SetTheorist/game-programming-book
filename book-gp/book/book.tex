@@ -150,14 +150,6 @@ the examples into their language of choice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Warm Up --- Tic-Tac-Toe}
-\label{chap-warm-up}
-
-The simple game of \g{tic-tac-toe} (also known as \g{noughts-and-crosses} or ...)
-is a simple child's game which is well-known.
-
-\section{Rules}
-
 \makeatletter
 \newcount\ttt@x
 \newcount\ttt@y
@@ -176,6 +168,89 @@ is a simple child's game which is well-known.
 \end{picture}
 }}
 \makeatother
+
+
+\makeatletter
+\newcount\chess@x
+\newcount\chess@y
+\newcount\chess@xa
+\newcount\chess@ya
+\newcount\chess@xb
+\newcount\chess@yb
+\newcommand{\chess@putrow}[1]{\@for\tmp:=#1\do{\put(\chess@x,\chess@y){\makebox(100,100){\tmp}}\advance\chess@x by 100}}
+\newcommand{\chess@grey}{%
+\linethickness{.001mm}
+\chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
+\chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
+\advance\chess@xa by 5\advance\chess@ya by 5
+\advance\chess@xb by -5\advance\chess@yb by -5
+\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+%
+\chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
+\chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
+\advance\chess@xa by 5\advance\chess@ya by 5
+\advance\chess@xb by -5\advance\chess@yb by -5
+%\drawline(\chess@x,\chess@y)(\chess@xb,\chess@yb)
+\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+}
+\newcommand{\chessdiagramfivebyfive}[1]{%
+\unitlength=.005truecm
+\begin{picture}(520,520)(-10,-10)\small
+% draw the board
+\linethickness{.1mm}
+%\put(0,0){\grid(500,500)(100,100)}
+\put(0,0){\grid(500,500)(500,500)}
+\linethickness{.3mm}
+\put(-9,-9){\grid(518,518)(518,518)}
+%
+\chess@x=0\chess@y=0\chess@grey
+%
+\chess@x=0\chess@y=200\chess@grey
+\chess@x=100\chess@y=100\chess@grey
+\chess@x=200\chess@y=0\chess@grey
+%
+\chess@x=0\chess@y=400\chess@grey
+\chess@x=100\chess@y=300\chess@grey
+\chess@x=200\chess@y=200\chess@grey
+\chess@x=300\chess@y=100\chess@grey
+\chess@x=400\chess@y=0\chess@grey
+%
+\chess@x=200\chess@y=400\chess@grey
+\chess@x=300\chess@y=300\chess@grey
+\chess@x=400\chess@y=200\chess@grey
+%
+\chess@x=400\chess@y=400\chess@grey
+%
+#1
+\end{picture}}
+
+\newfont\achessfont{fselch10}% scaled 1000}
+\newfont\bchessfont{fselch11}% scaled 1000}
+
+\chessdiagramfivebyfive{
+\put(100,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(100,100){\makebox(100,100){\achessfont\char0}}
+\put(0,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(0,100){\makebox(100,100){\achessfont\char12}}
+\put(0,0){\makebox(100,100){\color{white}\bchessfont\char13}}\put(0,0){\makebox(100,100){\achessfont\char1}}
+\put(200,200){\makebox(100,100){\color{white}\bchessfont\char12}}\put(200,200){\makebox(100,100){\achessfont\char12}}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Warm Up --- Tic-Tac-Toe}
+\label{chap-warm-up}
+
+The simple game of \g{tic-tac-toe} (also known as \g{noughts-and-crosses} or ...)
+is a simple child's game which is well-known.
+
+\section{Rules}
 
 For completeness, we'll review the rules here:  the game is played on a $3\x3$ grid of cells
 
