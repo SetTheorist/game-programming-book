@@ -19,8 +19,12 @@
 %\usepackage{diagram}
 %%%%%
 \usepackage{epic}
-\usepackage{color}
 %\usepackage[all]{xy}
+
+\usepackage{color}
+\definecolor{darkgray}{rgb}{0.25,0.25,0.25}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{lightgray}{rgb}{0.75,0.75,0.75}
 
 \makeindex
 
@@ -178,7 +182,9 @@ the examples into their language of choice.
 \newcount\chess@xb
 \newcount\chess@yb
 \newcommand{\chess@putrow}[1]{\@for\tmp:=#1\do{\put(\chess@x,\chess@y){\makebox(100,100){\tmp}}\advance\chess@x by 100}}
-\newcommand{\chess@grey}{%
+% TODO: try solid?
+\newcommand{\chess@grey}{{%
+\color{gray}
 \linethickness{.001mm}
 \chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
 \chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
@@ -199,7 +205,7 @@ the examples into their language of choice.
 \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
 \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
 \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-}
+}}
 \newcommand{\chessdiagramfivebyfive}[1]{%
 \unitlength=.005truecm
 \begin{picture}(520,520)(-10,-10)\small
@@ -231,14 +237,15 @@ the examples into their language of choice.
 #1
 \end{picture}}
 
-\newfont\achessfont{fselch10}% scaled 1000}
-\newfont\bchessfont{fselch11}% scaled 1000}
+\newfont\achessfont{fselch10 scaled 1200}
+\newfont\bchessfont{fselch12 scaled 1200}
 
 \chessdiagramfivebyfive{
 \put(100,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(100,100){\makebox(100,100){\achessfont\char0}}
 \put(0,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(0,100){\makebox(100,100){\achessfont\char12}}
 \put(0,0){\makebox(100,100){\color{white}\bchessfont\char13}}\put(0,0){\makebox(100,100){\achessfont\char1}}
 \put(200,200){\makebox(100,100){\color{white}\bchessfont\char12}}\put(200,200){\makebox(100,100){\achessfont\char12}}
+{\color{red}\thicklines\put(350,350){\vector(1,0){100}}}
 }
 
 
