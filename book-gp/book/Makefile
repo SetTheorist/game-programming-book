@@ -1,7 +1,9 @@
 
 
 
-all: book.ind book.bbl book.dvi book.pdf minishogi chapter-1-tictactoe
+book: book.ind book.bbl book.dvi book.pdf
+
+all: book minishogi chapter-1-tictactoe
 
 touch:
 	touch book.tex *.rs

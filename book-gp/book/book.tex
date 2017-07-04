@@ -3,12 +3,11 @@
 %% $Ver: $
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\documentclass[10pt]{book}
-\documentclass[10pt,dvipdfmx]{report}
+\documentclass[10pt,dvipdfmx,letter]{report}
 %\documentclass[10pt]{report}
-\usepackage[left=1in,right=0.75in,top=1in,bottom=1in]{geometry}
+\usepackage[dvipdfm,left=1in,right=0.75in,top=1in,bottom=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{makeidx}
-\usepackage{tikz}
 %%%%% For the skak/etc. packages, need ps-tricks, dvi2ps->ps2pdf etc.
 % need 'lambda' package - not working on miktex at the moment...
 %%\usepackage{skak}
@@ -21,7 +20,35 @@
 \usepackage{epic}
 %\usepackage[all]{xy}
 
-\usepackage{color}
+\usepackage{tikz}
+%% for hex grid pattern version 3
+%\usetikzlibrary{shapes}
+%% for hex grid pattern version 2
+%\usetikzlibrary{patterns}
+%\def\hexagonsize{0.5cm}
+%\pgfdeclarepatternformonly
+%  {hexagons}% name
+%  {\pgfpointorigin}% lower left
+%  {\pgfpoint{3*\hexagonsize}{0.866025*2*\hexagonsize}}%  upper right
+%  {\pgfpoint{3*\hexagonsize}{0.866025*2*\hexagonsize}}%  tile size
+%  {% shape description
+%   \pgfsetlinewidth{0.4pt}
+%   \pgftransformshift{\pgfpoint{0mm}{0.866025*\hexagonsize}}
+%   \pgfpathmoveto{\pgfpoint{0mm}{0mm}}
+%   \pgfpathlineto{\pgfpoint{0.5*\hexagonsize}{0mm}}
+%   \pgfpathlineto{\pgfpoint{\hexagonsize}{-0.866025*\hexagonsize}}
+%   \pgfpathlineto{\pgfpoint{2*\hexagonsize}{-0.866025*\hexagonsize}}
+%   \pgfpathlineto{\pgfpoint{2.5*\hexagonsize}{0mm}}
+%   \pgfpathlineto{\pgfpoint{3*\hexagonsize+0.2mm}{0mm}}
+%   \pgfpathmoveto{\pgfpoint{0.5*\hexagonsize}{0mm}}
+%   \pgfpathlineto{\pgfpoint{\hexagonsize}{0.866025*\hexagonsize}}
+%   \pgfpathlineto{\pgfpoint{2*\hexagonsize}{0.866025*\hexagonsize}}
+%   \pgfpathlineto{\pgfpoint{2.5*\hexagonsize}{0mm}}
+%   \pgfusepath{stroke}
+%  }
+
+
+\usepackage{xcolor}
 \definecolor{darkgray}{rgb}{0.25,0.25,0.25}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{lightgray}{rgb}{0.75,0.75,0.75}
@@ -175,79 +202,268 @@ the examples into their language of choice.
 
 
 \makeatletter
-\newcount\chess@x
-\newcount\chess@y
-\newcount\chess@xa
-\newcount\chess@ya
-\newcount\chess@xb
-\newcount\chess@yb
-\newcommand{\chess@putrow}[1]{\@for\tmp:=#1\do{\put(\chess@x,\chess@y){\makebox(100,100){\tmp}}\advance\chess@x by 100}}
+\newcount\chess@m  \newcount\chess@n
+\newcount\chess@x  \newcount\chess@y
+\newcount\chess@xa \newcount\chess@ya
+\newcount\chess@xb \newcount\chess@yb
+%\newcommand{\chess@putrow}[1]{\@for\tmp:=#1\do{\put(\chess@x,\chess@y){\makebox(100,100){\tmp}}\advance\chess@x by 100}}
 % TODO: try solid?
-\newcommand{\chess@grey}{{%
-\color{gray}
-\linethickness{.001mm}
-\chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
-\chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
-\advance\chess@xa by 5\advance\chess@ya by 5
-\advance\chess@xb by -5\advance\chess@yb by -5
-\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-%
-\chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
-\chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
-\advance\chess@xa by 5\advance\chess@ya by 5
-\advance\chess@xb by -5\advance\chess@yb by -5
-%\drawline(\chess@x,\chess@y)(\chess@xb,\chess@yb)
-\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
-\advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+\newcommand{\chess@grey}[2]{{%
+    %\color{gray}%?! somehow this screws up the picture environment...
+    \linethickness{.001mm}
+    %
+    \chess@xa=#1\chess@xb=#1\advance\chess@xb by 100
+    \chess@ya=#2\chess@yb=#2\advance\chess@yb by 100
+    \advance\chess@xa by 5\advance\chess@ya by 5
+    \advance\chess@xb by -5\advance\chess@yb by -5
+    \drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xa by 20\advance\chess@yb by -20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    %
+    \chess@xa=\chess@x\chess@xb=\chess@x\advance\chess@xb by 100
+    \chess@ya=\chess@y\chess@yb=\chess@y\advance\chess@yb by 100
+    \advance\chess@xa by 5\advance\chess@ya by 5
+    \advance\chess@xb by -5\advance\chess@yb by -5
+    %\drawline(\chess@x,\chess@y)(\chess@xb,\chess@yb)
+    \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
+    \advance\chess@xb by -20\advance\chess@ya by 20\drawline(\chess@xa,\chess@ya)(\chess@xb,\chess@yb)
 }}
-\newcommand{\chessdiagramfivebyfive}[1]{%
-\unitlength=.005truecm
-\begin{picture}(520,520)(-10,-10)\small
+\newcommand{\chessdiagram}[3]{%
+\unitlength=.005truecm%
+\begin{picture}(\the\numexpr #2*100+30,\the\numexpr #1*100+30)(-15,-15)%\small
 % draw the board
 \linethickness{.1mm}
 %\put(0,0){\grid(500,500)(100,100)}
-\put(0,0){\grid(500,500)(500,500)}
+\put(0,0){\grid(\the\numexpr #2*100,\the\numexpr #1*100)(\the\numexpr #2*100,\the\numexpr #1*100)}
 \linethickness{.3mm}
-\put(-9,-9){\grid(518,518)(518,518)}
+\put(-9,-9){\color{black}\grid(\the\numexpr #2*100+18,\the\numexpr #1*100+18)(\the\numexpr #2*100+18,\the\numexpr #1*100+18)}
 %
-\chess@x=0\chess@y=0\chess@grey
+{\chess@m=1\chess@n=1
+{\loop
+    {\loop  
+        \chess@x=\the\numexpr\chess@m*100-100\relax
+        \chess@y=\the\numexpr\chess@n*100-100\relax
+        \ifodd\the\numexpr \chess@n+\chess@m+1\relax{\chess@grey\chess@x\chess@y}\fi
+    \ifnum\chess@m<#2\advance\chess@m by 1\repeat}
+\ifnum\chess@n<#1\advance\chess@n by 1\repeat}
+}
 %
-\chess@x=0\chess@y=200\chess@grey
-\chess@x=100\chess@y=100\chess@grey
-\chess@x=200\chess@y=0\chess@grey
-%
-\chess@x=0\chess@y=400\chess@grey
-\chess@x=100\chess@y=300\chess@grey
-\chess@x=200\chess@y=200\chess@grey
-\chess@x=300\chess@y=100\chess@grey
-\chess@x=400\chess@y=0\chess@grey
-%
-\chess@x=200\chess@y=400\chess@grey
-\chess@x=300\chess@y=300\chess@grey
-\chess@x=400\chess@y=200\chess@grey
-%
-\chess@x=400\chess@y=400\chess@grey
-%
-#1
+#3
 \end{picture}}
+%\newcounter{chess@y}
+%\setcounter{chess@y}{100}
+%\addtocounter{chess@y}{100}
+%\ifnum\value{chess@y}<100
+\makeatother
 
 \newfont\achessfont{fselch10 scaled 1200}
 \newfont\bchessfont{fselch12 scaled 1200}
-
-\chessdiagramfivebyfive{
-\put(100,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(100,100){\makebox(100,100){\achessfont\char0}}
-\put(0,100){\makebox(100,100){\color{white}\bchessfont\char12}}\put(0,100){\makebox(100,100){\achessfont\char12}}
-\put(0,0){\makebox(100,100){\color{white}\bchessfont\char13}}\put(0,0){\makebox(100,100){\achessfont\char1}}
-\put(200,200){\makebox(100,100){\color{white}\bchessfont\char12}}\put(200,200){\makebox(100,100){\achessfont\char12}}
-{\color{red}\thicklines\put(350,350){\vector(1,0){100}}}
+\newcommand{\putchpiece}[4]{%
+\put(#1,#2){\makebox(100,100){\color{white}\bchessfont\char#3}}\put(#1,#2){\color{black}\makebox(100,100){\achessfont\char#4}}
 }
 
+{\newfont\testahchessfont{fsahchess10}\testahchessfont
+    \char0  \char1  \char2  \char3  \char4  \char5  \\
+    \char6  \char7  \char8  \char9  \char10 \char11 \\
+    \char12 \char13 \char14 \char15 \char16 \char17 \\
+    \char18 \char19 \char20 \char21 \char22 \char23 \\
+    \char24 \char25 \char26 \char27 \char28 \char29 \\
+    \char30 \char31 \char32 \char33 \char34 \char35 \\
+}
+
+\chessdiagram{4}{3}{}
+
+\chessdiagram{7}{7}{}
+
+\makeatletter
+{\unitlength=.005truecm%
+\begin{picture}(350,350)(-50,-50)
+\linethickness{.1mm}
+\put(0,0){\grid(300,300)(100,100)}
+\color{green}\putchpiece{0}{0}{12}{0}%
+\chess@n=0
+\loop
+    \color{black}\put(0,\chess@n){\line(1,1){100}}
+    \color{red}\put(0,\chess@n){\line(1,0){100}}
+\ifnum\chess@n<200\advance\chess@n by 20\repeat
+\color{blue}\putchpiece{100}{100}{12}{0}%
+\end{picture}}
+\makeatother
+
+\begin{tabular}{ccc}
+\color{blue}
+\chessdiagram{8}{12}{
+    \putchpiece{0}{100}{12}{0}%
+    \putchpiece{100}{100}{12}{0}%
+    \putchpiece{200}{100}{12}{0}%
+    \putchpiece{300}{100}{12}{0}%
+    \putchpiece{400}{100}{12}{0}%
+    }
+\\
+\color{green}
+\chessdiagram{8}{12}{
+    \putchpiece{0}{100}{12}{0}%
+    \putchpiece{100}{100}{12}{0}%
+    \putchpiece{200}{100}{12}{0}%
+    \putchpiece{300}{100}{12}{0}%
+    \putchpiece{400}{100}{12}{0}%
+    }
+\\
+\color{red}
+\chessdiagram{8}{12}{
+    \putchpiece{0}{100}{12}{0}%
+    \putchpiece{100}{100}{12}{0}%
+    \putchpiece{200}{100}{12}{0}%
+    \putchpiece{300}{100}{12}{0}%
+    \putchpiece{400}{100}{12}{0}%
+    }
+\end{tabular}
+
+% W pnbrqk 0--5
+% B pnrbqk 12--17
+\chessdiagram{6}{5}{%
+    \putchpiece{0}{0}{15}{3}%
+    \putchpiece{100}{0}{14}{2}%
+    \putchpiece{200}{0}{17}{5}%
+    \color{green}\putchpiece{300}{0}{16}{4}\color{black}%
+    \putchpiece{400}{0}{13}{1}%
+    %
+    \putchpiece{0}{100}{12}{0}%
+    \putchpiece{100}{100}{12}{0}%
+    \putchpiece{200}{100}{12}{0}%
+    \putchpiece{300}{100}{12}{0}%
+    \putchpiece{400}{100}{12}{0}%
+    %
+    {\color{red}\drawline(4,4)(104,104)}
+    \putchpiece{0}{400}{12}{12}%
+    \putchpiece{100}{400}{12}{12}%
+    \putchpiece{200}{400}{12}{12}%
+    \putchpiece{300}{400}{12}{12}%
+    \putchpiece{400}{400}{12}{12}%
+    %
+    \putchpiece{0}{500}{15}{15}%
+    \putchpiece{100}{500}{14}{14}%
+    \putchpiece{200}{500}{17}{17}%
+    \putchpiece{300}{500}{16}{16}%
+    \putchpiece{400}{500}{13}{13}%
+    %
+    %{\color{red}\thicklines\put(350,350){\vector(1,0){100}}}%
+}
+
+%\newfont\achessfontx{pkelch10 scaled 1200}
+%\newfont\bchessfontx{pkelch12 scaled 1200}
+%\newcommand{\putchpiecex}[4]{%
+%\put(#1,#2){\makebox(100,100){\color{white}\bchessfontx\char#3}}\put(#1,#2){\makebox(100,100){\achessfontx\char#4}}
+%}
+
+
+\newcommand{\tikzchessboard}[3]{%
+\begin{tikzpicture}[scale=0.5]
+\foreach\x in {1,...,#2} {
+    \foreach\y in {1,...,#1} {
+        \ifodd\the\numexpr\x+\y\relax{
+            \fill[white](\x,\y)++(-1,-1)rectangle++(1,1);
+        }\else{
+            \fill[#3!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+        }\fi
+    }
+}
+\foreach\x in {1,...,#2} { \draw(\x,-1)+(-0.5,0.1)node[anchor=base]{\csname @alph\endcsname{\x}}; }
+\foreach\y in {1,...,#1} { \draw(-1,\y)+(0.5,-0.5)node{\y}; }
+\draw[step=1,white,very thin](0,0)grid(#2,#1);
+\draw[black,thin](0,0)rectangle(#2,#1);
+\draw[black,thick,rounded corners=1pt](-0.1,-0.1)rectangle(#2+0.1,#1+0.1);
+\draw(0,0)+(0.5,0.5)node[white]{\achessfont\char12}node[black]{\achessfont\char0};
+\draw(1,1)+(0.5,0.5)node[black]{\achessfont\char12};
+\draw(2,2)+(0.5,0.5)node[gray!50!yellow]{\achessfont\char12}node[black]{\achessfont\char0};
+\end{tikzpicture}}
+
+\tikzchessboard{6}{6}{blue}
+\tikzchessboard{8}{8}{green}
+\tikzchessboard{7}{5}{red}
+
+\tikzchessboard{8}{12}{gray}
+
+\newcommand{\tcbatsquare}[3]{%
+    \ifodd\the\numexpr#2+#3\relax{%
+        \fill[#1!20!white](#2,#3)++(-1,-1)rectangle++(1,1);%
+    }\else{%
+        \fill[#1!30!white](#2,#3)++(-1,-1)rectangle++(1,1);%
+    }\fi%
+}%
+\newcommand{\tikzcongoboard}{
+\begin{tikzpicture}[scale=0.5]
+\foreach\x in {1,...,7} {
+    \foreach\y in {1,...,7} {
+        \ifnum\y=4{%
+            \tcbatsquare{blue}{\x}{\y}
+            %\fill[blue!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+        }\else\ifnum\x<3{%
+            \tcbatsquare{green}{\x}{\y}
+            %\fill[green!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+        }\else\ifnum\x<6{%
+            \tcbatsquare{yellow}{\x}{\y}
+            %\fill[yellow!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+         }\else{
+            \tcbatsquare{green}{\x}{\y}
+            %\fill[green!{\mix}!white](\x,\y)++(-1,-1)rectangle++(1,1);
+            %\ifodd\the\numexpr\x+\y\relax{
+            %    \fill[green!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+            %}\else{
+            %    \fill[green!30!white](\x,\y)++(-1,-1)rectangle++(1,1);
+            %}\fi
+        }\fi\fi\fi
+        %\ifodd\the\numexpr\x+\y\relax{
+        %    \fill[white](\x,\y)++(-1,-1)rectangle++(1,1);
+        %}\else{
+        %    \fill[#3!20!white](\x,\y)++(-1,-1)rectangle++(1,1);
+        %}\fi
+    }
+}
+\foreach\x in {1,...,7} { \draw(\x,-1)+(-0.5,0.1)node[anchor=base]{\csname @alph\endcsname{\x}}; }
+\foreach\y in {1,...,7} { \draw(-1,\y)+(0.5,-0.5)node{\y}; }
+\draw[step=1,white,thin](0,0)grid(7,7);
+\draw[black,thin](0,0)rectangle(7,7);
+\draw[black,thick,rounded corners=1pt](-0.1,-0.1)rectangle(7.1,7.1);
+\draw(0,0)+(0.5,0.5)node[white]{\achessfont\char12}node[black]{\achessfont\char0};
+\draw(1,1)+(0.5,0.5)node[black]{\achessfont\char12};
+\draw(2,2)+(0.5,0.5)node[gray!50!yellow]{\achessfont\char12}node[black]{\achessfont\char0};
+\end{tikzpicture}}
+
+\tikzcongoboard
+
+%% HEX BOARDS:
+%%
+%%%% VERSION 1
+%\begin{tikzpicture}
+%  \foreach \i in {0,...,3} 
+%  \foreach \j in {0,...,3} {
+%  \foreach \a in {0,120,-120} \draw (3*\i,2*sin{60}*\j) -- +(\a:1);
+%  \foreach \a in {0,120,-120} \draw (3*\i+3*cos{60},2*sin{60}*\j+sin{60}) -- +(\a:1);}
+%\end{tikzpicture}
+%%%% VERSION 2
+%\begin{tikzpicture}
+%\fill[pattern=hexagons] (0,0) rectangle (10,5);
+%\end{tikzpicture}
+%%%% VERSION 3
+%\begin{tikzpicture} [hexa/.style= {shape=regular polygon,
+%                                   regular polygon sides=6,
+%                                   minimum size=1cm, draw,
+%                                   inner sep=0,anchor=south,
+%                                   fill=lightgray!85!blue}]
+%
+%\foreach \j in {0,...,9}{% 
+%     \ifodd\j 
+%         \foreach \i in {0,...,9}{\node[hexa] (h\j;\i) at ({\j/2+\j/4},{(\i+1/2)*sin(60)}) {\j;\i};}        
+%    \else
+%         \foreach \i in {0,...,9}{\node[hexa] (h\j;\i) at ({\j/2+\j/4},{\i*sin(60)}) {\j;\i};}
+%    \fi}
+%\node [circle,draw,red,minimum size=1cm] at (h3;4){};
+%\end{tikzpicture}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
