@@ -15,7 +15,7 @@ chapter-1-tictactoe: chapter-1-tictactoe.rs
 	rustc chapter-1-tictactoe.rs
 
 book.pdf: book.dvi
-	dvipdfm book.dvi
+	dvipdfmx -p letter -r 1200 book.dvi
 
 book.bbl: book.aux
 	bibtex book
