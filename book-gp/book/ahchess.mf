@@ -52,7 +52,7 @@ def rook_outline =
         -- z19 -- z20 -- z21 -- z22 -- z23 -- z24
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 24);
 enddef;
 beginchar(0, 1em#, 1em#, 0); "Rook - mask";
@@ -126,7 +126,7 @@ def crocodile_outline =
         -- z10 -- z11 .. z12 .. z13
         --cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 15);
 enddef;
 beginchar(3, 1em#, 1em#, 0); "Crocodile - mask";
@@ -172,7 +172,7 @@ def pawn_one_outline =
         .. z7{down} .. z8{left}--z8{right} .. z9 .. z10{left}--z10{right} .. z11{down}
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 11);
 enddef;
 beginchar(6, 1em#, 1em#, 0); "Pawn1 - mask";
@@ -215,7 +215,7 @@ def pawn_two_outline =
         -- z7 -- z8 -- z9 -- z10 -- z11
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 11);
 enddef;
 beginchar(9, 1em#, 1em#, 0); "Pawn2 - mask";
@@ -258,7 +258,7 @@ def pawn_three_outline =
         .. z7{down} .. z8{left}--z8{right} .. z9 .. z10{left}--z10{right} .. z11{down}
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 11);
 enddef;
 beginchar(12, 1em#, 1em#, 0); "Pawn3 - mask";
@@ -301,7 +301,7 @@ def pawn_four_outline =
         .. z7{down} .. z8{left}--z8{right} .. z9 .. z10{left}--z10{right} .. z11{down}
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 11);
 enddef;
 beginchar(15, 1em#, 1em#, 0); "Pawn4 - mask";
@@ -364,7 +364,7 @@ def monkey_outline =
         & z16{down} .. z1{-1,-1}
         & cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 25);
 enddef;
 beginchar(18, 1em#, 1em#, 0); "Monkey - mask";
@@ -379,7 +379,7 @@ beginchar(19, 1em#, 1em#, 0); "Monkey - white";
     draw z17 -- z18;
     draw z20 .. z17{right} .. z21;
     draw z22 .. z18{right} .. z23;
-    pickup pencircle xscaled 0.1w yscaled 0.1w;% rotated 30;
+    pickup pencircle xscaled 0.1w yscaled 0.1w;
     drawdot z24;
     drawdot z25;
 endchar;
@@ -392,11 +392,11 @@ beginchar(20, 1em#, 1em#, 0); "Monkey - black";
     undraw z17 -- z18;
     undraw z20 .. z17{right} .. z21;
     undraw z22 .. z18{right} .. z23;
-    pickup pencircle xscaled 0.1w yscaled 0.1w;% rotated 30;
+    pickup pencircle xscaled 0.1w yscaled 0.1w;
     undrawdot z24;
     undrawdot z25;
     cullit;
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     draw p;
 endchar;
 
@@ -421,7 +421,7 @@ def horned_outline =
     p = z1{1,1} .. z2{right} -- z2{up} .. z3 .. z4
         -- z5 -- z6 .. z7 .. z8{down} -- z8{right} .. z9{1,-1}
         -- cycle;
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 9);
 enddef;
 beginchar(21, 1em#, 1em#, 0); "Horned - mask";
@@ -491,7 +491,7 @@ def firzan_outline =
     path pd;
     pd = z6 -- z7 -- z8 -- z19 -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 18);
 enddef;
 beginchar(24, 1em#, 1em#, 0); "Firzan - mask";
@@ -605,7 +605,7 @@ def queen_outline =
         -- z14
         .. z15 .. z16 .. z17 & (reverse pla) & cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 25);
 enddef;
 beginchar(27, 1em#, 1em#, 0); "Queen - mask";
@@ -663,15 +663,14 @@ def king_outline =
 
     path p;
     p = z1 -- z2 -- z3
-        & z3 .. z4{up} .. z5{right} .. z6 .. z7{down}
-        & z7{up} .. z11 .. z12{right} .. z13{down} .. z14
+        & z3 .. z4{up} .. z5{right} .. z6{1,-1} .. z7{down}
+        & z7{up} .. z11{1,1} .. z12{right} .. z13{down} .. z14
         & z14 -- z15 -- z16
         & z16 .. z10{left} .. z1
         & cycle;
     path ph;
-    ph = z6 .. z17{right} .. z11 & z11 -- z7 -- z6 & cycle;
-
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    ph = z6 .. z17{right} .. z11 -- z7 -- cycle;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 20);
 enddef;
 beginchar(30, 1em#, 1em#, 0); "King - mask";
@@ -697,8 +696,15 @@ beginchar(32, 1em#, 1em#, 0); "King - black";
     undraw z2 .. z8{right} .. z15;
     undraw z3 .. z7{right} .. z14;
     cullit;
+    pickup pencircle xscaled 0.08w yscaled 0.08w;
+    undraw z3 .. z4{up} .. z5{right} .. z6 .. z7{down}
+        & z7{up} .. z11 .. z12{right} .. z13{down} .. z14;
+    cullit;
+    undraw z6 .. z17{right} .. z11;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
     draw p;
-    draw ph;
+    draw z6 .. z17{right} .. z11;
     draw z18 -- z20; draw z17 -- z19;
 endchar;
 
@@ -758,7 +764,7 @@ def bishop_outline =
     path po;
     po = z7{left} .. z7.l{up} .. z7.u{right} .. z7.r{down} .. cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 19);
 enddef;
 beginchar(33, 1em#, 1em#, 0); "Bishop - mask";
@@ -871,7 +877,7 @@ def knight_outline =
         & z18 .. z19 .. z20 .. z21{down}
         -- cycle;
 
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
     penlabels(range 1 thru 31);
 enddef;
 beginchar(36, 1em#, 1em#, 0); "Knight - mask";
@@ -904,7 +910,326 @@ beginchar(38, 1em#, 1em#, 0); "Knight - black";
     undrawdot z29;
     pickup pencircle xscaled 0.05w yscaled 0.06w rotated -20;
     undrawdot z26;
-    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
+    draw p;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% ELEPHANT %%%%%%%%%%%%%%%%%%%%
+def elephant_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 5.5*q = w - x13;
+    x2 = 5*q = w - x12;
+    x3 = 4.5*q = w - x11;
+    x4 = 3.5*q = w - x10;
+    x5 = 4*q = w - x9;
+    x6 = 4.5*q = w - x8;
+    x7 = 6*q;
+    x14 = 4.5*q = w - x15;
+    x16 = 4*q = w - x19;
+    x17 = 1*q = w - x20;
+    x18 = 2.5*q = w - x21;
+    x22 = 3*q = w - x24;
+    x23 = 4*q = w - x25;
+
+    y1 = 1*q = y13;
+    y2 = 4.5*q = y12;
+    y3 = 5.5*q = y11;
+    y4 = 8*q = y10;
+    y5 = 10*q = y9;
+    y6 = 10.5*q = y8;
+    y7 = 11*q;
+    y14 = 8.5*q = y15;
+    y16 = 5*q = y19;
+    y17 = 8*q = y20;
+    y18 = 11*q = y21;
+    y22 = 2.5*q = y24;
+    y23 = 1*q = y25;
+
+    path p;
+    p = z1{up} .. z2 .. z3 .. z4 .. z5 .. z6 .. z7{right}
+        .. z8 .. z9 .. z10 .. z11 .. z12 .. z13{down}
+        -- cycle;
+    path pel, per;
+    pel = z16{-1,1} .. z17{up} .. z18{right} .. z6;
+    per = z19{1,1} .. z20{up} .. z21{left} .. z8;
+    path ptl, ptr;
+    ptl = z3 .. z16 .. z22{down} .. z23{1,-1} & z23{-1,1} .. z2;
+    ptr = z11 .. z19 .. z24{down} .. z25{-1,-1} & z25{1,1} .. z12;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 25);
+enddef;
+beginchar(39, 1em#, 1em#, 0); "Elephant - mask";
+    elephant_outline;
+    fill p;
+    fill ptl & z2 -- cycle;
+    fill reverse (ptr & z12 -- cycle);
+    fill pel & z6 -- z5 -- z4 -- z3 -- cycle;
+    fill per & z8 -- z9 -- z10 -- z11 -- cycle;
+endchar;
+beginchar(40, 1em#, 1em#, 0); "Elephant - white";
+    elephant_outline;
+    draw p;
+    draw pel;
+    draw per;
+    draw ptl;
+    draw ptr;
+    pickup pencircle xscaled 0.08w yscaled 0.08w;
+    drawdot z14;
+    drawdot z15;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+beginchar(41, 1em#, 1em#, 0); "Elephant - black";
+    elephant_outline;
+    fill p;
+    fill ptl & z2 -- cycle;
+    fill reverse (ptr & z12 -- cycle);
+    fill pel & z6 -- z5 -- z4 -- z3 -- cycle;
+    fill per & z8 -- z9 -- z10 -- z11 -- cycle;
+    cullit;
+    pickup pencircle xscaled 0.08w yscaled 0.08w;
+    undraw subpath (2,5) of p;
+    undraw subpath (7,10) of p;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
+    fill p;
+    fill ptl & z2 -- cycle;
+    fill reverse (ptr & z12 -- cycle);
+    cullit;
+    pickup pencircle xscaled 0.08w yscaled 0.08w;
+    undrawdot z14;
+    undrawdot z15;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
+    draw p;
+    draw pel;
+    draw per;
+    draw ptl;
+    draw ptr;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% GIRAFFE %%%%%%%%%%%%%%%%%%%%
+def giraffe_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 1*q;
+    x2 = 3*q;
+    x3 = 5.75*q;
+    x4 = 7*q;
+    x5 = 7.25*q;
+    x6 = 8*q;
+    x7 = 9*q;
+    x8 = 10*q;
+    x9 = 11*q;
+    x10 = 10.5*q;
+    x11 = 9.5*q;
+    x12 = 8.5*q;
+    x13 = 7*q;
+    x14 = 6.5*q;
+    x15 = 5.5*q;
+    x16 = 4*q;
+    x17 = 8*q;
+
+    x18 = 6.5*q;
+    x19 = 5*q;
+    x20 = 6.75*q;
+    x21 = 6*q;
+    x22 = 7.75*q;
+
+    y1 = 1*q;
+    y2 = 5*q;
+    y3 = 7.75*q;
+    y4 = 8.5*q;
+    y5 = 8.5*q;
+    y6 = 8.5*q;
+    y7 = 7.5*q;
+    y8 = 6.5*q;
+    y9 = 5.25*q;
+    y10 = 5*q;
+    y11 = 5.25*q;
+    y12 = 5*q;
+    y13 = 5.5*q;
+    y14 = 6*q;
+    y15 = 4*q;
+    y16 = 1*q;
+    y17 = 7*q;
+
+    y18 = 7.25*q;
+    y19 = 8.75*q;
+    y20 = 7.75*q;
+    y21 = 10*q;
+    y22 = 10*q;
+
+    path p;
+    p = z1 .. z2 .. z3 .. z4{right} .. z5 .. z6
+        .. z7 .. z8 .. z9{down} .. z10{left} .. z11{-1,1}
+        & z11{-1,-1} .. z12{left} .. z13{-1,1}
+        & z13 .. z15 .. z16
+        -- cycle;
+
+    path pe;
+    pe = z18 .. z3 .. z19 & z19 .. z20;
+
+    path phl, phr;
+    phl = z20{-1,1} .. {curl 1.5}z21{curl 1.5} .. z4{down};
+    phr = z5{up} .. {curl 1.5}z22{curl 1.5} .. z6{down};
+
+    path psa, psb, psc;
+    psa = (2,1.5)*q -- (3.5,2)*q -- (3,3)*q -- (2.5,2.5)*q -- cycle;
+    psb = (4,3.5)*q -- (5,4)*q -- (4,5)*q -- (3,4)*q -- cycle;
+    psc = (5,5)*q -- (6,5.5)*q -- (5,6.5)*q -- (4.5,5.5)*q -- cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 22);
+enddef;
+beginchar(42, 1em#, 1em#, 0); "Giraffe - mask";
+    giraffe_outline;
+    fill p;
+    fill pe -- cycle;
+    fill phl -- cycle;
+    fill phr -- cycle;
+endchar;
+beginchar(43, 1em#, 1em#, 0); "Giraffe - white";
+    giraffe_outline;
+    draw p;
+    cullit;
+    unfill pe -- cycle;
+    unfill phl -- cycle;
+    cullit;
+    fill psa;
+    fill psb;
+    fill psc;
+    draw pe;
+    draw phl;
+    draw phr;
+    draw z13{-1,1} .. z14;
+    pickup pencircle xscaled 0.06w yscaled 0.08w rotated 20;
+    drawdot z17;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+beginchar(44, 1em#, 1em#, 0); "Giraffe - black";
+    giraffe_outline;
+    fill p;
+    fill pe -- cycle;
+    fill phl -- cycle;
+    fill phr -- cycle;
+    cullit;
+    pickup pencircle xscaled 0.06w yscaled 0.08w rotated 20;
+    undrawdot z17;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
+    unfill psa;
+    unfill psb;
+    unfill psc;
+    cullit;
+    draw p;
+    draw pe;
+    draw phl;
+    draw phr;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% LION %%%%%%%%%%%%%%%%%%%%
+def lion_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 6*q;
+    x2 = 2*q = w - x4;
+    x3 = 6*q;
+
+    x5 = 3*q = w - x8;
+    x6 = 3*q = w - x9;
+    x7 = 4*q = w - x10;
+
+    x11 = 6*q;
+    x12 = 5*q = w - x18;
+    x13 = 3.5*q = w - x17;
+    x14 = 4.5*q = w - x16;
+    x15 = 6*q;
+
+    x19 = 6*q;
+    x20 = 6*q;
+    x21 = 4.75*q = w - x22;
+    x23 = 5.25*q = w - x24;
+    
+    y1 = 1*q;
+    y2 = 9*q = y4;
+    y3 = 11*q;
+
+    y5 = 7.5*q = y8;
+    y6 = 9*q = y9;
+    y7 = 9*q = y10;
+
+    y11 = 3.5*q;
+    y12 = 4.25*q = y18;
+    y13 = 6.5*q = y17;
+    y14 = 8.5*q = y16;
+    y15 = 7*q;
+
+    y19 = 4.75*q;
+    y20 = 5.5*q;
+    y21 = 7*q = y22;
+    y23 = 5.5*q = y24;
+    
+    path p;
+    p = z1{-1,1} .. z2{up}
+        & z2{1,1} .. z3{right} .. z4{1,-1}
+        & z4{down} .. z1{-1,-1}
+        & cycle;
+
+    % looks good large, but scaled down is unclear
+    path pf;
+    pf = z13 -- z14 & z14{right} .. z15{down} & z15{up} .. z16{right} & z16 -- z17
+        & z17{left} .. z18{down} -- z11 -- z12{up} .. z13{left};
+    
+    path pel, per;
+    pel = z5 --- z6 --- z7 --- cycle;
+    per = z8 --- z9 --- z10 --- cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 24);
+enddef;
+beginchar(45, 1em#, 1em#, 0); "Lion - mask";
+    lion_outline;
+    fill p;
+endchar;
+beginchar(46, 1em#, 1em#, 0); "Lion - white";
+    lion_outline;
+    draw p;
+    fill pel;
+    fill per;
+    draw z12 -- z19;
+    draw z18 -- z19;
+    draw z20 -- z19;
+    draw z23 -- z24;
+    %draw pf;
+    pickup pencircle xscaled 0.07w yscaled 0.1w rotated 20;
+    drawdot z21;
+    pickup pencircle xscaled 0.07w yscaled 0.1w rotated -20;
+    drawdot z22;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+beginchar(47, 1em#, 1em#, 0); "Lion - black";
+    lion_outline;
+    fill p;
+    cullit;
+    pickup pencircle xscaled 0.07w yscaled 0.1w rotated 20;
+    undrawdot z21;
+    pickup pencircle xscaled 0.07w yscaled 0.1w rotated -20;
+    undrawdot z22;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    cullit;
+    unfill pel;
+    unfill per;
+    undraw z12 -- z19;
+    undraw z18 -- z19;
+    undraw z20 -- z19;
+    undraw z23 -- z24;
+    %undraw pf;
     cullit;
     draw p;
 endchar;
