@@ -427,10 +427,16 @@ endchar;
 beginchar(22, 1em#, 1em#, 0); "Horned - white";
     horned_outline;
     draw p;
+    draw z2 -- z8;
+    fill 1/2[z3,z5] -- 1/2[z5,z7] -- 1/2[z7,z3] -- cycle;
 endchar;
 beginchar(23, 1em#, 1em#, 0); "Horned - black";
     horned_outline;
     fill p;
+    cullit;
+    undraw z2 -- z8;
+    unfill 1/2[z3,z5] -- 1/2[z5,z7] -- 1/2[z7,z3] -- cycle;
+    cullit;
     draw p;
 endchar;
 
@@ -690,6 +696,94 @@ beginchar(32, 1em#, 1em#, 0); "King - black";
     draw p;
     draw ph;
     draw z18 -- z20; draw z17 -- z19;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% BISHOP %%%%%%%%%%%%%%%%%%%%
+def bishop_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 1*q = w - x12;
+    x2 = 1*q = w - x11;
+    x3 = 6*q;
+    x4 = 3*q = w - x10;
+    x5 = 4*q = w - x9;
+    x6 = 3*q = w - x8;
+    x7 = 6*q;
+    x13 = 6*q;
+    x14 = 6*q;
+    x15 = 6*q;
+    x16 = 6*q;
+    x17 = 5*q;
+    x18 = 6*q;
+    x19 = 7*q;
+
+    y1 = 1*q = y12;
+    y2 = 2*q = y11;
+    y3 = 2.5*q;
+    y4 = 3.5*q = y10;
+    y5 = 5*q = y9;
+    y6 = 7*q = y8;
+    y7 = 10*q;
+    y13 = 1.5*q;
+    y14 = 4.25*q;
+    y15 = 5.5*q;
+    y16 = 6.5*q;
+    y17 = 7.5*q;
+    y18 = 8.5*q;
+    y19 = 7.5*q;
+
+    z7.u = z7 + ( 0.0*q,+1.0*q);
+    z7.l = z7 + (-0.5*q,+0.5*q);
+    z7.r = z7 + (+0.5*q,+0.5*q);
+
+    path p;
+    p = z1 -- z2 & z2{1,1} .. z3{1,1}
+        & z3{left} .. z4{-1,1}
+        & z4 -- z5
+        & z5 .. z6{up} .. z7{1,1}
+        & z7{1,-1} .. z8{down} .. z9
+        & z9 -- z10
+        & z10{-1,-1} .. z3{left}
+        & z3{1,-1} .. z11{1,-1}
+        & z11 -- z12
+        & z12{-1,1} .. z13{-1,1}
+        & z13{-1,-1} .. z1{-1,-1}
+        & cycle;
+
+    path po;
+    po = z7{left} .. z7.l{up} .. z7.u{right} .. z7.r{down} .. cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    penlabels(range 1 thru 20);
+enddef;
+beginchar(33, 1em#, 1em#, 0); "Bishop - mask";
+    bishop_outline;
+    fill p;
+    fill po;
+endchar;
+beginchar(34, 1em#, 1em#, 0); "Bishop - white";
+    bishop_outline;
+    draw p;
+    draw po;
+    draw z4 .. z14{right} .. z10;
+    draw z5 .. z15{right} .. z9;
+    draw z16 -- z18;
+    draw z17 -- z19;
+endchar;
+beginchar(35, 1em#, 1em#, 0); "Bishop - black";
+    bishop_outline;
+    fill p;
+    cullit;
+    undraw z4 .. z14{right} .. z10;
+    undraw z5 .. z15{right} .. z9;
+    undraw z16 -- z18;
+    undraw z17 -- z19;
+    cullit;
+    unfill po;
+    cullit;
+    draw p;
+    draw po;
 endchar;
 
 
