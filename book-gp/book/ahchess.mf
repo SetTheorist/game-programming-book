@@ -451,6 +451,8 @@ def firzan_outline =
     x15 = 4.5*q = w - x18;
     x16 = 4.5*q = w - x17;
 
+    x19 = 6*q;
+
     y1 = 1*q = y13;
     y2 = 2*q = y12;
     y3 = 3*q = y11;
@@ -463,6 +465,8 @@ def firzan_outline =
     y15 = 4.5*q = y18;
     y16 = 7.5*q = y17;
 
+    y19 = 9*q;
+
     path p;
     p = z1 -- z2 -- z3 .. z4{up} .. z5 .. z6{right}
         -- z7
@@ -474,6 +478,8 @@ def firzan_outline =
         -- z17 -- (1/2[z14, 1/2[z17,z18]])
         -- z18 -- (1/2[z14, 1/2[z18,z15]])
         -- cycle;
+    path pd;
+    pd = z6 -- z7 -- z8 -- z19 -- cycle;
 
     pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
     penlabels(range 1 thru 18);
@@ -485,7 +491,10 @@ endchar;
 beginchar(25, 1em#, 1em#, 0); "Firzan - white";
     firzan_outline;
     draw p;
+    draw z2 -- z12;
+    draw z3 -- z11;
     fill px;
+    fill pd;
     cullit;
     undrawdot z14;
     cullit;
@@ -494,10 +503,195 @@ beginchar(26, 1em#, 1em#, 0); "Firzan - black";
     firzan_outline;
     fill p;
     cullit;
+    undraw z2 -- z12;
+    undraw z3 -- z11;
+    cullit;
     unfill px;
+    cullit;
+    unfill pd;
     cullit;
     drawdot z14;
     draw p;
 endchar;
+
+%%%%%%%%%%%%%%%%%%%% QUEEN %%%%%%%%%%%%%%%%%%%%
+def queen_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x23 = 1*q = w - x25;
+    x24 = 6*q;
+    y23 = 8.5*q = y25;
+    y24 = 10.5*q;
+
+    path crown_arc;
+    crown_arc = z23 .. z24{right} .. z25;
+
+    x1 = 2*q = w - x17;
+    x2 = 2.5*q = w - x16;
+    x3 = 2.5*q = w - x15;
+    x4 = 2*q = w - x14;
+    x18 = 6*q;
+    x19 = 6*q;
+    x20 = 6*q;
+    x21 = 6*q;
+    x22 = 6*q;
+
+    y1 = 2*q = y17;
+    y2 = 3*q = y16;
+    y3 = 4*q = y15;
+    y4 = 5*q = y14;
+    y18 = 1*q;
+    y19 = 3*q;
+    y20 = 4*q;
+    y21 = 5*q;
+    y22 = 6*q;
+
+    z5 = point 0*2/4 of crown_arc;
+    z7 = point 1*2/4 of crown_arc;
+    z9 = point 2*2/4 of crown_arc;
+    z11 = point 3*2/4 of crown_arc;
+    z13 = point 4*2/4 of crown_arc;
+
+    z5.l = z5 + (-0.5*q, +0.5*q);
+    z5.u = z5 + ( 0.0*q, +1.0*q);
+    z5.r = z5 + (+0.5*q, +0.5*q);
+    z7.l = z7 + (-0.5*q, +0.5*q);
+    z7.u = z7 + ( 0.0*q, +1.0*q);
+    z7.r = z7 + (+0.5*q, +0.5*q);
+    z9.l = z9 + (-0.5*q, +0.5*q);
+    z9.u = z9 + ( 0.0*q, +1.0*q);
+    z9.r = z9 + (+0.5*q, +0.5*q);
+    z11.l = z11 + (-0.5*q, +0.5*q);
+    z11.u = z11 + ( 0.0*q, +1.0*q);
+    z11.r = z11 + (+0.5*q, +0.5*q);
+    z13.l = z13 + (-0.5*q, +0.5*q);
+    z13.u = z13 + ( 0.0*q, +1.0*q);
+    z13.r = z13 + (+0.5*q, +0.5*q);
+
+    path pla, plb, plc, pld, ple;
+    pla = z1{1,-1} .. z18{right} .. z17{1,1};
+    plb = z1{1,1} .. z19{right} .. z17{1,-1};
+    plc = z2{1,1} .. z20{right} .. z16{1,-1};
+    pld = z3{1,1} .. z21{right} .. z15{1,-1};
+    ple = z4{1,1} .. z22{right} .. z14{1,-1};
+
+    z6 = point 1*2/8 of ple;
+    z8 = point 3*2/8 of ple;
+    z10 = point 5*2/8 of ple;
+    z12 = point 7*2/8 of ple;
+
+    path p;
+    p = z1 .. z2 .. z3 .. z4
+        -- z5 & (z5{left} .. z5.l{up} .. z5.u{right} .. z5{left}) & z5
+        -- z6
+        -- z7 & (z7{left} .. z7.l{up} .. z7.u{right} .. z7{left}) & z7
+        -- z8
+        -- z9 & (z9{left} .. z9.l{up} .. z9.u{right} .. z9{left}) & z9
+        -- z10
+        -- z11 & (z11{left} .. z11.l{up} .. z11.u{right} .. z11{left}) & z11
+        -- z12
+        -- z13 & (z13{left} .. z13.l{up} .. z13.u{right} .. z13{left}) & z13
+        -- z14
+        .. z15 .. z16 .. z17 & (reverse pla) & cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    penlabels(range 1 thru 25);
+enddef;
+beginchar(27, 1em#, 1em#, 0); "Queen - mask";
+    queen_outline;
+    fill p;
+endchar;
+beginchar(28, 1em#, 1em#, 0); "Queen - white";
+    queen_outline;
+    draw p;
+    draw plb;
+    draw plc;
+    draw pld;
+    draw ple;
+endchar;
+beginchar(29, 1em#, 1em#, 0); "Queen - black";
+    queen_outline;
+    fill p;
+    cullit;
+    undraw plb;
+    undraw plc;
+    undraw pld;
+    %undraw ple;
+    cullit;
+    draw p;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% KING %%%%%%%%%%%%%%%%%%%%
+def king_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 3*q = w - x16;
+    x2 = 3*q = w - x15;
+    x3 = 3*q = w - x14;
+    x4 = 1*q = w - x13;
+    x5 = 2.5*q = w - x12;
+    x6 = 4.5*q = w - x11;
+    x7 = x8 = x9 = x10 = 6*q;
+    x17 = x19 = 6*q;
+    x18 = 5*q = w - x20;
+
+    y1 = 1.5*q = y16;
+    y2 = 2.5*q = y15;
+    y3 = 3.5*q = y14;
+    y4 = 8*q = y13;
+    y5 = 9*q = y12;
+    y6 = 8*q = y11;
+    y7 = 4*q;
+    y8 = 3*q;
+    y9 = 2*q;
+    y10 = 1*q;
+    y18 = y20 = 10*q;
+    y17 = 9*q;
+    y19 = 11*q;
+
+    path p;
+    p = z1 -- z2 -- z3
+        & z3 .. z4{up} .. z5{right} .. z6 .. z7{down}
+        & z7{up} .. z11 .. z12{right} .. z13{down} .. z14
+        & z14 -- z15 -- z16
+        & z16 .. z10{left} .. z1
+        & cycle;
+    path ph;
+    ph = z6 .. z17{right} .. z11 & z11 -- z7 -- z6 & cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    penlabels(range 1 thru 20);
+enddef;
+beginchar(30, 1em#, 1em#, 0); "King - mask";
+    king_outline;
+    fill p;
+    fill ph;
+endchar;
+beginchar(31, 1em#, 1em#, 0); "King - white";
+    king_outline;
+    draw p;
+    draw z6 .. z17{right} .. z11;
+    draw z1 .. z9{right} .. z16;
+    draw z2 .. z8{right} .. z15;
+    draw z3 .. z7{right} .. z14;
+    draw z18 -- z20; draw z17 -- z19;
+endchar;
+beginchar(32, 1em#, 1em#, 0); "King - black";
+    king_outline;
+    fill p;
+    fill ph;
+    cullit;
+    undraw z1 .. z9{right} .. z16;
+    undraw z2 .. z8{right} .. z15;
+    undraw z3 .. z7{right} .. z14;
+    cullit;
+    draw p;
+    draw ph;
+    draw z18 -- z20; draw z17 -- z19;
+endchar;
+
+
 
 end
