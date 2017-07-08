@@ -186,6 +186,7 @@ endchar;
 beginchar(8, 1em#, 1em#, 0); "Pawn1 - black";
     pawn_one_outline;
     fill p;
+    cullit;
     draw p;
 endchar;
 
@@ -228,6 +229,7 @@ endchar;
 beginchar(11, 1em#, 1em#, 0); "Pawn2 - black";
     pawn_two_outline;
     fill p;
+    cullit;
     draw p;
 endchar;
 
@@ -270,6 +272,7 @@ endchar;
 beginchar(14, 1em#, 1em#, 0); "Pawn3 - black";
     pawn_three_outline;
     fill p;
+    cullit;
     draw p;
 endchar;
 
@@ -312,6 +315,7 @@ endchar;
 beginchar(17, 1em#, 1em#, 0); "Pawn4 - black";
     pawn_four_outline;
     fill p;
+    cullit;
     draw p;
 endchar;
 
@@ -755,7 +759,7 @@ def bishop_outline =
     po = z7{left} .. z7.l{up} .. z7.u{right} .. z7.r{down} .. cycle;
 
     pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
-    penlabels(range 1 thru 20);
+    penlabels(range 1 thru 19);
 enddef;
 beginchar(33, 1em#, 1em#, 0); "Bishop - mask";
     bishop_outline;
@@ -784,6 +788,125 @@ beginchar(35, 1em#, 1em#, 0); "Bishop - black";
     cullit;
     draw p;
     draw po;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% KNIGHT %%%%%%%%%%%%%%%%%%%%
+def knight_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 4*q;
+    x2 = 6.5*q;
+    x3 = 6.5*q;
+    x4 = 3*q;
+    x5 = 2.75*q;
+    x6 = 2*q;
+    x7 = 1.25*q;
+    x8 = 2.5*q;
+    x9 = 3*q;
+    x10 = 3.9*q;
+    x11 = 3.5*q;
+    x12 = 4.25*q;
+    x13 = 4.5*q;
+    x14 = 5*q;
+    x15 = 5*q;
+    x16 = 5.5*q;
+    x17 = 6.25*q;
+    x18 = 6.25*q;
+    x19 = 9*q;
+    x20 = 10*q;
+    x21 = 11*q;
+    x22 = 10.5*q;
+    x23 = 10.25*q;
+    x24 = 9*q;
+    x25 = 6.5*q;
+    x26 = 2*q;
+    x27 = 3.5*q;
+    x28 = 4.25*q;
+    x29 = 4*q;
+    x30 = 4*q;
+    x31 = 3*q;
+
+    y1 = 1*q;
+    y2 = 6*q;
+    y3 = 7.75*q;
+    y4 = 3.8*q;
+    y5 = 4*q;
+    y6 = 4*q;
+    y7 = 5*q;
+    y8 = 7*q;
+    y9 = 8.75*q;
+    y10 = 9*q;
+    y11 = 11*q;
+    y12 = 10.25*q;
+    y13 = 10*q;
+    y14 = 10*q;
+    y15 = 9.5*q;
+    y16 = 11*q;
+    y17 = 9.25*q;
+    y18 = 10*q;
+    y19 = 8.5*q;
+    y20 = 7*q;
+    y21 = 1*q;
+    y22 = 1*q;
+    y23 = 5*q;
+    y24 = 8*q;
+    y25 = 9.75*q;
+    y26 = 5*q;
+    y27 = 7.5*q;
+    y28 = 8.5*q;
+    y29 = 8*q;
+    y30 = 9.5*q;
+    y31 = 4.5*q;
+
+    path p;
+    p = z1{up} .. z2{up}
+        & z2{-1,-1} .. z4{-1,-1} & z4 .. z5{up}
+        & z5 .. z7 .. z8 .. z9 .. z10{right}
+        & z10{left} .. z11{up}
+        & z11 .. z12 .. z13{1,-1}
+        & z13{right} .. z14
+        & z14{up} .. z16{up}
+        & z16 .. z18
+        & z18 .. z19 .. z20 .. z21{down}
+        -- cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    penlabels(range 1 thru 31);
+enddef;
+beginchar(36, 1em#, 1em#, 0); "Knight - mask";
+    knight_outline;
+    fill p;
+endchar;
+beginchar(37, 1em#, 1em#, 0); "Knight - white";
+    knight_outline;
+    draw p;
+    draw z15 .. z14;
+    draw z17 .. z18{z16-z18};
+    draw z3 .. z2{-1,-1};
+    draw z5 .. z31{up};
+    draw z22 .. z23 .. z24 .. z25;
+    draw z30 .. z13{right};
+    pickup pencircle xscaled 0.04w yscaled 0.08w rotated -30;
+    drawdot z29;
+    pickup pencircle xscaled 0.05w yscaled 0.06w rotated -20;
+    drawdot z26;
+endchar;
+beginchar(38, 1em#, 1em#, 0); "Knight - black";
+    knight_outline;
+    fill p;
+    cullit;
+    undraw z3 .. z2{-1,-1};
+    undraw z5 .. z31{up};
+    undraw z22 .. z23 .. z24 .. z25;
+    cullit;
+    pickup pencircle xscaled 0.04w yscaled 0.08w rotated -30;
+    undrawdot z29;
+    pickup pencircle xscaled 0.05w yscaled 0.06w rotated -20;
+    undrawdot z26;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;% rotated 30;
+    cullit;
+    draw p;
 endchar;
 
 
