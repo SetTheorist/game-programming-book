@@ -331,6 +331,12 @@ the examples into their language of choice.
 \char27\char28\char29 \\
 \char30\char31\char32 \\
 \char33\char34\char35 \\
+\char36\char37\char38 \\
+\char39\char40\char41 \\
+\char42\char43\char44 \\
+\char45\char46\char47 \\
+\char48\char49\char50 \\
+\char51\char52\char53 \\
 }
 
 \chessdiagram{4}{3}{}
@@ -456,15 +462,15 @@ the examples into their language of choice.
     \foreach\x in {0,2,4,6,8,10} {%
         \draw(\x,1)+(0.5,0.5)node[yellow]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
     }%
-    \draw(2,0)+(0.5,0.5)node[yellow]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
+    \draw(1,0)+(0.5,0.5)node[yellow]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
     \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
     \draw(10,0)+(0.5,0.5)node[yellow]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
     %%%%
     \foreach\x in {0,2,4,6,8,10} {%
-        \draw(\x,6)+(0.5,0.5)node[red]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
+        \draw(\x,6)+(1.5,0.5)node[red]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
     }%
-    \draw(2,7)+(0.5,0.5)node[red]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
-    \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
+    \draw(1,7)+(0.5,0.5)node[red]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
+    \draw(5,7)+(0.5,0.5)node[red]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
     \draw(10,7)+(0.5,0.5)node[red]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
 }\\
 \tikzchessboard{8}{12}{green}{%
@@ -474,10 +480,12 @@ the examples into their language of choice.
     \draw(0,0)+(0.5,0.5)node[yellow]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
     \draw(1,0)+(0.5,0.5)node[yellow]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
     \draw(2,0)+(0.5,0.5)node[yellow]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
+    \draw(3,0)+(0.5,0.5)node[yellow]{\dragonfont\char33}node[black]{\dragonfont\char34};%thief
     \draw(4,0)+(0.5,0.5)node[yellow]{\dragonfont\char24}node[black]{\dragonfont\char25};%cleric
     \draw(5,0)+(0.5,0.5)node[yellow]{\dragonfont\char12}node[black]{\dragonfont\char13};%mage
     \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char21}node[black]{\dragonfont\char22};%king
     \draw(7,0)+(0.5,0.5)node[yellow]{\dragonfont\char3}node[black]{\dragonfont\char4};%paladin
+    \draw(8,0)+(0.5,0.5)node[yellow]{\dragonfont\char33}node[black]{\dragonfont\char34};%thief
     \draw(9,0)+(0.5,0.5)node[yellow]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
     \draw(10,0)+(0.5,0.5)node[yellow]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
     \draw(11,0)+(0.5,0.5)node[yellow]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
@@ -488,15 +496,30 @@ the examples into their language of choice.
     \draw(0,7)+(0.5,0.5)node[red]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
     \draw(1,7)+(0.5,0.5)node[red]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
     \draw(2,7)+(0.5,0.5)node[red]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
-    \draw(4,7)+(0.5,0.5)node[red]{\dragonfont\char24}node[black]{\dragonfont\char25};%cleric
-    \draw(5,7)+(0.5,0.5)node[red]{\dragonfont\char12}node[black]{\dragonfont\char13};%mage
-    \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char21}node[black]{\dragonfont\char22};%king
-    \draw(7,7)+(0.5,0.5)node[red]{\dragonfont\char3}node[black]{\dragonfont\char4};%paladin
+    \draw(3,7)+(0.5,0.5)node[red]{\dragonfont\char33}node[black]{\dragonfont\char34};%thief
+    \draw(4,7)+(0.5,0.5)node[red]{\dragonfont\char3}node[black]{\dragonfont\char4};%paladin
+    \draw(5,7)+(0.5,0.5)node[red]{\dragonfont\char21}node[black]{\dragonfont\char22};%king
+    \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char12}node[black]{\dragonfont\char13};%mage
+    \draw(7,7)+(0.5,0.5)node[red]{\dragonfont\char24}node[black]{\dragonfont\char25};%cleric
+    \draw(8,7)+(0.5,0.5)node[red]{\dragonfont\char33}node[black]{\dragonfont\char34};%thief
     \draw(9,7)+(0.5,0.5)node[red]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
     \draw(10,7)+(0.5,0.5)node[red]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
     \draw(11,7)+(0.5,0.5)node[red]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
 }\\
 \tikzchessboard{8}{12}{red}{%
+    \foreach\x in {1,3,5,7,9,11} {%
+        \draw(\x,1)+(0.5,0.5)node[yellow]{\dragonfont\char36}node[black]{\dragonfont\char37};%dwarf
+    }%
+    \draw(2,0)+(0.5,0.5)node[yellow]{\dragonfont\char39}node[black]{\dragonfont\char40};%basilisk
+    \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char42}node[black]{\dragonfont\char43};%elemental
+    \draw(9,0)+(0.5,0.5)node[yellow]{\dragonfont\char39}node[black]{\dragonfont\char40};%basilisk
+    %%%%
+    \foreach\x in {1,3,5,7,9,11} {%
+        \draw(\x,6)+(-0.5,0.5)node[red]{\dragonfont\char36}node[black]{\dragonfont\char37};%dwarf
+    }%
+    \draw(2,7)+(0.5,0.5)node[red]{\dragonfont\char39}node[black]{\dragonfont\char40};%basilisk
+    \draw(5,7)+(0.5,0.5)node[red]{\dragonfont\char42}node[black]{\dragonfont\char43};%elemental
+    \draw(9,7)+(0.5,0.5)node[red]{\dragonfont\char39}node[black]{\dragonfont\char40};%basilisk
 }\\
 \end{tabular}\end{center}
 %%%%%%%%%%%%%%%%%%%%

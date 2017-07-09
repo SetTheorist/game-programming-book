@@ -632,7 +632,7 @@ def griffon_outline =
     x27 = 8*q;
     x28 = 7*q;
     x29 = 4*q;
-    x30 = 6*q;
+    x30 = 5.5*q;
     x31 = 5*q;
     x32 = 5*q;
     x33 = 5*q;
@@ -691,6 +691,213 @@ beginchar(31, 1em#, 1em#, 0); "Griffon - white";
     draw z11 .. z33;
     pickup pencircle xscaled 0.08w yscaled 0.05w rotated 30;
     drawdot z34;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% THIEF %%%%%%%%%%%%%%%%%%%%
+def thief_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 3*q = w - x15;
+    x2 = 3*q = w - x14;
+    x3 = 5*q = w - x13;
+    x4 = 2*q = w - x12;
+    x5 = 3*q = w - x11;
+    x6 = 3*q = w - x10;
+    x7 = 5*q = w - x9;
+    x8 = 6*q;
+
+    y1 = 1*q = y15;
+    y2 = 2*q = y14;
+    y3 = 2*q = y13;
+    y4 = 4*q = y12;
+    y5 = 8*q = y11;
+    y6 = 4*q = y10;
+    y7 = 3*q = y9;
+    y8 = 11*q;
+
+    path p;
+    p = reverse (
+        z1{1,1} .. {right}z3{left}
+        .. z4{up} .. {up}z5{down}
+        .. z6 .. {right}z7{up} .. {up}z8{down}
+        .. {down}z9{right} .. z10 .. {up}z11{down}
+        .. z12{down}
+        .. {left}z13{right} .. {1,-1}z15
+        -- cycle);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 15);
+enddef;
+beginchar(33, 1em#, 1em#, 0); "Thief - mask";
+    thief_outline;
+    fill p;
+endchar;
+beginchar(34, 1em#, 1em#, 0); "Thief - white";
+    thief_outline;
+    draw p;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% DWARF %%%%%%%%%%%%%%%%%%%%
+def dwarf_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 1.5*q;
+    x3 = 2*q;
+    x4 = 2.75*q;
+    %x5 = 3.5*q;
+    x7 = 7*q;
+    x8 = 9*q;
+    x9 = 8.5*q;
+    x10 = 9*q;
+    x11 = 11*q;
+    x12 = 8*q;
+    x13 = 6.5*q;
+    x14 = 5*q;
+    x15 = 6.5*q;
+
+    y1 = 1*q;
+    y3 = 7*q;
+    y4 = 11*q;
+    %y5 = 10*q;
+    y7 = 10*q;
+    y8 = 7.75*q;
+    y9 = 6*q;
+    y10 = 6*q;
+    y11 = 1*q;
+    y12 = 1*q;
+    y13 = 3*q;
+    y14 = 1*q;
+    y15 = 8.5*q;
+
+    z2 = 1/10[z3,z7];
+    z6 = 1/2[z3,z7];
+
+    path p;
+    p = reverse (
+        z1 -- z2 -- z3{(z7-z2) rotated 90}
+        .. z4{z7-z3} .. {(z7-z2) rotated -90}z7
+        .. {right}z8{-1,-1} .. z9
+        -- z10 -- z11 -- z12 -- z14
+        -- cycle);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 15);
+enddef;
+beginchar(36, 1em#, 1em#, 0); "Dwarf - mask";
+    dwarf_outline;
+    fill p;
+endchar;
+beginchar(37, 1em#, 1em#, 0); "Dwarf - white";
+    dwarf_outline;
+    draw p;
+    draw z3 -- z7;
+    draw z2 .. z13 .. z12;
+    draw z6 .. {right}z9;
+    pickup pencircle xscaled 0.08w yscaled 0.05w rotated 30;
+    drawdot z15;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% BASILISK %%%%%%%%%%%%%%%%%%%%
+def basilisk_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 2*q;
+    x2 = 6*q;
+    x3 = 6*q;
+    x4 = 10*q;
+    x5 = 8*q;
+    x6 = 5*q;
+    x7 = 3*q;
+    x8 = 8.5*q;
+    x9 = 9*q;
+    x10 = 11*q;
+    x11 = 10*q;
+    x12 = 8*q;
+
+    y1 = 5*q;
+    y2 = 1*q;
+    y3 = 2*q;
+    y4 = 4*q;
+    y5 = 4*q;
+    y6 = 8*q;
+    y7 = 8*q;
+    y8 = 10*q;
+    y9 = 9*q;
+    y10 = 8*q;
+    y11 = 10*q;
+    y12 = 11*q;
+
+    z13 = (0.5[z7,z5]) + (+0.25,-0.5)*q;
+    z14 = (0.5[z4,z6]) + (-0.25,+0.5)*q;
+
+    path p;
+    p = z1{down} .. z2{right} .. z4{up} .. z14 .. z6{up} .. {right}z9
+        -- z8{left} .. z7{down} .. z13 .. z5{down} .. z3{left} .. {up}cycle;
+
+    path ph;
+    ph = z9 -- z10 -- z11 -- z12 -- cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 14);
+enddef;
+beginchar(39, 1em#, 1em#, 0); "Basilisk - mask";
+    basilisk_outline;
+    fill p;
+    fill ph;
+endchar;
+beginchar(40, 1em#, 1em#, 0); "Basilisk - white";
+    basilisk_outline;
+    draw p;
+    draw ph;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% ELEMENTAL %%%%%%%%%%%%%%%%%%%%
+def elemental_outline =
+    numeric q;
+    q = round 1/12em;
+
+    path p;
+    p = (0,0)*q -- (2,1)*q -- (3,3)*q -- (1,2)*q -- cycle;
+
+    path pdl, pdr, pul, pur, pu, pl, pr, pd;
+    pdl = p shifted ((1,1)*q);
+    pdr = (p rotated 90) shifted ((11,1)*q);
+    pul = (p rotated 90) shifted ((4,8)*q);
+    pur = p shifted ((8,8)*q);
+    pu = (p rotated 45) shifted ((6,6)*q);
+    pr = (p rotated -45) shifted ((6,6)*q);
+    pd = (p rotated 45) shifted ((6,2)*q);
+    pl = (p rotated -45) shifted ((2,6)*q);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 14);
+enddef;
+beginchar(42, 1em#, 1em#, 0); "Elemental - mask";
+    elemental_outline;
+    fill pdl;
+    fill pdr;
+    fill pul;
+    fill pur;
+    fill pu;
+    fill pr;
+    fill pd;
+    fill pl;
+endchar;
+beginchar(43, 1em#, 1em#, 0); "Elemental - white";
+    elemental_outline;
+    draw pdl;
+    draw pdr;
+    draw pul;
+    draw pur;
+    draw pu;
+    draw pr;
+    draw pd;
+    draw pl;
 endchar;
 
 
