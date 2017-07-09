@@ -604,5 +604,94 @@ beginchar(28, 1em#, 1em#, 0); "Unicorn - white";
     drawdot z26;
 endchar;
 
+%%%%%%%%%%%%%%%%%%%% GRIFFON %%%%%%%%%%%%%%%%%%%%
+def griffon_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 2*q;
+    x8 = 4*q;
+    x9 = 3*q;
+    x10 = 2*q;
+    x11 = 1.25*q;
+    x12 = 1*q;
+    x13 = 6*q;
+    x14 = 7*q;
+    x15 = 7.75*q;
+    x16 = 7*q;
+    x17 = 9*q;
+    x18 = 10*q;
+    x19 = 11*q;
+    x20 = 11*q;
+    x21 = 10*q;
+    x22 = 9*q;
+    x23 = 10*q;
+    x24 = 9*q;
+    x25 = 9*q;
+    x26 = 10*q;
+    x27 = 8*q;
+    x28 = 7*q;
+    x29 = 4*q;
+    x30 = 6*q;
+    x31 = 5*q;
+    x32 = 5*q;
+    x33 = 5*q;
+    x34 = 8.5*q;
+
+    y1 = 1*q;
+    y8 = 7*q;
+    y9 = 8*q;
+    y10 = 9*q;
+    y11 = 10*q;
+    y12 = 11*q;
+    y13 = 11*q;
+    y14 = 9*q;
+    y15 = 10*q;
+    y16 = 11*q;
+    y17 = 11*q;
+    y18 = 10*q;
+    y19 = 9*q;
+    y20 = 8.5*q;
+    y21 = 9*q;
+    y22 = 8*q;
+    y23 = 5.5*q;
+    y24 = 3.5*q;
+    y25 = 2*q;
+    y26 = 1*q;
+    y27 = 1*q;
+    y28 = 4*q;
+    y29 = 2*q;
+    y30 = 1*q;
+    y31 = 8*q;
+    y32 = 9*q;
+    y33 = 10*q;
+    y34 = 9.5*q;
+
+    path p;
+    p = reverse (z1{up} .. {1,1}z8{-1,1}
+        .. z9 .. z10 .. z11 .. {up}z12
+        -- z13 -- z14{1,1} .. z15{up} .. {-1,1}z16
+        -- z17{down} .. z18{right} .. z19{down} .. {down}z20{up}
+        .. z21{left} .. z22{down} .. z23{down} .. z24{down}
+        .. z25 .. z26 -- z27{up} .. {up}z28{left} .. {down}z29{right} .. {1,-1}z30
+        -- cycle);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 34);
+enddef;
+beginchar(30, 1em#, 1em#, 0); "Griffon - mask";
+    griffon_outline;
+    fill p;
+endchar;
+beginchar(31, 1em#, 1em#, 0); "Griffon - white";
+    griffon_outline;
+    draw p;
+    draw z9 .. z31;
+    draw z10 .. z32;
+    draw z11 .. z33;
+    pickup pencircle xscaled 0.08w yscaled 0.05w rotated 30;
+    drawdot z34;
+endchar;
+
 
 end;

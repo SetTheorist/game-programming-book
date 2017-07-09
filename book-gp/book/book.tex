@@ -456,12 +456,16 @@ the examples into their language of choice.
     \foreach\x in {0,2,4,6,8,10} {%
         \draw(\x,1)+(0.5,0.5)node[yellow]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
     }%
+    \draw(2,0)+(0.5,0.5)node[yellow]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
     \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
+    \draw(10,0)+(0.5,0.5)node[yellow]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
     %%%%
     \foreach\x in {0,2,4,6,8,10} {%
         \draw(\x,6)+(0.5,0.5)node[red]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
     }%
+    \draw(2,7)+(0.5,0.5)node[red]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
     \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
+    \draw(10,7)+(0.5,0.5)node[red]{\dragonfont\char30}node[black]{\dragonfont\char31};%griffon
 }\\
 \tikzchessboard{8}{12}{green}{%
     \foreach\x in {0,...,11} {%
