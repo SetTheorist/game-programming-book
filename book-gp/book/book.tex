@@ -267,7 +267,28 @@ the examples into their language of choice.
 }
 
 %{\newfont\testahchessfont{fsahchess10}\testahchessfont}
-\newfont\ahfont{ahchess}{\ahfont
+{\newfont\ahfont{ahchess scaled 2000}{\ahfont
+\ \\
+\char0\char1\char2 \\
+\char3\char4\char5 \\
+\char6\char7\char8 \\
+\char9\char10\char11 \\
+\char12\char13\char14 \\
+\char15\char16\char17 \\
+\char18\char19\char20 \\
+\char21\char22\char23 \\
+\char24\char25\char26 \\
+\char27\char28\char29 \\
+\char30\char31\char32 \\
+\char33\char34\char35 \\
+\char36\char37\char38 \\
+\char39\char40\char41 \\
+\char42\char43\char44 \\
+\char45\char46\char47 \\
+\char48\char49\char50 \\
+\char51\char52\char53 \\
+}}
+\newfont\ahfont{ahchess scaled 1200}{\ahfont
 \ \\
 \char0\char1\char2 \\
 \char3\char4\char5 \\
@@ -295,6 +316,21 @@ the examples into their language of choice.
     \char18 \char19 \char20 \char21 \char22 \char23 \\
     \char24 \char25 \char26 \char27 \char28 \char29 \\
     \char30 \char31 \char32 \char33 \char34 \char35 \\
+}
+\newfont\dragonfont{dragonchess scaled 1200}{\dragonfont
+\ \\
+\char0\char1\char2 \\
+\char3\char4\char5 \\
+\char6\char7\char8 \\
+\char9\char10\char11 \\
+\char12\char13\char14 \\
+\char15\char16\char17 \\
+\char18\char19\char20 \\
+\char21\char22\char23 \\
+\char24\char25\char26 \\
+\char27\char28\char29 \\
+\char30\char31\char32 \\
+\char33\char34\char35 \\
 }
 
 \chessdiagram{4}{3}{}
@@ -414,11 +450,53 @@ the examples into their language of choice.
 
 \tikzchessboard{8}{12}{black}{}
 
+%%%%%%%%%%%%%%%%%%%%
 \begin{center}\begin{tabular}{c}
-\tikzchessboard{8}{12}{blue}{}\\
-\tikzchessboard{8}{12}{green}{}\\
-\tikzchessboard{8}{12}{red}{}\\
+\tikzchessboard{8}{12}{blue}{%
+    \foreach\x in {0,2,4,6,8,10} {%
+        \draw(\x,1)+(0.5,0.5)node[yellow]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
+    }%
+    \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
+    %%%%
+    \foreach\x in {0,2,4,6,8,10} {%
+        \draw(\x,6)+(0.5,0.5)node[red]{\dragonfont\char0}node[black]{\dragonfont\char1};%sylph
+    }%
+    \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char15}node[black]{\dragonfont\char16};%dragon
+}\\
+\tikzchessboard{8}{12}{green}{%
+    \foreach\x in {0,...,11} {%
+        \draw(\x,1)+(0.5,0.5)node[yellow]{\dragonfont\char6}node[black]{\dragonfont\char7};%warrior
+    }%
+    \draw(0,0)+(0.5,0.5)node[yellow]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
+    \draw(1,0)+(0.5,0.5)node[yellow]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
+    \draw(2,0)+(0.5,0.5)node[yellow]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
+    \draw(4,0)+(0.5,0.5)node[yellow]{\dragonfont\char24}node[black]{\dragonfont\char25};%cleric
+    \draw(5,0)+(0.5,0.5)node[yellow]{\dragonfont\char12}node[black]{\dragonfont\char13};%mage
+    \draw(6,0)+(0.5,0.5)node[yellow]{\dragonfont\char21}node[black]{\dragonfont\char22};%king
+    \draw(7,0)+(0.5,0.5)node[yellow]{\dragonfont\char3}node[black]{\dragonfont\char4};%paladin
+    \draw(9,0)+(0.5,0.5)node[yellow]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
+    \draw(10,0)+(0.5,0.5)node[yellow]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
+    \draw(11,0)+(0.5,0.5)node[yellow]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
+    %%%%
+    \foreach\x in {0,...,11} {%
+        \draw(\x,6)+(0.5,0.5)node[red]{\dragonfont\char6}node[black]{\dragonfont\char7};%warrior
+    }%
+    \draw(0,7)+(0.5,0.5)node[red]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
+    \draw(1,7)+(0.5,0.5)node[red]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
+    \draw(2,7)+(0.5,0.5)node[red]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
+    \draw(4,7)+(0.5,0.5)node[red]{\dragonfont\char24}node[black]{\dragonfont\char25};%cleric
+    \draw(5,7)+(0.5,0.5)node[red]{\dragonfont\char12}node[black]{\dragonfont\char13};%mage
+    \draw(6,7)+(0.5,0.5)node[red]{\dragonfont\char21}node[black]{\dragonfont\char22};%king
+    \draw(7,7)+(0.5,0.5)node[red]{\dragonfont\char3}node[black]{\dragonfont\char4};%paladin
+    \draw(9,7)+(0.5,0.5)node[red]{\dragonfont\char9}node[black]{\dragonfont\char10};%hero
+    \draw(10,7)+(0.5,0.5)node[red]{\dragonfont\char27}node[black]{\dragonfont\char28};%unicorn
+    \draw(11,7)+(0.5,0.5)node[red]{\dragonfont\char18}node[black]{\dragonfont\char19};%oliphant
+}\\
+\tikzchessboard{8}{12}{red}{%
+}\\
 \end{tabular}\end{center}
+%%%%%%%%%%%%%%%%%%%%
+
 
 \makeatletter
 \newcommand{\tcb@sq}[3]{%
@@ -467,6 +545,7 @@ the examples into their language of choice.
 \end{tikzpicture}}
 \makeatother
 
+%%%%%%%%%%%%%%%%%%%%
 \tikzchessboard{8}{12}{black}{%
 %
 \foreach\x in {1,...,12} {%
@@ -501,7 +580,9 @@ the examples into their language of choice.
 \draw(10,7)+(0.5,0.5)node[white]{\ahfont\char36}node[black]{\ahfont\char38};
 \draw(11,7)+(0.5,0.5)node[white]{\ahfont\char0}node[black]{\ahfont\char2};
 }
+%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%
 \tikzcongoboard{%
 \foreach\x in {1,...,7} {
     \draw(\x,1)+(-0.5,0.5)node[white]{\ahfont\char12}node[black]{\ahfont\char13};
@@ -524,6 +605,7 @@ the examples into their language of choice.
 \draw(5,6)+(0.5,0.5)node[white]{\ahfont\char3}node[black]{\ahfont\char5};
 \draw(6,6)+(0.5,0.5)node[white]{\ahfont\char36}node[black]{\ahfont\char38};
 }
+%%%%%%%%%%%%%%%%%%%%
 
 %% HEX BOARDS:
 %%
