@@ -1234,6 +1234,210 @@ beginchar(47, 1em#, 1em#, 0); "Lion - black";
     draw p;
 endchar;
 
+%%%%%%%%%%%%%%%%%%%% FALCON %%%%%%%%%%%%%%%%%%%%
+def falcon_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 2*q = w - x11;
+    x2 = 2*q = w - x10;
+    x3 = 3*q = w - x9;
+    x4 = 3.5*q;
+    x5 = 2*q;
+    x6 = 6*q;
+    x7 = 10*q;
+    x8 = 7*q;
+    x12 = 6.5*q;
+
+    y1 = 1*q = y11;
+    y2 = 2*q = y10;
+    y3 = 2*q = y9;
+    y4 = 5.5*q;
+    y5 = 11*q;
+    y6 = 9*q;
+    y7 = 6*q;
+    y8 = 5*q;
+    y12 = 8*q;
+    
+    path p;
+    p = reverse (z1 -- z2 -- z3 .. z4{up} .. {up}z5{down}
+        .. z6{right} .. {down}z7{up} .. z8{down}
+        .. z9 -- z10 -- z11 -- cycle);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 12);
+enddef;
+beginchar(48, 1em#, 1em#, 0); "Falcon - mask";
+    falcon_outline;
+    fill p;
+endchar;
+beginchar(49, 1em#, 1em#, 0); "Falcon - white";
+    falcon_outline;
+    draw p;
+    draw z3 -- z9;
+    pickup pencircle xscaled 0.09w yscaled 0.05w;
+    drawdot z12;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+endchar;
+beginchar(50, 1em#, 1em#, 0); "Falcon - black";
+    falcon_outline;
+    fill p;
+    cullit;
+    pickup pencircle xscaled 0.09w yscaled 0.05w;
+    undrawdot z12;
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    undraw z3 -- z9;
+    cullit;
+    draw p;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% HUNTER %%%%%%%%%%%%%%%%%%%%
+def hunter_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 1*q = w - x4;
+    x2 = 1*q = w - x3;
+    x5 = 2*q;
+    x6 = 6*q;
+    x8 = 10*q;
+    x9 = 6*q;
+    x10 = 9*q;
+    x12 = 6*q;
+
+    y1 = 1*q = y4;
+    y2 = 2*q = y3;
+    y5 = 6*q;
+    y6 = 10*q;
+    y8 = 6*q;
+    y9 = 2*q;
+    y10 = 6*q;
+    y12 = 9*q;
+    
+    z7 = (4*q,0) rotated 45 shifted (6*q,6*q);
+    z11 = (3*q,0) rotated 45 shifted (6*q,6*q);
+
+    z13 = (2,2)*q;
+    z14 = (9,10)*q;
+    z15 = (11,11)*q;
+    z16 = (10,9)*q;
+
+    z17 = (1.5,2.5)*q;
+    z18 = (3,4)*q;
+    z19 = (4,4)*q;
+    z20 = (4,3)*q;
+    z21 = (3,2)*q;
+    
+    path pbase, pcrescent, pah, pat;
+    pbase = z1 -- z2 -- z3 -- z4 -- cycle;
+    pcrescent = reverse
+        (z5{up} .. z6{right} .. z7{1,-1} ..z8{down} .. {left}z9{right}
+        .. z10{up} .. z11{-1,1} .. z12{left} .. {down}cycle);
+    pah = z14 -- z15 -- z16 -- cycle; 
+    pat = z13 -- z17 -- z18 -- z19 -- z20 -- z21 -- cycle;
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 21);
+enddef;
+beginchar(51, 1em#, 1em#, 0); "Hunter - mask";
+    hunter_outline;
+    fill pbase;
+    fill pcrescent;
+    fill pah;
+    fill pat;
+endchar;
+beginchar(52, 1em#, 1em#, 0); "Hunter - white";
+    hunter_outline;
+    fill pah;
+    fill pat;
+    draw pbase;
+    draw pcrescent;
+    draw z7 -- z15;
+    draw z19 -- z11;
+    draw pah;
+    draw pat;
+endchar;
+beginchar(53, 1em#, 1em#, 0); "Hunter - black";
+    hunter_outline;
+    fill pbase;
+    fill pcrescent;
+    fill pah;
+    fill pat;
+    cullit;
+    draw z7 -- z15;
+    draw z19 -- z11;
+    draw pbase;
+    draw pcrescent;
+    draw pah;
+    draw pah;
+endchar;
+
+%%%%%%%%%%%%%%%%%%%% DABBABA %%%%%%%%%%%%%%%%%%%%
+def dabbaba_outline =
+    numeric q;
+    q = round 1/12em;
+
+    x1 = 1*q = w - x18;
+    x2 = 1*q = w - x17;
+    x3 = 2*q = w - x16;
+    x4 = 3*q = w - x15;
+    x5 = 3*q = w - x14;
+    x6 = 2*q = w - x13;
+    x7 = 1*q = w - x12;
+    x8 = 1*q = w - x11;
+    x9 = 2*q = w - x10;
+
+    x19 = 5*q = w - x21;
+    x20 = 5*q = w - x22;
+
+    y1 = 1*q = y18;
+    y2 = 2*q = y17;
+    y3 = 2*q = y16;
+    y4 = 3*q = y15;
+    y5 = 8*q = y14;
+    y6 = 9*q = y13;
+    y7 = 9*q = y12;
+    y8 = 10*q = y11;
+    y9 = 11*q = y10;
+
+    y19 = 8*q = y21;
+    y20 = 3*q = y22;
+    
+    path p;
+    p = reverse
+        (z1 -- z2 -- z3 -- z4 -- z5 -- z6 -- z7 -- z8 -- z9
+        -- z10 -- z11 -- z12 -- z13 -- z14 -- z15 -- z16 -- z17 -- z18
+        -- cycle);
+
+    pickup pencircle xscaled 0.03w yscaled 0.03w;
+    penlabels(range 1 thru 22);
+enddef;
+beginchar(54, 1em#, 1em#, 0); "Dabbaba - mask";
+    dabbaba_outline;
+    fill p;
+endchar;
+beginchar(55, 1em#, 1em#, 0); "Dabbaba - white";
+    dabbaba_outline;
+    draw p;
+    draw z3 -- z16;
+    draw z6 -- z13;
+    draw z8 -- z11;
+    draw z19 -- z20;
+    draw z21 -- z22;
+endchar;
+beginchar(56, 1em#, 1em#, 0); "Dabbaba - black";
+    dabbaba_outline;
+    fill p;
+    cullit;
+    undraw z3 -- z16;
+    undraw z6 -- z13;
+    undraw z8 -- z11;
+    undraw z19 -- z20;
+    undraw z21 -- z22;
+    cullit;
+    draw p;
+endchar;
+
 
 
 end
