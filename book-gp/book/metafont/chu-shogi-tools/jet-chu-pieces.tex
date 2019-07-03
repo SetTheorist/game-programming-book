@@ -1,0 +1,199 @@
+\documentclass[dvipdfmx,10pt,letterpaper]{article}
+\PassOptionsToPackage{dvipdfmx}{graphicx}
+%\usepackage[driver=dvipdfm,left=0.3125in,right=0.3125in,top=0.5in,bottom=0.5in]{geometry}
+\usepackage[driver=dvipdfm,left=0.1875in,right=0.3125in,top=0.5in,bottom=0.5in]{geometry}
+\usepackage{piece}
+\usepackage{epic}
+\usepackage{tikz}
+
+\let\x=\times
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\newcommand{\tikzchupiece}[4]{%{loc}{top_char}{bot_char}{other}
+%\draw[thin,color=yellow,step=0.1in]#1+(-0.5in,-0.5in)grid+(0.5in,0.5in);
+\draw[thin,color=white]#1+(-0.5in,-0.5in)--+(0.5in,-0.5in)--+(0.5in,0.5in)--+(-0.5in,0.5in)--+(-0.5in,-0.5in);
+%\draw[thin,color=yellow]#1+(-0.5in,-0.5in)--+(0.5in,-0.5in)--+(0.5in,0.5in)--+(-0.5in,0.5in)--+(-0.5in,-0.5in);
+%\draw[gray,very thin]#1+(0.5in,0)arc(0:360:0.5in);
+\draw[gray]#1+(-0.16in,-0.2in)--+(0.16in,-0.2in)--+(0.12in,0.16in)--+(0in,0.2in)--+(-0.12in,0.16in)--+(-0.16in,-0.2in);
+\draw#1+(0,0.05in)node[black]{#2};\draw#1+(0,-0.10in)node[black]{#3};
+#4
+}
+\newcommand{\tikzchupiecep}[4]{%{loc}{top_char}{bot_char}{other}
+%\draw[thin,color=yellow,step=0.1in]#1+(-0.5in,-0.5in)grid+(0.5in,0.5in);
+\draw[thin,color=white]#1+(-0.5in,-0.5in)--+(0.5in,-0.5in)--+(0.5in,0.5in)--+(-0.5in,0.5in)--+(-0.5in,-0.5in);
+%\draw[thin,color=yellow]#1+(-0.5in,-0.5in)--+(0.5in,-0.5in)--+(0.5in,0.5in)--+(-0.5in,0.5in)--+(-0.5in,-0.5in);
+%\draw[gray,very thin]#1+(0.5in,0)arc(0:360:0.5in);
+\draw[gray]#1+(-0.16in,-0.2in)--+(0.16in,-0.2in)--+(0.12in,0.16in)--+(0in,0.2in)--+(-0.12in,0.16in)--+(-0.16in,-0.2in);
+\draw#1+(0,0.05in)node[red]{#2};\draw#1+(0,-0.10in)node[red]{#3};
+#4
+}
+%
+\newcommand{\xnn}[1]{\draw[thin,color=white,fill=blue]#1+( 0,     0.3in)circle(0.03in);}
+\newcommand{\xss}[1]{\draw[thin,color=white,fill=blue]#1+( 0,    -0.3in)circle(0.03in);}
+\newcommand{\xee}[1]{\draw[thin,color=white,fill=blue]#1+( 0.3in, 0    )circle(0.03in);}
+\newcommand{\xww}[1]{\draw[thin,color=white,fill=blue]#1+(-0.3in, 0    )circle(0.03in);}
+\newcommand{\xne}[1]{\draw[thin,color=white,fill=blue]#1+( 0.3in, 0.3in)circle(0.03in);}
+\newcommand{\xnw}[1]{\draw[thin,color=white,fill=blue]#1+(-0.3in, 0.3in)circle(0.03in);}
+\newcommand{\xse}[1]{\draw[thin,color=white,fill=blue]#1+( 0.3in,-0.3in)circle(0.03in);}
+\newcommand{\xsw}[1]{\draw[thin,color=white,fill=blue]#1+(-0.3in,-0.3in)circle(0.03in);}
+%
+\newcommand{\jnn}[1]{\draw[thin,color=white,fill=green]#1+( 0,      0.4in)circle(0.03in);}
+\newcommand{\jss}[1]{\draw[thin,color=white,fill=green]#1+( 0,     -0.4in)circle(0.03in);}
+\newcommand{\jee}[1]{\draw[thin,color=white,fill=green]#1+( 0.4in,  0    )circle(0.03in);}
+\newcommand{\jww}[1]{\draw[thin,color=white,fill=green]#1+(-0.4in,  0    )circle(0.03in);}
+\newcommand{\qne}[1]{\draw[thin,color=white,fill=blue]#1+( 0.21in, 0.21in)circle(0.03in);}
+\newcommand{\qnw}[1]{\draw[thin,color=white,fill=blue]#1+(-0.21in, 0.21in)circle(0.03in);}
+\newcommand{\qse}[1]{\draw[thin,color=white,fill=blue]#1+( 0.21in,-0.21in)circle(0.03in);}
+\newcommand{\qsw}[1]{\draw[thin,color=white,fill=blue]#1+(-0.21in,-0.21in)circle(0.03in);}
+%
+\newcommand{\qnn}[1]{\draw[thin,color=white,fill=blue]#1+( 0,       0.25in)circle(0.03in);}
+\newcommand{\qss}[1]{\draw[thin,color=white,fill=blue]#1+( 0,      -0.25in)circle(0.03in);}
+\newcommand{\qee}[1]{\draw[thin,color=white,fill=blue]#1+( 0.25in,  0     )circle(0.03in);}
+\newcommand{\qww}[1]{\draw[thin,color=white,fill=blue]#1+(-0.25in,  0     )circle(0.03in);}
+\newcommand{\jne}[1]{\draw[thin,color=white,fill=green]#1+( 0.31in,  0.31in)circle(0.03in);}
+\newcommand{\jnw}[1]{\draw[thin,color=white,fill=green]#1+(-0.31in,  0.31in)circle(0.03in);}
+\newcommand{\jse}[1]{\draw[thin,color=white,fill=green]#1+( 0.31in, -0.31in)circle(0.03in);}
+\newcommand{\jsw}[1]{\draw[thin,color=white,fill=green]#1+(-0.31in, -0.31in)circle(0.03in);}
+%
+\newcommand{\snn}[1]{\draw[->,thick,color=blue]#1+( 0,     0.25in)--+( 0,     0.4in);}
+\newcommand{\sss}[1]{\draw[->,thick,color=blue]#1+( 0,    -0.25in)--+( 0,    -0.4in);}
+\newcommand{\see}[1]{\draw[->,thick,color=blue]#1+( 0.2in, 0    )--+( 0.35in, 0    );}
+\newcommand{\sww}[1]{\draw[->,thick,color=blue]#1+(-0.2in, 0    )--+(-0.35in, 0    );}
+\newcommand{\sne}[1]{\draw[->,thick,color=blue]#1+( 0.2in, 0.2in)--+( 0.3in, 0.3in);}
+\newcommand{\snw}[1]{\draw[->,thick,color=blue]#1+(-0.2in, 0.2in)--+(-0.3in, 0.3in);}
+\newcommand{\sse}[1]{\draw[->,thick,color=blue]#1+( 0.2in,-0.2in)--+( 0.3in,-0.3in);}
+\newcommand{\ssw}[1]{\draw[->,thick,color=blue]#1+(-0.2in,-0.2in)--+(-0.3in,-0.3in);}
+%
+\newcommand{\lnn}[1]{\draw[color=green]#1+( 0,     0.25in)circle(0.03in)+( 0,     0.4in)circle(0.03in);}
+\newcommand{\lss}[1]{\draw[color=green]#1+( 0,    -0.25in)circle(0.03in)+( 0,    -0.4in)circle(0.03in);}
+\newcommand{\lee}[1]{\draw[color=green]#1+( 0.2in, 0    )circle(0.03in)+( 0.35in, 0    )circle(0.03in);}
+\newcommand{\lww}[1]{\draw[color=green]#1+(-0.2in, 0    )circle(0.03in)+(-0.35in, 0    )circle(0.03in);}
+\newcommand{\lne}[1]{\draw[color=green]#1+( 0.2in, 0.2in)circle(0.03in)+( 0.3in, 0.3in)circle(0.03in);}
+\newcommand{\lnw}[1]{\draw[color=green]#1+(-0.2in, 0.2in)circle(0.03in)+(-0.3in, 0.3in)circle(0.03in);}
+\newcommand{\lse}[1]{\draw[color=green]#1+( 0.2in,-0.2in)circle(0.03in)+( 0.3in,-0.3in)circle(0.03in);}
+\newcommand{\lsw}[1]{\draw[color=green]#1+(-0.2in,-0.2in)circle(0.03in)+(-0.3in,-0.3in)circle(0.03in);}
+%
+\newcommand{\rowa}{0.000in}
+\newcommand{\rowb}{-1.125in}
+\newcommand{\rowc}{-2.250in}
+\newcommand{\rowd}{-3.375in}
+\newcommand{\rowe}{-4.500in}
+\newcommand{\rowf}{-5.625in}
+\newcommand{\rowg}{-6.750in}
+\newcommand{\rowh}{-7.875in}
+\newcommand{\rowi}{-9.000in}
+\newcommand{\cola}{0.000in}
+\newcommand{\colb}{1.125in}
+\newcommand{\colc}{2.250in}
+\newcommand{\cold}{3.375in}
+\newcommand{\cole}{4.500in}
+\newcommand{\colf}{5.625in}
+\newcommand{\colg}{6.750in}
+
+\begin{tikzpicture}
+\def\o{(\cola,\rowa)}\tikzchupiece{\o}{\Chu}{\Nin}{\xnn\o\xss\o}%go-between
+\def\o{(\colb,\rowa)}\tikzchupiece{\o}{\Chu}{\Nin}{\xnn\o\xss\o}%go-between
+\def\o{(\colc,\rowa)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cold,\rowa)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cole,\rowa)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colf,\rowa)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colg,\rowa)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cola,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colb,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colc,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cold,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cole,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colf,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\colg,\rowb)}\tikzchupiece{\o}{\Fu}{\Hei}{\xnn\o}%pawn
+\def\o{(\cola,\rowc)}\tikzchupiece{\o}{\Ko}{\Gyo}{\xnn\o\xss\o\see\o\sww\o}%side mover
+\def\o{(\colb,\rowc)}\tikzchupiece{\o}{\Ko}{\Gyo}{\xnn\o\xss\o\see\o\sww\o}%side mover
+\def\o{(\colc,\rowc)}\tikzchupiece{\o}{\Ken}{\Gyo}{\snn\o\sss\o\xee\o\xww\o}%vertical mover
+\def\o{(\cold,\rowc)}\tikzchupiece{\o}{\Ken}{\Gyo}{\snn\o\sss\o\xee\o\xww\o}%vertical mover
+\def\o{(\cole,\rowc)}\tikzchupiece{\o}{\Hi}{\Sha}{\snn\o\sss\o\see\o\sww\o}%rook
+\def\o{(\colf,\rowc)}\tikzchupiece{\o}{\Hi}{\Sha}{\snn\o\sss\o\see\o\sww\o}%rook
+\def\o{(\colg,\rowc)}\tikzchupiece{\o}{\Ryu}{\Ma}{\sne\o\snw\o\sse\o\ssw\o\xnn\o\xee\o\xss\o\xww\o}%dragon horse
+\def\o{(\cola,\rowd)}\tikzchupiece{\o}{\Ryu}{\Ma}{\sne\o\snw\o\sse\o\ssw\o\xnn\o\xee\o\xss\o\xww\o}%dragon horse
+\def\o{(\colb,\rowd)}\tikzchupiece{\o}{\Ryu}{\Oo}{\xne\o\xnw\o\xse\o\xsw\o\snn\o\see\o\sss\o\sww\o}%dragon king
+\def\o{(\colc,\rowd)}\tikzchupiece{\o}{\Ryu}{\Oo}{\xne\o\xnw\o\xse\o\xsw\o\snn\o\see\o\sss\o\sww\o}%dragon king
+\def\o{(\cold,\rowd)}\tikzchupiece{\o}{\Shi}{\Shii}{\lne\o\lnw\o\lse\o\lsw\o\lnn\o\lee\o\lss\o\lww\o}%lion
+\def\o{(\cole,\rowd)}\tikzchupiece{\o}{\Hon}{\Oo}{\sne\o\snw\o\sse\o\ssw\o\snn\o\see\o\sss\o\sww\o}%free king
+\def\o{(\colf,\rowd)}\tikzchupiece{\o}{\Han}{\Sha}{\snn\o\sss\o}%reverse chariot
+\def\o{(\colg,\rowd)}\tikzchupiece{\o}{\Han}{\Sha}{\snn\o\sss\o}%reverse chariot
+\def\o{(\cola,\rowe)}\tikzchupiece{\o}{\Kaku}{\Gyo}{\sne\o\snw\o\sse\o\ssw\o}%bishop
+\def\o{(\colb,\rowe)}\tikzchupiece{\o}{\Kaku}{\Gyo}{\sne\o\snw\o\sse\o\ssw\o}%bishop
+\def\o{(\colc,\rowe)}\tikzchupiece{\o}{\Moii}{\Koii}{\xnw\o\xne\o\xee\o\xse\o\xss\o\xsw\o\xww\o}%blind tiger
+\def\o{(\cold,\rowe)}\tikzchupiece{\o}{\Moii}{\Koii}{\xnw\o\xne\o\xee\o\xse\o\xss\o\xsw\o\xww\o}%blind tiger
+\def\o{(\cole,\rowe)}\tikzchupiece{\o}{\Ki}{\Rin}{\qnw\o\jnn\o\qne\o\jee\o\qse\o\jss\o\qsw\o\jww\o}%kylin
+\def\o{(\colf,\rowe)}\tikzchupiece{\o}{\Ho}{\Ooii}{\jnw\o\qnn\o\jne\o\qee\o\jse\o\qss\o\jsw\o\qww\o}%phoenix
+\def\o{(\colg,\rowe)}\tikzchupiece{\o}{\Kyo}{\Sha}{\snn\o}%lance
+\def\o{(\cola,\rowf)}\tikzchupiece{\o}{\Kyo}{\Sha}{\snn\o}%lance
+\def\o{(\colb,\rowf)}\tikzchupiece{\o}{\Mo}{\Hyo}{\xnw\o\xnn\o\xne\o\xse\o\xss\o\xsw\o}%ferocious leopard
+\def\o{(\colc,\rowf)}\tikzchupiece{\o}{\Mo}{\Hyo}{\xnw\o\xnn\o\xne\o\xse\o\xss\o\xsw\o}%ferocious leopard
+\def\o{(\cold,\rowf)}\tikzchupiece{\o}{\Do}{\Sho}{\xnw\o\xnn\o\xne\o\xss\o}%copper general
+\def\o{(\cole,\rowf)}\tikzchupiece{\o}{\Do}{\Sho}{\xnw\o\xnn\o\xne\o\xss\o}%copper general
+\def\o{(\colf,\rowf)}\tikzchupiece{\o}{\Gin}{\Sho}{\xnw\o\xnn\o\xne\o\xse\o\xsw\o}%silver general
+\def\o{(\colg,\rowf)}\tikzchupiece{\o}{\Gin}{\Sho}{\xnw\o\xnn\o\xne\o\xse\o\xsw\o}%silver general
+\def\o{(\cola,\rowg)}\tikzchupiece{\o}{\Kin}{\Sho}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%gold general
+\def\o{(\colb,\rowg)}\tikzchupiece{\o}{\Kin}{\Sho}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%gold general
+\def\o{(\colc,\rowg)}\tikzchupiece{\o}{\Oo}{\Sho}{\xnw\o\xnn\o\xne\o\xee\o\xse\o\xss\o\xsw\o\xww\o}%king
+\def\o{(\cold,\rowg)}\tikzchupiece{\o}{\Gyoku}{\Sho}{\xnw\o\xnn\o\xne\o\xee\o\xse\o\xss\o\xsw\o\xww\o}%jeweled general
+\def\o{(\cole,\rowg)}\tikzchupiece{\o}{\Sui}{\Zo}{\xnw\o\xne\o\xee\o\xse\o\xnn\o\xsw\o\xww\o}%drunk elephant
+\end{tikzpicture}
+
+\newpage
+\begin{tikzpicture}
+\def\o{(\cola,\rowa)}\tikzchupiecep{\o}{\Sui}{\Zo}{\xnw\o\xne\o\xee\o\xse\o\xnn\o\xsw\o\xww\o}%promoted go-between = drunk elephant
+\def\o{(\colb,\rowa)}\tikzchupiecep{\o}{\Sui}{\Zo}{\xnw\o\xne\o\xee\o\xse\o\xnn\o\xsw\o\xww\o}%promoted go-between = drunk elephant
+\def\o{(\colc,\rowa)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cold,\rowa)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cole,\rowa)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colf,\rowa)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colg,\rowa)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cola,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colb,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colc,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cold,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cole,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colf,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\colg,\rowb)}\tikzchupiecep{\o}{\To}{}{\xnw\o\xnn\o\xne\o\xee\o\xss\o\xww\o}%promoted pawn = tokin (= gold general)
+\def\o{(\cola,\rowc)}\tikzchupiecep{\o}{\Hon}{\Cho}{\snw\o\sww\o\ssw\o\sne\o\see\o\sse\o}%promoted side mover = free boar
+\def\o{(\colb,\rowc)}\tikzchupiecep{\o}{\Hon}{\Cho}{\snw\o\sww\o\ssw\o\sne\o\see\o\sse\o}%promoted side mover = free boar
+\def\o{(\colc,\rowc)}\tikzchupiecep{\o}{\Hi}{\Gyu}{\snw\o\snn\o\sne\o\ssw\o\sss\o\sse\o}%promoted vertical mover = flying ox
+\def\o{(\cold,\rowc)}\tikzchupiecep{\o}{\Hi}{\Gyu}{\snw\o\snn\o\sne\o\ssw\o\sss\o\sse\o}%promoted vertical mover = flying ox
+\def\o{(\cole,\rowc)}\tikzchupiecep{\o}{\Ryu}{\Oo}{\xne\o\xnw\o\xse\o\xsw\o\snn\o\see\o\sss\o\sww\o}%promoted rook = dragon king
+\def\o{(\colf,\rowc)}\tikzchupiecep{\o}{\Ryu}{\Oo}{\xne\o\xnw\o\xse\o\xsw\o\snn\o\see\o\sss\o\sww\o}%promoted rook = dragon king
+\def\o{(\colg,\rowc)}\tikzchupiecep{\o}{\Kaku}{\Kuo}{\snw\o\sww\o\ssw\o\sss\o\sse\o\see\o\sne\o\lnn\o}%promoted dragon horse = horned falcon
+\def\o{(\cola,\rowd)}\tikzchupiecep{\o}{\Kaku}{\Kuo}{\snw\o\sww\o\ssw\o\sss\o\sse\o\see\o\sne\o\lnn\o}%promoted dragon horse = horned falcon
+\def\o{(\colb,\rowd)}\tikzchupiecep{\o}{\Hi}{\Ju}{\snn\o\sww\o\see\o\ssw\o\sss\o\sse\o\lnw\o\lne\o}%promoted dragon king = soaring eagle
+\def\o{(\colc,\rowd)}\tikzchupiecep{\o}{\Hi}{\Ju}{\snn\o\sww\o\see\o\ssw\o\sss\o\sse\o\lnw\o\lne\o}%promoted dragon king = soaring eagle
+\def\o{(\cold,\rowd)}\tikzchupiecep{\o}{\Shi}{\Shii}{}%promoted lion = !DNP
+\def\o{(\cole,\rowd)}\tikzchupiecep{\o}{\Hon}{\Oo}{}%promoted free king = !DNP
+\def\o{(\colf,\rowd)}\tikzchupiecep{\o}{\Keii}{\Gei}{\snn\o\ssw\o\sss\o\sse\o}%promoted reverse chariot = whale
+\def\o{(\colg,\rowd)}\tikzchupiecep{\o}{\Keii}{\Gei}{\snn\o\ssw\o\sss\o\sse\o}%promoted reverse chariot = whale
+\def\o{(\cola,\rowe)}\tikzchupiecep{\o}{\Ryu}{\Ma}{\sne\o\snw\o\sse\o\ssw\o\xnn\o\xee\o\xss\o\xww\o}%promoted bishop = dragon horse
+\def\o{(\colb,\rowe)}\tikzchupiecep{\o}{\Ryu}{\Ma}{\sne\o\snw\o\sse\o\ssw\o\xnn\o\xee\o\xss\o\xww\o}%promoted bishop = dragon horse
+\def\o{(\colc,\rowe)}\tikzchupiecep{\o}{\Hi}{\Roku}{\snn\o\sss\o\xnw\o\xww\o\xsw\o\xne\o\xee\o\xse\o}%promoted blind tiger = flying stag
+\def\o{(\cold,\rowe)}\tikzchupiecep{\o}{\Hi}{\Roku}{\snn\o\sss\o\xnw\o\xww\o\xsw\o\xne\o\xee\o\xse\o}%promoted blind tiger = flying stag
+\def\o{(\cole,\rowe)}\tikzchupiecep{\o}{\Shi}{\Shii}{\lne\o\lnw\o\lse\o\lsw\o\lnn\o\lee\o\lss\o\lww\o}%promoted kylin = lion
+\def\o{(\colf,\rowe)}\tikzchupiecep{\o}{\Hon}{\Oo}{\sne\o\snw\o\sse\o\ssw\o\snn\o\see\o\sss\o\sww\o}%promoted phoenix = free king
+\def\o{(\colg,\rowe)}\tikzchupiecep{\o}{\Haku}{\Ku}{\sss\o\snw\o\snn\o\sne\o}%promoted lance = white horse
+\def\o{(\cola,\rowf)}\tikzchupiecep{\o}{\Haku}{\Ku}{\sss\o\snw\o\snn\o\sne\o}%promoted lance = white horse
+\def\o{(\colb,\rowf)}\tikzchupiecep{\o}{\Kaku}{\Gyo}{\sne\o\snw\o\sse\o\ssw\o}%promoted ferocious leopard = bishop
+\def\o{(\colc,\rowf)}\tikzchupiecep{\o}{\Kaku}{\Gyo}{\sne\o\snw\o\sse\o\ssw\o}%promoted ferocious leopard = bishop
+\def\o{(\cold,\rowf)}\tikzchupiecep{\o}{\Ko}{\Gyo}{\xnn\o\xss\o\see\o\sww\o}%promoted copper general = side mover
+\def\o{(\cole,\rowf)}\tikzchupiecep{\o}{\Ko}{\Gyo}{\xnn\o\xss\o\see\o\sww\o}%promoted copper general = side mover
+\def\o{(\colf,\rowf)}\tikzchupiecep{\o}{\Ken}{\Gyo}{\snn\o\sss\o\xee\o\xww\o}%promoted silver general = vertical mover
+\def\o{(\colg,\rowf)}\tikzchupiecep{\o}{\Ken}{\Gyo}{\snn\o\sss\o\xee\o\xww\o}%promoted silver general = vertical mover
+\def\o{(\cola,\rowg)}\tikzchupiecep{\o}{\Hi}{\Sha}{\snn\o\sss\o\see\o\sww\o}%promoted gold general = rook
+\def\o{(\colb,\rowg)}\tikzchupiecep{\o}{\Hi}{\Sha}{\snn\o\sss\o\see\o\sww\o}%promoted gold general = rook
+\def\o{(\colc,\rowg)}\tikzchupiecep{\o}{\Oo}{\Sho}{}%promoted king = !DNP
+\def\o{(\cold,\rowg)}\tikzchupiecep{\o}{\Gyoku}{\Sho}{}%promoted jeweled general = !DNP
+\def\o{(\cole,\rowg)}\tikzchupiecep{\o}{\Tai}{\Shii}{\xnw\o\xnn\o\xne\o\xee\o\xse\o\xss\o\xsw\o\xww\o}%promoted drunk elephant = crown prince
+\end{tikzpicture}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,11 +1,15 @@
 
 
 
-all: test.pdf
+all: test.pdf jet-chu-pieces.pdf
 
 test.pdf: test.tex piece.sty
 	latex test.tex
-	dvipdfm -r1200 test.dvi
+	dvipdfmx -r1200 test.dvi
+
+jet-chu-pieces.pdf: jet-chu-pieces.tex piece.sty
+	latex jet-chu-pieces.tex
+	dvipdfmx -r1200 jet-chu-pieces.dvi
 
 
 # mf shg10.mf
