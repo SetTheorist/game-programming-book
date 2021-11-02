@@ -5,3 +5,6 @@ edition = "2021"
 
 [dependencies]
 bitfield = "*"
+
+[dependencies.chill]
+path = "../chill"

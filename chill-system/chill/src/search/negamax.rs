@@ -1,6 +1,7 @@
 use super::*;
 use crate::{*};
 use crate::tt;
+use crate::pv::PV;
 
 pub fn search_negamax<G:Game>(
   b:&mut G::B, e:&G::E, pv:&mut PV<G::M>,

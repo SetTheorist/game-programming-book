@@ -1,4 +1,5 @@
 pub mod hash;
+pub mod pv;
 pub mod search;
 pub mod tt;
 
@@ -16,25 +17,23 @@ pub trait Move : Clone+Copy+Default+Sized+PartialEq {
   fn null_move() -> Self;
 }
 
-pub trait Board : Clone {
-  type M : Move;
-
+pub trait Board<M:Move> : Clone {
   fn new() -> Self;
   fn init(&mut self);
   fn terminal(&self) -> bool;
 
   fn hash(&self) -> hash::H;
 
-  fn gen_moves(&self) -> Vec<Self::M>;
-  fn gen_q_moves(&self) -> Vec<Self::M>;
+  fn gen_moves(&self) -> Vec<M>;
+  fn gen_q_moves(&self) -> Vec<M>;
 
-  fn make_move(&mut self, m:Self::M) -> MoveResult;
-  fn unmake_move(&mut self, m:Self::M) -> MoveResult;
+  fn make_move(&mut self, m:M) -> MoveResult;
+  fn unmake_move(&mut self, m:M) -> MoveResult;
 }
 
 pub trait Value
   : Clone + Copy + Sized + Default
-  + PartialOrd + PartialEq
+  + PartialEq + PartialOrd
   + std::ops::Add<Output=Self>
   + std::ops::Sub<Output=Self>
   + std::ops::Neg<Output=Self>
@@ -45,16 +44,16 @@ pub trait Value
   fn mate_in_n(n:usize) -> Self;
 }
 
-pub trait Evaluator<B:Board,V:Value> {
+pub trait Evaluator<B:Board<M>,M:Move,V:Value> {
   fn evaluate_relative(&self, b:&B, ply:usize) -> V;
   fn evaluate_absolute(&self, b:&B, ply:usize) -> V;
 }
 
 pub trait Game {
   type M : Move;
-  type B : Board<M=Self::M>;
+  type B : Board<Self::M>;
   type V : Value;
-  type E : Evaluator<Self::B,Self::V>;
+  type E : Evaluator<Self::B,Self::M,Self::V>;
 }
 
 
