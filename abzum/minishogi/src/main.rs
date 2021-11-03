@@ -62,7 +62,7 @@ impl std::ops::Neg for FVal {
   #[inline] fn neg(self) -> Self { FVal(-self.0) }
 }
 
-impl chill::Value for FVal {
+impl abzu::Value for FVal {
   const MIN  : FVal = FVal(-100_000_000_f64);
   const MAX  : FVal = FVal( 100_000_000_f64);
   const DRAW : FVal = FVal(0_f64);
@@ -178,9 +178,9 @@ pub struct Board {
   nhand: [usize;2],
   hand: [[usize;5];2],
   ply: usize,
-  hash: chill::hash::H,
+  hash: abzu::hash::H,
   play: State,
-  drawhash: [chill::hash::H; MAX_GAME_LENGTH],
+  drawhash: [abzu::hash::H; MAX_GAME_LENGTH],
 }
 
 ////////////////////////////////////////
