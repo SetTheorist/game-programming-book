@@ -1,4 +1,12 @@
+#![feature(destructuring_assignment)]
+
 use abzu::hash::H;
+
+//王将
+//角行
+//金将
+//銀将
+//歩兵
 
 ////////////////////////////////////////
 
@@ -9,6 +17,7 @@ bitfield::bitfield! {
   u8,f,_    : 5,0; // from
   u8,t,_    : 11,6; // to
   u8,p,_    : 17,12; // captured/dropped piece
+  u8,into Piece, piece,_    : 17,12; // captured/dropped piece
   u8,m,_    : 23,18; // moved piece
   cap,_       : 24;
   pro,_       : 25;
@@ -34,6 +43,10 @@ impl Move {
       | ((m as u32)<<18)
       | ((flags as u32)<<24)
       )
+  }
+
+  fn null() -> Self {
+    Move((MF_NULLMOVE as u32) << 24)
   }
 }
 
@@ -61,17 +74,17 @@ impl std::fmt::Display for Move {
         Piece::from(self.m()).name(c),
         5 - (self.f()%5),
         ['e','d','c','b','a'][(self.f()/5) as usize])?;
+      write!(f, "{}", if self.cap() {'x'} else {'-'})?;
     }
-    write!(f, "{}", if self.cap() {'x'} else {'-'})?;
     if self.cap() {
-      write!(f, "{}", Piece::from(self.p()).name(c.other()))?;
+      write!(f, "{}", self.piece().name(c.other()))?;
     }
     write!(f, "{}{}",
       5 - (self.t()%5),
       ['e','d','c','b','a'][(self.t()/5) as usize])?;
     if self.pro() { write!(f, "+")?; }
     if self.nonpro() { write!(f, "=")?; }
-    if self.p() == (Piece::King as u8) { write!(f, "#")?; }
+    if self.piece() == Piece::King { write!(f, "#")?; }
     write!(f, "")
   }
 }
@@ -154,26 +167,36 @@ pub enum Piece {
 
 impl Piece {
   #[inline]
-  pub fn promotes(self) -> Option<Self> {
+  pub fn can_promote(self) -> bool {
     use Piece::*;
     match self {
-      Pawn => Some(Tokin),
-      Silver => Some(Nari),
-      Bishop => Some(Horse),
-      Rook => Some(Dragon),
-      _ => None,
+      Pawn => true,
+      Silver => true,
+      Bishop => true,
+      Rook => true,
+      _ => false,
+    }
+  }
+  pub fn promotes(self) -> Self {
+    use Piece::*;
+    match self {
+      Pawn => Tokin,
+      Silver => Nari,
+      Bishop => Horse,
+      Rook => Dragon,
+      x => x,
     }
   }
 
   #[inline]
-  pub fn unpromotes(self) -> Option<Self> {
+  pub fn unpromotes(self) -> Self {
     use Piece::*;
     match self {
-      Tokin => Some(Pawn),
-      Nari => Some(Silver),
-      Horse => Some(Bishop),
-      Dragon => Some(Rook),
-      _ => None,
+      Tokin => Pawn,
+      Nari => Silver,
+      Horse => Bishop,
+      Dragon => Rook,
+      x => x,
     }
   }
 
@@ -238,6 +261,64 @@ pub struct Board {
 
 ////////////////////////////////////////
 
+impl std::fmt::Display for Board {
+  fn fmt(&self, f:&mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "   5  4  3  2  1  \n")?;
+    write!(f, " +---------------+ [{:016X}]\n", self.hash)?;
+    for r in (0..5).rev() {
+      write!(f, " |")?;
+      for c in 0..5 {
+        let rc = r*5 + c;
+        if let Some((p,c)) = self.cells[rc] {
+          write!(f, " {} ", Piece::from(p).name(c))?;
+        } else {
+          write!(f, " . ")?;
+        }
+      }
+      write!(f, "| ({})", ['e','d','c','b','a'][r])?;
+      match r {
+        0 => {
+          write!(f, " {}.{}\n", (self.ply+1)/2, (if self.side==Color::Black{""}else{".."}))?;
+        }
+        1 => {
+          write!(f, " Black({})[ ", self.nhand[Color::Black as usize])?;
+          for i in 0..5 {
+            if self.hand[Color::Black as usize][i] > 0 {
+              for _ in 0..self.hand[Color::Black as usize][i] {
+                write!(f, " {}", Piece::from(i as u8).name(Color::Black))?;
+              }
+            }
+          }
+          write!(f, "]\n")?;
+        }
+        2 => {
+          write!(f, " White({})[ ", self.nhand[Color::White as usize])?;
+          for i in 0..5 {
+            if self.hand[Color::White as usize][i] > 0 {
+              for _ in 0..self.hand[Color::White as usize][i] {
+                write!(f, " {}", Piece::from(i as u8).name(Color::White))?;
+              }
+            }
+          }
+          write!(f, "]\n")?;
+        }
+        3 => {
+          write!(f, " {}\n", self.to_fen())?;
+        }
+        4 => {
+          let eval = 0; // TODO: self.evaluate_relative()
+          write!(f, " {}{{{}}}\n", if self.in_check() {"!"} else {""}, eval)?;
+        }
+        _ => {}
+      }
+    }
+    write!(f, " +---------------+\n")?;
+    write!(f, "")
+  }
+}
+
+////////////////////////////////////////
+
 const INITIAL_BOARD : [Option<(Piece,Color)>; 25] = [
   Some((Piece::King,Color::Black)),
     Some((Piece::Gold,Color::Black)),
@@ -253,6 +334,11 @@ const INITIAL_BOARD : [Option<(Piece,Color)>; 25] = [
     Some((Piece::Gold,Color::White)),
     Some((Piece::King,Color::White)),
 ];
+
+#[cfg(debug_assertions)]
+const CHECK_INCREMENTAL_HASH : bool = true;
+#[cfg(not(debug_assertions))]
+const CHECK_INCREMENTAL_HASH : bool = false;
 
 impl Board {
   fn new() -> Self {
@@ -272,6 +358,56 @@ impl Board {
     b
   }
 
+  // TODO
+  fn from_fen(s:&str) -> Self {
+    let mut b = Board::new();
+    let mut cs = s.chars();
+    todo!();
+    b
+  }
+
+  fn to_fen(&self) -> String {
+    let mut s = String::new();
+    for r in (0..5).rev() {
+      let mut b = 0;
+      for c in 0..5 {
+        let rc = r*5 + c;
+        match self.cells[rc] {
+          None => { b += 1; }
+          Some((p,c)) => {
+            if b != 0 {
+              s += &format!("{}", b);
+              b = 0;
+            }
+            s.push(p.name(c));
+          }
+        }
+      }
+      if b != 0 {
+        s += &format!("{}", b);
+      }
+      if r != 0 {
+        s.push('/');
+      }
+    }
+    s += &format!(" {} ", if self.side==Color::Black {'b'} else {'w'});
+    if self.nhand[0] + self.nhand[1] == 0 {
+      s.push('-');
+    } else {
+      for i in 0..5 {
+        for j in 0..self.hand[0][i] {
+          s.push(Piece::from(i as u8).name(Color::Black));
+        }
+      }
+      for i in 0..5 {
+        for j in 0..self.hand[1][i] {
+          s.push(Piece::from(i as u8).name(Color::White));
+        }
+      }
+    }
+    s
+  }
+
   fn hash_board(&mut self) {
     let mut h = 0;
     unsafe {
@@ -288,6 +424,266 @@ impl Board {
       }
     }
     self.hash = h;
+  }
+
+  #[inline]
+  fn make_null_move(&mut self) -> abzu::MoveResult {
+    self.ply += 1;
+    (self.side, self.xside) = (self.xside, self.side);
+    self.hash ^= unsafe{HASH_SIDE_WHITE};
+    self.drawhash[self.ply-1] = self.hash;
+    abzu::MoveResult::OtherSideMoves
+  }
+
+  #[inline]
+  fn unmake_null_move(&mut self) -> abzu::MoveResult {
+    self.ply -= 1;
+    (self.side, self.xside) = (self.xside, self.side);
+    self.hash = self.drawhash[self.ply-1];
+    abzu::MoveResult::OtherSideMoves
+  }
+
+  fn make_move(&mut self, m:Move) -> abzu::MoveResult {
+    if m.nullmove() { return self.make_null_move() };
+
+    let mut h = self.hash ^ unsafe{HASH_SIDE_WHITE};
+
+    let s = self.side as usize;
+    let f = m.f() as usize;
+    let t = m.t() as usize;
+    let p = m.p() as usize;
+    if m.drop() {
+      unsafe {
+        h ^= HASH_PIECE[s][p][t];
+        h ^= HASH_PIECE_HAND[s][p][self.hand[s][p]];
+        h ^= HASH_PIECE_HAND[s][p][self.hand[s][p]-1];
+      }
+      self.cells[t] = Some((m.piece(), self.side));
+      self.nhand[s] -= 1;
+      self.hand[s][p] -= 1;
+    } else {
+      let pu = m.piece().unpromotes() as usize;
+      if m.cap() {
+        if Piece::from(m.p()) == Piece::King {
+          self.play = if self.side==Color::Black {State::BlackWin} else {State::WhiteWin};
+        } else {
+          self.nhand[s] += 1;
+          self.hand[s][pu] += 1;
+        }
+      }
+      self.cells[f] = None;
+      if m.pro() {
+        self.cells[t] = Some((Piece::from(m.m()).promotes(), self.side));
+      } else {
+        self.cells[t] = Some((Piece::from(m.m()), self.side));
+      }
+      unsafe {
+        let mm = m.m() as usize;
+        if m.cap() {
+          h ^= HASH_PIECE[self.xside as usize][p][t];
+          if m.piece() != Piece::King {
+            h ^= HASH_PIECE_HAND[s][pu][self.hand[s][pu]];
+            h ^= HASH_PIECE_HAND[s][pu][self.hand[s][pu]-1];
+          }
+        }
+        h ^= HASH_PIECE[s][mm][f];
+        if m.pro() {
+          h ^= HASH_PIECE[s][Piece::from(m.m()).promotes() as usize][t];
+        } else {
+          h ^= HASH_PIECE[s][mm][t];
+        }
+      }
+    }
+    (self.side, self.xside) = (self.xside, self.side);
+    self.ply += 1;
+    self.hash = h;
+    if CHECK_INCREMENTAL_HASH {
+      self.hash_board();
+      if h != self.hash {
+        eprintln!("* Error incremental hash: move = {} *", m);
+      }
+    }
+
+    // draw by repetition check
+    // TODO: lame slow approach
+    // (replace with hash for speed)
+    self.drawhash[self.ply-1] = self.hash;
+    if false /* the_settings.check_draws */ {
+      if self.drawhash[0..(self.ply-1)].iter().any(|&xh|xh==h) {
+        self.play = State::Draw;
+      }
+    }
+    abzu::MoveResult::OtherSideMoves
+  }
+
+  fn unmake_move(&mut self, m:Move) -> abzu::MoveResult {
+    if m.nullmove() { return self.unmake_null_move() };
+
+    self.play = State::Playing;
+    let f = m.f() as usize;
+    let t = m.t() as usize;
+    if f < 25 {
+      if m.pro() {
+        self.cells[f] = Some((Piece::from(m.m()).unpromotes(), self.xside));
+      } else {
+        self.cells[f] = Some((Piece::from(m.m()), self.xside));
+      }
+    }
+    if m.drop() {
+      self.cells[t] = None;
+       self.nhand[self.xside as usize] += 1;
+       self.hand[self.xside as usize][m.p() as usize] += 1;
+    } else if m.cap() {
+      self.cells[t] = Some((m.piece(), self.side));
+      if m.piece() != Piece::King {
+       self.nhand[self.xside as usize] -= 1;
+       self.hand[self.xside as usize][m.piece().unpromotes() as usize] -= 1;
+      }
+    } else {
+      self.cells[t] = None;
+    }
+    (self.side, self.xside) = (self.xside, self.side);
+    self.ply -= 1;
+    self.hash = self.drawhash[self.ply - 1];
+
+    if CHECK_INCREMENTAL_HASH {
+      let h = self.hash;
+      self.hash_board();
+      if h != self.hash {
+        eprintln!("* Error incremental hash: move = {} *", m);
+      }
+    }
+    abzu::MoveResult::OtherSideMoves
+  }
+
+  fn generate_moves<const CAPS_ONLY:bool>(&self) -> Vec<Move> {
+    if self.play != State::Playing { return Vec::new(); }
+    let mult = if self.side == Color::Black {1} else {-1};
+    let flg = if self.side == Color::Black {0} else {MF_WHITEMOVE};
+    let mut ml = Vec::new();
+
+    // generate drops
+    //   drop onto empty squares
+    //   can't drop pawns onto promotion squares
+    //   TODO: disallow pawn drops giving checkmate
+    //   TODO: disallow pawn drops with pawns
+    if !CAPS_ONLY && self.nhand[self.side as usize]>0 {
+      for i in 0..5 {
+        if self.hand[self.side as usize][i] > 0 {
+          let f = if self.side == Color::Black {B_HAND} else {W_HAND};
+          if i == (Piece::Pawn as usize) {
+            for t in 0..25 {
+              if self.cells[t] == None && PROMOTION[t]!=Some(self.side) {
+                ml.push(Move::new(f as u8, t as u8, i as u8, i as u8, flg|MF_DROP));
+              }
+            }
+          } else {
+            for t in 0..25 {
+              if self.cells[t] == None {
+                ml.push(Move::new(f as u8, t as u8, i as u8, i as u8, flg|MF_DROP));
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for f in 0..25 {
+      if let Some((mvd,c)) = self.cells[f] {
+        if c!=self.side {continue;}
+        // generate step moves
+        for i in 0..MOVE_STEP_NUM[mvd as usize] {
+          let t = BOX_TO_BOARD[(BOARD_TO_BOX[f] + mult*MOVE_STEP_OFFSET[mvd as usize][i]) as usize];
+          if t<0 {continue;}
+          let t = t as usize;
+          if self.cells[t].is_none() && CAPS_ONLY {continue;}
+          if let Some((_,c)) = self.cells[t] { if c==self.side {continue;} }
+          let flags;
+          let p;
+          if let Some((xp,_)) = self.cells[t] { flags=MF_CAP; p=xp as u8; }
+          else { flags=0; p=0; }
+          if (PROMOTION[f] == Some(self.side) || PROMOTION[t] == Some(self.side))
+            &&  mvd.can_promote()
+          {
+            if mvd != Piece::Pawn {
+              ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags|MF_NONPRO));
+            }
+            ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags|MF_PRO));
+          } else {
+            ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags));
+          }
+        }
+        // generate slide moves
+        for &offset in &MOVE_SLIDE_OFFSET[mvd as usize] {
+          if offset == 0 {break;}
+          let mut t = f;
+          loop {
+            let pt = BOX_TO_BOARD[(BOARD_TO_BOX[t as usize] + offset) as usize];
+            if pt<0 {break;}
+            t = pt as usize;
+            let fp = if (PROMOTION[f] == Some(self.side) || PROMOTION[t] == Some(self.side))
+                && mvd.can_promote() {MF_PRO} else {0};
+            match self.cells[t as usize] {
+              None => {
+                if !CAPS_ONLY {
+                  ml.push(Move::new(f as u8, t as u8, 0, mvd as u8, flg|fp));
+                  if fp!=0 {
+                    ml.push(Move::new(f as u8, t as u8, 0, mvd as u8, flg|MF_NONPRO));
+                  }
+                }
+              }
+              Some((xp,c)) if c==self.xside => {
+                ml.push(Move::new(f as u8, t as u8, xp as u8, mvd as u8, flg|fp|MF_CAP));
+                if fp!=0 {
+                  ml.push(Move::new(f as u8, t as u8, xp as u8, mvd as u8, flg|MF_NONPRO|MF_CAP));
+                }
+                break;
+              }
+              _ => break,
+            }
+          }
+        }
+      }
+    }
+    return ml;
+  }
+
+  // TODO: might be more efficient to look at moves _from_ king...
+  fn in_check(&self) -> bool {
+    if self.play != State::Playing { return false; }
+    let mult = if self.xside == Color::Black {1} else {-1};
+    for f in 0..25 {
+      if let Some((mvd,c)) = self.cells[f] {
+        if c!=self.xside {continue;}
+        // step moves
+        for i in 0..MOVE_STEP_NUM[mvd as usize] {
+          let t = BOX_TO_BOARD[(BOARD_TO_BOX[f] + mult*MOVE_STEP_OFFSET[mvd as usize][i]) as usize];
+          if t<0 {continue;}
+          if let Some(pc) = self.cells[t as usize] {
+            if pc == (Piece::King, self.side) {
+              return true;
+            }
+          }
+        }
+        // slide moves
+        for &offset in &MOVE_SLIDE_OFFSET[mvd as usize] {
+          if offset == 0 {break;}
+          let mut t = f;
+          loop {
+            let pt = BOX_TO_BOARD[(BOARD_TO_BOX[t as usize] + offset) as usize];
+            if pt<0 {break;}
+            t = pt as usize;
+            if let Some(pc) = self.cells[t as usize] {
+              if pc == (Piece::King, self.side) {
+                return true;
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 }
 
@@ -373,98 +769,6 @@ const PROMOTION : [Option<Color>; 25] = [
   Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black),
 ];
 
-fn generate_moves<const CAPS_ONLY:bool>(b:&Board) -> Vec<Move> {
-  if b.play != State::Playing { return Vec::new(); }
-  let mult = if b.side == Color::Black {1} else {-1};
-  let flg = if b.side == Color::Black {0} else {MF_WHITEMOVE};
-  let mut ml = Vec::new();
-
-  // generate drops
-  //   drop onto empty squares
-  //   can't drop pawns onto promotion squares
-  //   TODO: disallow pawn drops giving checkmate
-  //   TODO: disallow pawn drops with pawns
-  if !CAPS_ONLY && b.nhand[b.side as usize]>0 {
-    for i in 0..5 {
-      if b.hand[b.side as usize][i] > 0 {
-        let f = if b.side == Color::Black {B_HAND} else {W_HAND};
-        if i == (Piece::Pawn as usize) {
-          for t in 0..25 {
-            if b.cells[t] == None && PROMOTION[t]!=Some(b.side) {
-              ml.push(Move::new(f as u8, t as u8, i as u8, i as u8, flg|MF_DROP));
-            }
-          }
-        } else {
-          for t in 0..25 {
-            if b.cells[t] == None {
-              ml.push(Move::new(f as u8, t as u8, i as u8, i as u8, flg|MF_DROP));
-            }
-          }
-        }
-      }
-    }
-  }
-
-  for f in 0..25 {
-    if let Some((mvd,c)) = b.cells[f] {
-      if c!=b.side {continue;}
-      // generate step moves
-      for i in 0..MOVE_STEP_NUM[mvd as usize] {
-        let t = BOX_TO_BOARD[(BOARD_TO_BOX[f] + mult*MOVE_STEP_OFFSET[mvd as usize][i]) as usize];
-        if t<0 {continue;}
-        let t = t as usize;
-        if b.cells[t].is_none() && CAPS_ONLY {continue;}
-        if let Some((_,c)) = b.cells[t] { if c==b.side {continue;} }
-        let flags;
-        let p;
-        if let Some((xp,_)) = b.cells[t] { flags=MF_CAP; p=xp as u8; }
-        else { flags=0; p=0; }
-        if (PROMOTION[f] == Some(b.side) || PROMOTION[t] == Some(b.side))
-          &&  mvd.promotes().is_some()
-        {
-          if mvd != Piece::Pawn {
-            ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags|MF_NONPRO));
-          }
-          ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags|MF_PRO));
-        } else {
-          ml.push(Move::new(f as u8, t as u8, p as u8, mvd as u8, flg|flags));
-        }
-      }
-      // generate slide moves
-      for &offset in &MOVE_SLIDE_OFFSET[mvd as usize] {
-        if offset == 0 {break;}
-        let mut t = f;
-        loop {
-          let pt = BOX_TO_BOARD[(BOARD_TO_BOX[t as usize] + offset) as usize];
-          if pt<0 {break;}
-          t = pt as usize;
-          let fp = if (PROMOTION[f] == Some(b.side) || PROMOTION[t] == Some(b.side))
-              && mvd.promotes().is_some() {MF_PRO} else {0};
-          match b.cells[t as usize] {
-            None => {
-              if !CAPS_ONLY {
-                ml.push(Move::new(f as u8, t as u8, 0, mvd as u8, flg|fp));
-                if fp!=0 {
-                  ml.push(Move::new(f as u8, t as u8, 0, mvd as u8, flg|MF_NONPRO));
-                }
-              }
-            }
-            Some((xp,c)) if c==b.xside => {
-              ml.push(Move::new(f as u8, t as u8, xp as u8, mvd as u8, flg|fp|MF_CAP));
-              if fp!=0 {
-                ml.push(Move::new(f as u8, t as u8, xp as u8, mvd as u8, flg|MF_NONPRO|MF_CAP));
-              }
-              break;
-            }
-            _ => break,
-          }
-        }
-      }
-    }
-  }
-
-  return ml;
-}
 
 ////////////////////////////////////////
 
@@ -472,12 +776,31 @@ fn main() {
   let mut hg = abzu::hash::HashGen::new(1);
   unsafe{gen_hash(&mut hg)};
   let mut b = Board::new();
+
   println!("{:?}", b);
+  println!("{:?}", b.generate_moves::<false>());
+  println!("{:?}", b.generate_moves::<true>());
 
-  println!("{:?}", generate_moves::<false>(&b));
-  for m in generate_moves::<false>(&b) { print!(" {}", m); } println!();
-
-  println!("{:?}", generate_moves::<true>(&b));
-  for m in generate_moves::<true>(&b) { print!(" {}", m); } println!();
+  println!("{}", b);
+  for m in b.generate_moves::<false>() { print!(" {}", m); } println!();
+  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
+  b.make_move(Move::null());
+  println!("{}", b);
+  b.unmake_move(Move::null());
+  println!("{}", b);
+  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
+  b.make_move(b.generate_moves::<true>()[0]);
+  println!("{}", b);
+  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
+  b.make_move(b.generate_moves::<true>()[0]);
+  println!("{}", b);
+  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
+  let m0 = b.generate_moves::<true>()[0];
+  b.make_move(m0);
+  println!("{}", b);
+  for m in b.generate_moves::<false>() { print!(" {}", m); } println!();
+  b.unmake_move(m0);
+  println!("{}", b);
+  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
 }
 
