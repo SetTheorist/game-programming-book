@@ -7,9 +7,9 @@ pub const F_LOWER   : u16 = 4|F_VALID;
 pub const F_EXACT   : u16 = F_UPPER|F_LOWER|F_VALID;
 
 #[derive(Clone,Copy,Default,Debug)]
-pub struct Entry<E,M> {
+pub struct Entry<V,M> {
   pub lock: H,
-  pub value: E,
+  pub value: V,
   pub best_move: M,
   pub depth: i16,
   pub flags: u16,
@@ -27,14 +27,14 @@ pub struct Stats {
   pub used_upper: usize,
 }
 
-pub struct Table<E,M>{
+pub struct Table<V,M>{
   n:usize,
-  t:Vec<Entry<E,M>>,
+  t:Vec<Entry<V,M>>,
   s:Stats,
 }
 
-impl<E,M> Table<E,M> where
-  E:Clone+Copy+Default,
+impl<V,M> Table<V,M> where
+  V:Clone+Copy+Default,
   M:Clone+Copy+Default,
 {
   pub fn new(n:usize) -> Self {
@@ -48,7 +48,7 @@ impl<E,M> Table<E,M> where
     self.s = Stats::default();
   }
 
-  pub fn retrieve(&mut self, h:H) -> Option<Entry<E,M>> {
+  pub fn retrieve(&mut self, h:H) -> Option<Entry<V,M>> {
     let i = (h % (self.n as u64)) as usize;
     let e = self.t[i];
     if e.flags == F_INVALID { return None; }
@@ -57,11 +57,11 @@ impl<E,M> Table<E,M> where
     return Some(e);
   }
 
-  pub fn store(&mut self, hash:H, eval:E, m:M, flags:u16, depth:i16) {
+  pub fn store(&mut self, hash:H, val:V, m:M, flags:u16, depth:i16) {
     let i = (hash % (self.n as u64)) as usize;
     let e = &mut self.t[i];
     e.lock = hash;
-    e.value = eval;
+    e.value = val;
     e.best_move = m;
     e.depth = depth;
     e.flags = flags;

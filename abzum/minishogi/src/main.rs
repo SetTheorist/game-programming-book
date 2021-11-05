@@ -303,7 +303,7 @@ impl std::fmt::Display for Board {
           write!(f, "]\n")?;
         }
         3 => {
-          write!(f, " {}\n", self.to_fen())?;
+          write!(f, " \"{}\"\n", self.to_fen())?;
         }
         4 => {
           let eval = 0; // TODO: self.evaluate_relative()
