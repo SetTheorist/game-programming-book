@@ -4,7 +4,8 @@ use crate::tt;
 use crate::pv::PV;
 
 pub fn search_negamax<G:Game>(
-  b:&mut G::B, e:&G::E, pv:&mut PV<G::M>,
+  b:&mut G::B, e:&G::E,
+  pv:&mut PV<G::M>,
   tt:&mut tt::Table<G::V,G::M>,
   settings:&Settings<G::V>,
   stats:&mut Stats
@@ -13,12 +14,8 @@ pub fn search_negamax<G:Game>(
 {
   tt.init();
   stats.nodes_searched = 1;
-  let ml = b.gen_moves();
-  if ml.len() == 0 {
-    // TODO: stalemate is loss ?!
-    return (G::V::MIN, vec![]);
-  }
 
+  let ml = b.gen_moves();
   let mut best_val = G::V::MIN;
   let mut made_valid_move = false;
   for &m in &ml {
@@ -41,14 +38,14 @@ pub fn search_negamax<G:Game>(
   }
 
   if !made_valid_move {
-    // TODO: stalemate is loss ?!
-    return (G::V::MIN, vec![]);
+    // stalemate: no valid moves
+    (e.stalemate_relative(b, 0), vec![])
+  } else {
+    (best_val, pv.pv[0][0..pv.length[0]].to_vec())
   }
-
-  (best_val, pv.pv[0][0..pv.length[0]].to_vec())
 }
 
-pub fn search_negamax_general<G:Game>(
+fn search_negamax_general<G:Game>(
   b:&mut G::B, e:&G::E,
   depth:i16, ply:usize,
   pv:&mut PV<G::M>,
@@ -92,10 +89,10 @@ pub fn search_negamax_general<G:Game>(
       match b.make_move(m) {
         MoveResult::InvalidMove => { continue; }
         MoveResult::SameSideMovesAgain => {
-          search_negamax_general::<G>(b, e, settings.depth-100, ply+1, pv, tt, settings, stats)
+          search_negamax_general::<G>(b, e, depth-100, ply+1, pv, tt, settings, stats)
         } 
         MoveResult::OtherSideMoves => {
-          -search_negamax_general::<G>(b, e, settings.depth-100, ply+1, pv, tt, settings, stats)
+          -search_negamax_general::<G>(b, e, depth-100, ply+1, pv, tt, settings, stats)
         }
       };
     b.unmake_move(m);
@@ -109,6 +106,5 @@ pub fn search_negamax_general<G:Game>(
   }
   return best_val;
 }
-
 
 

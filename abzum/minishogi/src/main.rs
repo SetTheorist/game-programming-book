@@ -11,7 +11,7 @@ use abzu::hash::H;
 ////////////////////////////////////////
 
 bitfield::bitfield! {
-  #[derive(Clone,Copy,Eq,PartialEq)]
+  #[derive(Clone,Copy,Default,Eq,PartialEq)]
   pub struct Move(u32);
   //impl Debug;
   u8,f,_    : 5,0; // from
@@ -96,34 +96,6 @@ const W_HAND : usize = 26;
 
 const PV_LENGTH : usize = 64;
 const MAX_GAME_LENGTH : usize = 256;
-
-////////////////////////////////////////
-
-#[derive(Clone,Copy,Debug,Default,PartialEq,PartialOrd)]
-pub struct FVal(f64);
-
-impl std::ops::Add for FVal {
-  type Output = Self;
-  #[inline] fn add(self, rhs:Self) -> Self { FVal(self.0 + rhs.0) }
-}
-impl std::ops::Sub for FVal {
-  type Output = Self;
-  #[inline] fn sub(self, rhs:Self) -> Self { FVal(self.0 - rhs.0) }
-}
-impl std::ops::Neg for FVal {
-  type Output = Self;
-  #[inline] fn neg(self) -> Self { FVal(-self.0) }
-}
-
-impl abzu::Value for FVal {
-  const MIN  : FVal = FVal(-100_000_000_f64);
-  const MAX  : FVal = FVal( 100_000_000_f64);
-  const DRAW : FVal = FVal(0_f64);
-  #[inline]
-  fn mate_in_n(n:usize) -> Self {
-    Self::MAX - FVal(n as f64)
-  }
-}
 
 ////////////////////////////////////////
 
@@ -306,7 +278,8 @@ impl std::fmt::Display for Board {
           write!(f, " \"{}\"\n", self.to_fen())?;
         }
         4 => {
-          let eval = 0; // TODO: self.evaluate_relative()
+          let eval = <MatEval as abzu::Evaluator<Board,Move,IValue>>
+            ::evaluate_absolute(&MatEval,self, 0).0;
           write!(f, " {}{{{}}}\n", if self.in_check() {"!"} else {""}, eval)?;
         }
         _ => {}
@@ -769,38 +742,124 @@ const PROMOTION : [Option<Color>; 25] = [
   Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black), Some(Color::Black),
 ];
 
+////////////////////////////////////////
+
+impl abzu::Move for Move {
+  #[inline] fn to_i(self) -> u32 { self.0 }
+  #[inline] fn from_i(i:u32) -> Self { Move(i) }
+  #[inline] fn is_valid(&self) -> bool { true }
+  #[inline] fn is_null(&self) -> bool { self.nullmove() }
+  #[inline] fn null_move() -> Self { Move::null() }
+}
+
+impl abzu::Board<Move> for Board {
+  #[inline] fn new() -> Self { Board::new() }
+  #[inline] fn init(&mut self) { *self = Board::new() }
+  #[inline] fn terminal(&self) -> bool { self.play != State::Playing }
+  #[inline] fn hash(&self) -> H { self.hash }
+  #[inline] fn gen_moves(&self) -> Vec<Move> { self.generate_moves::<false>() }
+  #[inline] fn gen_q_moves(&self) -> Vec<Move> { self.generate_moves::<true>() }
+  #[inline] fn make_move(&mut self, m:Move) -> abzu::MoveResult { self.make_move(m) }
+  #[inline] fn unmake_move(&mut self, m:Move) -> abzu::MoveResult { self.unmake_move(m) }
+}
 
 ////////////////////////////////////////
+
+use abzu::{Value};
+use abzu::value::{IValue};
+pub struct MatEval;
+const MAT_VALUE : [i32;10] = [
+  100, 300, 200, 400, 500, 1000, 150, 250, 500, 600
+];
+const MAT_VALUE_HAND : [i32;5] = [
+  100*11/12, 300*11/12, 200*11/12, 400*11/12, 500*11/12,
+];
+
+impl abzu::Evaluator<Board,Move,IValue> for MatEval {
+  fn evaluate_absolute(&self, b:&Board, ply:usize) -> IValue {
+    match b.play {
+      State::Draw => {return IValue::DRAW; }
+      State::BlackWin => {return IValue::mate_in_n(ply); }
+      State::WhiteWin => {return -IValue::mate_in_n(ply); }
+      State::Playing => {}
+    }
+    let mut v = 0;
+    for &c in b.cells.iter() {
+      match c {
+        Some((p,Color::Black)) => { v += MAT_VALUE[p as usize]; }
+        Some((p,Color::White)) => { v -= MAT_VALUE[p as usize]; }
+        _ => {}
+      }
+    }
+    for i in 0..5 { v += (b.hand[0][i] as i32)*MAT_VALUE_HAND[i]; }
+    for i in 0..5 { v -= (b.hand[1][i] as i32)*MAT_VALUE_HAND[i]; }
+    IValue(v)
+  }
+  fn evaluate_relative(&self, b:&Board, ply:usize) -> IValue {
+    match b.side {
+      Color::Black => self.evaluate_absolute(b, ply),
+      Color::White => -self.evaluate_absolute(b, ply),
+    }
+  }
+  fn stalemate_absolute(&self, b:&Board, ply:usize) -> IValue {
+    match b.side {
+      Color::Black => -IValue::mate_in_n(ply),
+      Color::White => IValue::mate_in_n(ply),
+    }
+  }
+  fn stalemate_relative(&self, b:&Board, ply:usize) -> IValue {
+    match b.side {
+      Color::Black => self.stalemate_absolute(b, ply),
+      Color::White => -self.stalemate_absolute(b, ply),
+    }
+  }
+}
+
+////////////////////////////////////////
+
+struct GameIMat;
+impl abzu::Game for GameIMat {
+  type M = Move;
+  type B = Board;
+  type V = IValue;
+  type E = MatEval;
+}
 
 fn main() {
   let mut hg = abzu::hash::HashGen::new(1);
   unsafe{gen_hash(&mut hg)};
   let mut b = Board::new();
 
-  println!("{:?}", b);
-  println!("{:?}", b.generate_moves::<false>());
-  println!("{:?}", b.generate_moves::<true>());
+  println!("{}", b);
+  for m in b.generate_moves::<true>() { print!("{} ", m); } println!("");
+  println!("**********");
 
-  println!("{}", b);
-  for m in b.generate_moves::<false>() { print!(" {}", m); } println!();
-  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
-  b.make_move(Move::null());
-  println!("{}", b);
-  b.unmake_move(Move::null());
-  println!("{}", b);
-  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
-  b.make_move(b.generate_moves::<true>()[0]);
-  println!("{}", b);
-  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
-  b.make_move(b.generate_moves::<true>()[0]);
-  println!("{}", b);
-  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
-  let m0 = b.generate_moves::<true>()[0];
-  b.make_move(m0);
-  println!("{}", b);
-  for m in b.generate_moves::<false>() { print!(" {}", m); } println!();
-  b.unmake_move(m0);
-  println!("{}", b);
-  for m in b.generate_moves::<true>() { print!(" {}", m); } println!();
+  let eval = MatEval;
+  let mut pv = abzu::pv::PV::new(16);
+  let mut tt = abzu::tt::Table::new(1024);
+  let mut stats = abzu::search::Stats::new();
+  let mut settings =
+    abzu::search::Settings {
+      depth: 400,
+      hh: None,
+      tt: Some(abzu::search::TT{}),
+      id: None,
+      iid: None,
+      mws: None,
+      asp: None,
+      qs: None,
+      nmp: None,
+    };
+  while !abzu::Board::<Move>::terminal(&b) {
+    println!("\n{}", b);
+    let (v,mpv) = abzu::search::negamax::search_negamax::<GameIMat>(
+      &mut b, &eval,
+      &mut pv, &mut tt,
+      &settings, &mut stats);
+    print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
+    println!("{:?}", stats);
+    b.make_move(mpv[0]);
+  }
+  println!("\n{}", b);
 }
 

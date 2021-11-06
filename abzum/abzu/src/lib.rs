@@ -2,6 +2,7 @@ pub mod hash;
 pub mod pv;
 pub mod search;
 pub mod tt;
+pub mod value;
 
 pub enum MoveResult {
   InvalidMove,
@@ -45,8 +46,11 @@ pub trait Value
 }
 
 pub trait Evaluator<B:Board<M>,M:Move,V:Value> {
-  fn evaluate_relative(&self, b:&B, ply:usize) -> V;
   fn evaluate_absolute(&self, b:&B, ply:usize) -> V;
+  fn evaluate_relative(&self, b:&B, ply:usize) -> V;
+
+  fn stalemate_absolute(&self, b:&B, ply:usize) -> V;
+  fn stalemate_relative(&self, b:&B, ply:usize) -> V;
 }
 
 pub trait Game {

@@ -58,5 +58,14 @@ pub struct Stats {
   pub tt: tt::Stats,
 }
 
+impl Stats {
+  pub fn new() -> Self {
+    Stats {
+      nodes_searched: 0,
+      tt: tt::Stats::new(),
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
