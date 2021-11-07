@@ -1,5 +1,6 @@
 use crate::tt;
 
+pub mod alphabeta;
 pub mod negamax;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,14 +56,12 @@ pub struct Settings<E:Clone+Copy+Sized> {
 #[derive(Clone,Copy,Debug,Default)]
 pub struct Stats {
   pub nodes_searched: u64,
-  pub tt: tt::Stats,
 }
 
 impl Stats {
   pub fn new() -> Self {
     Stats {
       nodes_searched: 0,
-      tt: tt::Stats::new(),
     }
   }
 }

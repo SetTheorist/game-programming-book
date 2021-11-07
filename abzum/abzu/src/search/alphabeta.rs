@@ -3,7 +3,7 @@ use crate::{*};
 use crate::tt;
 use crate::pv::PV;
 
-pub fn search_negamax<G:Game>(
+pub fn search_alphabeta<G:Game>(
   b:&mut G::B, e:&G::E,
   pv:&mut PV<G::M>,
   tt:&mut tt::Table<G::V,G::M>,
@@ -14,12 +14,16 @@ pub fn search_negamax<G:Game>(
 {
   tt.init();
   stats.nodes_searched = 1;
-  let val = search_negamax_general::<G>(b, e, settings.depth, 0, pv, tt, settings, stats);
+
+  let val = search_alphabeta_general::<G>(b, e,
+    G::V::MIN, G::V::MAX, settings.depth, 0,
+    pv, tt, settings, stats);
   (val, pv.pv[0][0..pv.length[0]].to_vec())
 }
 
-fn search_negamax_general<G:Game>(
+fn search_alphabeta_general<G:Game>(
   b:&mut G::B, e:&G::E,
+  α:G::V, β:G::V,
   depth:i16, ply:usize,
   pv:&mut PV<G::M>,
   tt:&mut tt::Table<G::V,G::M>,
@@ -58,6 +62,8 @@ fn search_negamax_general<G:Game>(
     }
   }
 
+  let mut α = α;
+  let mut β = β;
   let mut made_valid_move = false;
   let mut best_val = G::V::MIN;
   let ml = b.gen_moves();
@@ -66,17 +72,26 @@ fn search_negamax_general<G:Game>(
       match b.make_move(m) {
         MoveResult::InvalidMove => { continue; }
         MoveResult::SameSideMovesAgain => {
-          search_negamax_general::<G>(b, e, depth-100, ply+1, pv, tt, settings, stats)
+          search_alphabeta_general::<G>(b, e, α, β, depth-100, ply+1, pv, tt, settings, stats)
         } 
         MoveResult::OtherSideMoves => {
-          -search_negamax_general::<G>(b, e, depth-100, ply+1, pv, tt, settings, stats)
+          -search_alphabeta_general::<G>(b, e, -β, -α, depth-100, ply+1, pv, tt, settings, stats)
         }
       };
     b.unmake_move(m);
     made_valid_move = true;
     if val > best_val {
       best_val = val;
+    }
+    if best_val > α {
+      α = best_val;
       pv.update(ply, m);
+      if α >= β {
+        if let Some(TT{}) = settings.tt {
+          tt.store(b.hash(), α, m, tt::F_LOWER, depth);
+        }
+        return α;
+      }
     }
   }
   if !made_valid_move {
@@ -86,7 +101,5 @@ fn search_negamax_general<G:Game>(
   } else if let Some(TT{}) = settings.tt {
     tt.store(b.hash(), best_val, pv.pv[ply][ply], tt::F_EXACT, depth);
   }
-  return best_val;
+  return α;
 }
-
-

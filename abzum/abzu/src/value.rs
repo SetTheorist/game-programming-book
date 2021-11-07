@@ -1,5 +1,19 @@
 use std::ops::{Add,Sub,Neg};
 
+pub trait Value
+  : Clone + Copy + Sized + Default
+  + PartialEq + PartialOrd
+  + std::ops::Add<Output=Self>
+  + std::ops::Sub<Output=Self>
+  + std::ops::Neg<Output=Self>
+  + Into<f32>
+{
+  const MIN : Self;
+  const DRAW : Self;
+  const MAX : Self;
+  fn mate_in_n(n:usize) -> Self;
+}
+
 ////////////////////////////////////////
 
 macro_rules! op0 {
@@ -35,6 +49,10 @@ op0!(FValue, Neg, neg);
 op1!(FValue, Add, add);
 op1!(FValue, Sub, sub);
 
+impl Into<f32> for FValue {
+  #[inline] fn into(self) -> f32 { self.0 }
+}
+
 impl super::Value for FValue {
   const MIN : Self = FValue(-1.0e6);
   const DRAW : Self = FValue(0.0);
@@ -52,6 +70,10 @@ pub struct IValue(pub i32);
 op0!(IValue, Neg, neg);
 op1!(IValue, Add, add);
 op1!(IValue, Sub, sub);
+
+impl Into<f32> for IValue {
+  #[inline] fn into(self) -> f32 { self.0 as f32 }
+}
 
 impl super::Value for IValue {
   const MIN : Self = IValue(-1_000_000);

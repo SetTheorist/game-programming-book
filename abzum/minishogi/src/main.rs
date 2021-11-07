@@ -253,7 +253,7 @@ impl std::fmt::Display for Board {
           write!(f, " {}.{}\n", (self.ply+1)/2, (if self.side==Color::Black{""}else{".."}))?;
         }
         1 => {
-          write!(f, " Black({})[ ", self.nhand[Color::Black as usize])?;
+          write!(f, " Black({})[", self.nhand[Color::Black as usize])?;
           for i in 0..5 {
             if self.hand[Color::Black as usize][i] > 0 {
               for _ in 0..self.hand[Color::Black as usize][i] {
@@ -261,10 +261,10 @@ impl std::fmt::Display for Board {
               }
             }
           }
-          write!(f, "]\n")?;
+          write!(f, " ]\n")?;
         }
         2 => {
-          write!(f, " White({})[ ", self.nhand[Color::White as usize])?;
+          write!(f, " White({})[", self.nhand[Color::White as usize])?;
           for i in 0..5 {
             if self.hand[Color::White as usize][i] > 0 {
               for _ in 0..self.hand[Color::White as usize][i] {
@@ -272,15 +272,16 @@ impl std::fmt::Display for Board {
               }
             }
           }
-          write!(f, "]\n")?;
+          write!(f, " ]\n")?;
         }
         3 => {
           write!(f, " \"{}\"\n", self.to_fen())?;
         }
         4 => {
           let eval = <MatEval as abzu::Evaluator<Board,Move,IValue>>
-            ::evaluate_absolute(&MatEval,self, 0).0;
-          write!(f, " {}{{{}}}\n", if self.in_check() {"!"} else {""}, eval)?;
+            ::evaluate_absolute(&MatEval::new(false),self, 0).0;
+          write!(f, " {:?} {}{{{}}}\n",
+            self.play, if self.in_check() {"!"} else {""}, eval)?;
         }
         _ => {}
       }
@@ -481,7 +482,7 @@ impl Board {
     // TODO: lame slow approach
     // (replace with hash for speed)
     self.drawhash[self.ply-1] = self.hash;
-    if false /* the_settings.check_draws */ {
+    if true /* the_settings.check_draws */ {
       if self.drawhash[0..(self.ply-1)].iter().any(|&xh|xh==h) {
         self.play = State::Draw;
       }
@@ -765,15 +766,28 @@ impl abzu::Board<Move> for Board {
 
 ////////////////////////////////////////
 
-use abzu::{Value};
-use abzu::value::{IValue};
-pub struct MatEval;
+use abzu::value::{Value,IValue};
 const MAT_VALUE : [i32;10] = [
   100, 300, 200, 400, 500, 1000, 150, 250, 500, 600
 ];
 const MAT_VALUE_HAND : [i32;5] = [
   100*11/12, 300*11/12, 200*11/12, 400*11/12, 500*11/12,
 ];
+pub struct MatEval {
+  random:bool,
+  mat_value: [i32;10],
+  mat_value_hand: [i32;5],
+}
+
+impl MatEval {
+  pub fn new(random:bool) -> Self {
+    MatEval {
+      random,
+      mat_value: MAT_VALUE.clone(),
+      mat_value_hand: MAT_VALUE_HAND.clone(),
+    }
+  }
+}
 
 impl abzu::Evaluator<Board,Move,IValue> for MatEval {
   fn evaluate_absolute(&self, b:&Board, ply:usize) -> IValue {
@@ -786,13 +800,14 @@ impl abzu::Evaluator<Board,Move,IValue> for MatEval {
     let mut v = 0;
     for &c in b.cells.iter() {
       match c {
-        Some((p,Color::Black)) => { v += MAT_VALUE[p as usize]; }
-        Some((p,Color::White)) => { v -= MAT_VALUE[p as usize]; }
+        Some((p,Color::Black)) => { v += self.mat_value[p as usize]; }
+        Some((p,Color::White)) => { v -= self.mat_value[p as usize]; }
         _ => {}
       }
     }
-    for i in 0..5 { v += (b.hand[0][i] as i32)*MAT_VALUE_HAND[i]; }
-    for i in 0..5 { v -= (b.hand[1][i] as i32)*MAT_VALUE_HAND[i]; }
+    for i in 0..5 { v += (b.hand[0][i] as i32)*self.mat_value_hand[i]; }
+    for i in 0..5 { v -= (b.hand[1][i] as i32)*self.mat_value_hand[i]; }
+    if self.random { v += ((b.hash%7) as i32)-3; }
     IValue(v)
   }
   fn evaluate_relative(&self, b:&Board, ply:usize) -> IValue {
@@ -812,6 +827,34 @@ impl abzu::Evaluator<Board,Move,IValue> for MatEval {
       Color::Black => self.stalemate_absolute(b, ply),
       Color::White => -self.stalemate_absolute(b, ply),
     }
+  }
+
+  fn num_weights(&self) -> usize {
+    0
+  }
+  fn get_weight_f32(&self, j:usize) -> f32 {
+    if j<10 {
+      self.mat_value[j] as f32
+    } else {
+      self.mat_value_hand[j-10] as f32
+    }
+  }
+  fn set_weight_f32(&mut self, j:usize, wj:f32) {
+    if j<10 {
+      self.mat_value[j] = wj as i32;
+    } else {
+      self.mat_value_hand[j-10] = wj as i32;
+    }
+  }
+  fn get_all_weights_f32(&self) -> Vec<f32> {
+    let mut v = vec![0.0; 15];
+    for j in 0..10 {
+      v[j] = self.mat_value[j] as f32;
+    }
+    for j in 0..5 {
+      v[10+j] = self.mat_value_hand[j] as f32;
+    }
+    v
   }
 }
 
@@ -834,15 +877,16 @@ fn main() {
   for m in b.generate_moves::<true>() { print!("{} ", m); } println!("");
   println!("**********");
 
-  let eval = MatEval;
+  let eval = MatEval::new(true);
   let mut pv = abzu::pv::PV::new(16);
-  let mut tt = abzu::tt::Table::new(1024);
+  let mut tt = abzu::tt::Table::new(1024*3-1);
   let mut stats = abzu::search::Stats::new();
   let mut settings =
     abzu::search::Settings {
       depth: 400,
       hh: None,
       tt: Some(abzu::search::TT{}),
+      //tt: None,
       id: None,
       iid: None,
       mws: None,
@@ -850,16 +894,40 @@ fn main() {
       qs: None,
       nmp: None,
     };
+
+  println!("----- -----");
+  let (v,mpv) = abzu::search::negamax::search_negamax::<GameIMat>(
+    &mut b, &eval,
+    &mut pv, &mut tt,
+    &settings, &mut stats);
+  print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
+  println!("{:?}", stats);
+  println!("{:?}", tt.s);
+
+  println!("----- -----");
+  let (v,mpv) = abzu::search::alphabeta::search_alphabeta::<GameIMat>(
+    &mut b, &eval,
+    &mut pv, &mut tt,
+    &settings, &mut stats);
+  print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
+  println!("{:?}", stats);
+  println!("{:?}", tt.s);
+
+/*
   while !abzu::Board::<Move>::terminal(&b) {
     println!("\n{}", b);
+    //println!("{:?}", &b.drawhash[0..b.ply]);
+    settings.depth = if b.side==Color::Black {400} else {300};
     let (v,mpv) = abzu::search::negamax::search_negamax::<GameIMat>(
       &mut b, &eval,
       &mut pv, &mut tt,
       &settings, &mut stats);
     print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
     println!("{:?}", stats);
+    println!("{:?}", tt.s);
     b.make_move(mpv[0]);
   }
   println!("\n{}", b);
+*/
 }
 

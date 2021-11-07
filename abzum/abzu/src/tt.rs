@@ -45,7 +45,7 @@ impl Stats {
 pub struct Table<V,M>{
   n:usize,
   t:Vec<Entry<V,M>>,
-  s:Stats,
+  pub s:Stats,
 }
 
 impl<V,M> Table<V,M> where

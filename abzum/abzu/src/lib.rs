@@ -1,8 +1,14 @@
+#![allow(mixed_script_confusables)]
+
 pub mod hash;
 pub mod pv;
 pub mod search;
+pub mod td_lambda;
+pub mod time;
 pub mod tt;
 pub mod value;
+
+use crate::value::{Value};
 
 pub enum MoveResult {
   InvalidMove,
@@ -32,25 +38,17 @@ pub trait Board<M:Move> : Clone {
   fn unmake_move(&mut self, m:M) -> MoveResult;
 }
 
-pub trait Value
-  : Clone + Copy + Sized + Default
-  + PartialEq + PartialOrd
-  + std::ops::Add<Output=Self>
-  + std::ops::Sub<Output=Self>
-  + std::ops::Neg<Output=Self>
-{
-  const MIN : Self;
-  const DRAW : Self;
-  const MAX : Self;
-  fn mate_in_n(n:usize) -> Self;
-}
-
 pub trait Evaluator<B:Board<M>,M:Move,V:Value> {
   fn evaluate_absolute(&self, b:&B, ply:usize) -> V;
   fn evaluate_relative(&self, b:&B, ply:usize) -> V;
 
   fn stalemate_absolute(&self, b:&B, ply:usize) -> V;
   fn stalemate_relative(&self, b:&B, ply:usize) -> V;
+
+  fn num_weights(&self) -> usize;
+  fn get_weight_f32(&self, j:usize) -> f32;
+  fn set_weight_f32(&mut self, j:usize, wj:f32);
+  fn get_all_weights_f32(&self) -> Vec<f32>;
 }
 
 pub trait Game {
