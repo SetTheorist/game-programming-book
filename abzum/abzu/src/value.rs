@@ -2,6 +2,7 @@ use std::ops::{Add,Sub,Neg};
 
 pub trait Value
   : Clone + Copy + Sized + Default
+  + std::fmt::Debug + std::fmt::Display
   + PartialEq + PartialOrd
   + std::ops::Add<Output=Self>
   + std::ops::Sub<Output=Self>
@@ -49,6 +50,12 @@ op0!(FValue, Neg, neg);
 op1!(FValue, Add, add);
 op1!(FValue, Sub, sub);
 
+impl std::fmt::Display for FValue {
+  fn fmt(&self, f:&mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
+
 impl Into<f32> for FValue {
   #[inline] fn into(self) -> f32 { self.0 }
 }
@@ -70,6 +77,12 @@ pub struct IValue(pub i32);
 op0!(IValue, Neg, neg);
 op1!(IValue, Add, add);
 op1!(IValue, Sub, sub);
+
+impl std::fmt::Display for IValue {
+  fn fmt(&self, f:&mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "{}", self.0)
+  }
+}
 
 impl Into<f32> for IValue {
   #[inline] fn into(self) -> f32 { self.0 as f32 }

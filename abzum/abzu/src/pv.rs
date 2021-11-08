@@ -1,15 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pub struct PV<M>{
-  pub pv:Vec<Vec<M>>,
   pub length:Vec<usize>,
+  pub pv:Vec<Vec<M>>,
 }
 
 impl<M:Clone+Copy+Default> PV<M> {
   pub fn new(maxn:usize) -> Self {
-    let pv = vec![vec![M::default();maxn];maxn];
     let length = vec![0; maxn];
-    PV { pv, length }
+    let pv = vec![vec![M::default();maxn];maxn];
+    PV { length, pv }
+  }
+  
+  pub fn init(&mut self) {
+    for l in self.length.iter_mut() { *l = 0; }
   }
 
   pub fn update(&mut self, ply:usize, m:M) {

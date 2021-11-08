@@ -2,11 +2,12 @@
 
 use abzu::hash::H;
 
-//王将
-//角行
-//金将
-//銀将
-//歩兵
+#[cfg(debug_assertions)]
+const DEBUG_MODE : bool = true;
+#[cfg(not(debug_assertions))]
+const DEBUG_MODE : bool = false;
+
+const CHECK_INCREMENTAL_HASH : bool = DEBUG_MODE;
 
 ////////////////////////////////////////
 
@@ -94,7 +95,6 @@ const W_HAND : usize = 26;
 
 ////////////////////////////////////////
 
-const PV_LENGTH : usize = 64;
 const MAX_GAME_LENGTH : usize = 256;
 
 ////////////////////////////////////////
@@ -103,6 +103,17 @@ const MAX_GAME_LENGTH : usize = 256;
 pub enum Color {
   Black = 0,
   White = 1,
+}
+
+impl std::fmt::Display for Color {
+  fn fmt(&self, f:&mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "{}",
+      match self {
+        Color::Black => 'B',
+        Color::White => 'W',
+      }
+    )
+  }
 }
 
 impl Color {
@@ -198,6 +209,34 @@ impl Piece {
       (Dragon,White) => 'd',
     }
   }
+
+  pub fn from_char(ch:char) -> Option<(Piece,Color)> {
+    use Color::*;
+    use Piece::*;
+    match ch {
+      'P' => Some((Pawn,Black)),
+      'G' => Some((Gold,Black)),
+      'S' => Some((Silver,Black)),
+      'B' => Some((Bishop,Black)),
+      'R' => Some((Rook,Black)),
+      'K' => Some((King,Black)),
+      'T' => Some((Tokin,Black)),
+      'N' => Some((Nari,Black)),
+      'H' => Some((Horse,Black)),
+      'D' => Some((Dragon,Black)),
+      'p' => Some((Pawn,White)),
+      'g' => Some((Gold,White)),
+      's' => Some((Silver,White)),
+      'b' => Some((Bishop,White)),
+      'r' => Some((Rook,White)),
+      'k' => Some((King,White)),
+      't' => Some((Tokin,White)),
+      'n' => Some((Nari,White)),
+      'h' => Some((Horse,White)),
+      'd' => Some((Dragon,White)),
+      _ => None,
+    }
+  }
 }
 
 impl From<u8> for Piece {
@@ -235,16 +274,24 @@ pub struct Board {
 
 impl std::fmt::Display for Board {
   fn fmt(&self, f:&mut std::fmt::Formatter) -> std::fmt::Result {
-    write!(f, "   5  4  3  2  1  \n")?;
-    write!(f, " +---------------+ [{:016X}]\n", self.hash)?;
+    write!(f, "    5   4   3   2   1  \n")?;
+    write!(f, " +--------------------+ [{:016X}]\n", self.hash)?;
     for r in (0..5).rev() {
       write!(f, " |")?;
       for c in 0..5 {
         let rc = r*5 + c;
         if let Some((p,c)) = self.cells[rc] {
-          write!(f, " {} ", Piece::from(p).name(c))?;
+          //write!(f, " {} ", Piece::from(p).name(c))?;
+          write!(f, " {}{}{} ",
+            if c==Color::Black {format!("{}{}",abzu::ansi::BRIGHT,abzu::ansi::FG_WHITE)}
+            else {format!("{}{}",abzu::ansi::BRIGHT,abzu::ansi::FG_GREEN)},
+            ["歩", "金", "銀", "角", "飛",
+             "王", "と", "成", "馬", "竜",
+            ][p as usize],
+            "\x1b[0m"
+            )?;
         } else {
-          write!(f, " . ")?;
+          write!(f, " .. ")?;
         }
       }
       write!(f, "| ({})", ['e','d','c','b','a'][r])?;
@@ -278,7 +325,7 @@ impl std::fmt::Display for Board {
           write!(f, " \"{}\"\n", self.to_fen())?;
         }
         4 => {
-          let eval = <MatEval as abzu::Evaluator<Board,Move,IValue>>
+          let eval = <MatEval as abzu::Evaluator<Board,Move,FValue>>
             ::evaluate_absolute(&MatEval::new(false),self, 0).0;
           write!(f, " {:?} {}{{{}}}\n",
             self.play, if self.in_check() {"!"} else {""}, eval)?;
@@ -286,7 +333,7 @@ impl std::fmt::Display for Board {
         _ => {}
       }
     }
-    write!(f, " +---------------+\n")?;
+    write!(f, " +--------------------+\n")?;
     write!(f, "")
   }
 }
@@ -309,11 +356,6 @@ const INITIAL_BOARD : [Option<(Piece,Color)>; 25] = [
     Some((Piece::King,Color::White)),
 ];
 
-#[cfg(debug_assertions)]
-const CHECK_INCREMENTAL_HASH : bool = true;
-#[cfg(not(debug_assertions))]
-const CHECK_INCREMENTAL_HASH : bool = false;
-
 impl Board {
   fn new() -> Self {
     let mut b = Board {
@@ -332,12 +374,76 @@ impl Board {
     b
   }
 
-  // TODO
-  fn from_fen(s:&str) -> Self {
+  // TODO: not robust against bad FEN input
+  fn from_fen(s:&str) -> Result<Self,String> {
     let mut b = Board::new();
-    let mut cs = s.chars();
-    todo!();
-    b
+    let mut bk = false;
+    let mut wk = false;
+    let mut cs = s.chars().peekable();
+    let mut row = 4;
+    let mut col = 0;
+    loop {
+      match cs.next() {
+        Some(' ') => { break; }
+        Some('/') => { row-=1; col=0; }
+        Some('1') => { for _ in 0..1 { b.cells[row*5 + col] = None; col+=1; } }
+        Some('2') => { for _ in 0..2 { b.cells[row*5 + col] = None; col+=1; } }
+        Some('3') => { for _ in 0..3 { b.cells[row*5 + col] = None; col+=1; } }
+        Some('4') => { for _ in 0..4 { b.cells[row*5 + col] = None; col+=1; } }
+        Some('5') => { for _ in 0..5 { b.cells[row*5 + col] = None; col+=1; } }
+        Some(ch) => {
+          if let Some((p,c)) = Piece::from_char(ch) {
+            b.cells[row*5 + col] = Some((p,c)); col+=1;
+            if (p,c) == (Piece::King,Color::Black) {
+              bk = true;
+            } else if (p,c) == (Piece::King,Color::White) {
+              wk = true;
+            }
+          } else {
+            return Err(format!("Malformed FEN string '{}'", s));
+          }
+        }
+        _ => { return Err(format!("Malformed FEN string '{}'", s)); }
+      }
+    }
+    match cs.next() {
+      Some('b') => {
+        b.side = Color::Black;
+        b.xside = Color::White;
+      }
+      Some('w') => {
+        b.side = Color::White;
+        b.xside = Color::Black;
+      }
+      _ => { return Err(format!("Malformed FEN string '{}'", s)); }
+    }
+    cs.next(); // consume ' '
+    if cs.peek() == Some(&'-') {
+      cs.next();
+    } else {
+      for ch in cs {
+        match Piece::from_char(ch) {
+          Some((p,c)) if c==Color::Black => {
+            b.nhand[0] += 1;
+            b.hand[0][p as usize] += 1;
+          }
+          Some((p,c)) if c==Color::White => {
+            b.nhand[1] += 1;
+            b.hand[1][p as usize] += 1;
+          }
+          _ => { return Err(format!("Malformed FEN string '{}'", s)); }
+        }
+      }
+    }
+    b.hash_board();
+    b.drawhash[0] = b.hash;
+    match (bk,wk) {
+      (true,true) => { b.play = State::Playing; }
+      (true,false) => { b.play = State::BlackWin; }
+      (false,true) => { b.play = State::WhiteWin; }
+      (false,false) => { b.play = State::Draw; }
+    }
+    Ok(b)
   }
 
   fn to_fen(&self) -> String {
@@ -369,12 +475,12 @@ impl Board {
       s.push('-');
     } else {
       for i in 0..5 {
-        for j in 0..self.hand[0][i] {
+        for _ in 0..self.hand[0][i] {
           s.push(Piece::from(i as u8).name(Color::Black));
         }
       }
       for i in 0..5 {
-        for j in 0..self.hand[1][i] {
+        for _ in 0..self.hand[1][i] {
           s.push(Piece::from(i as u8).name(Color::White));
         }
       }
@@ -420,17 +526,23 @@ impl Board {
   fn make_move(&mut self, m:Move) -> abzu::MoveResult {
     if m.nullmove() { return self.make_null_move() };
 
-    let mut h = self.hash ^ unsafe{HASH_SIDE_WHITE};
-
+    let mut h = self.hash;
     let s = self.side as usize;
     let f = m.f() as usize;
     let t = m.t() as usize;
     let p = m.p() as usize;
+    let mm = m.m() as usize;
     if m.drop() {
       unsafe {
         h ^= HASH_PIECE[s][p][t];
         h ^= HASH_PIECE_HAND[s][p][self.hand[s][p]];
         h ^= HASH_PIECE_HAND[s][p][self.hand[s][p]-1];
+      }
+      if DEBUG_MODE {
+        if !self.cells[t].is_none() {
+          eprintln!("{}\n{}", self, m);
+          panic!("** Invalid move: drop onto non-empty square **");
+        }
       }
       self.cells[t] = Some((m.piece(), self.side));
       self.nhand[s] -= 1;
@@ -438,43 +550,36 @@ impl Board {
     } else {
       let pu = m.piece().unpromotes() as usize;
       if m.cap() {
-        if Piece::from(m.p()) == Piece::King {
+        if m.piece() == Piece::King {
           self.play = if self.side==Color::Black {State::BlackWin} else {State::WhiteWin};
         } else {
           self.nhand[s] += 1;
           self.hand[s][pu] += 1;
+          h ^= unsafe{HASH_PIECE_HAND[s][pu][self.hand[s][pu]]};
+          h ^= unsafe{HASH_PIECE_HAND[s][pu][self.hand[s][pu]-1]};
         }
+        h ^= unsafe{HASH_PIECE[self.xside as usize][p][t]};
       }
       self.cells[f] = None;
+      h ^= unsafe{HASH_PIECE[s][mm][f]};
       if m.pro() {
         self.cells[t] = Some((Piece::from(m.m()).promotes(), self.side));
+        h ^= unsafe{HASH_PIECE[s][Piece::from(m.m()).promotes() as usize][t]};
       } else {
         self.cells[t] = Some((Piece::from(m.m()), self.side));
-      }
-      unsafe {
-        let mm = m.m() as usize;
-        if m.cap() {
-          h ^= HASH_PIECE[self.xside as usize][p][t];
-          if m.piece() != Piece::King {
-            h ^= HASH_PIECE_HAND[s][pu][self.hand[s][pu]];
-            h ^= HASH_PIECE_HAND[s][pu][self.hand[s][pu]-1];
-          }
-        }
-        h ^= HASH_PIECE[s][mm][f];
-        if m.pro() {
-          h ^= HASH_PIECE[s][Piece::from(m.m()).promotes() as usize][t];
-        } else {
-          h ^= HASH_PIECE[s][mm][t];
-        }
+        h ^= unsafe{HASH_PIECE[s][mm][t]};
       }
     }
+
     (self.side, self.xside) = (self.xside, self.side);
+    h ^= unsafe{HASH_SIDE_WHITE};
+
     self.ply += 1;
     self.hash = h;
     if CHECK_INCREMENTAL_HASH {
       self.hash_board();
       if h != self.hash {
-        eprintln!("* Error incremental hash: move = {} *", m);
+        eprintln!("* make_move(): Error incremental hash: move = {} *\n{}", m, self);
       }
     }
 
@@ -497,11 +602,7 @@ impl Board {
     let f = m.f() as usize;
     let t = m.t() as usize;
     if f < 25 {
-      if m.pro() {
-        self.cells[f] = Some((Piece::from(m.m()).unpromotes(), self.xside));
-      } else {
-        self.cells[f] = Some((Piece::from(m.m()), self.xside));
-      }
+      self.cells[f] = Some((Piece::from(m.m()), self.xside));
     }
     if m.drop() {
       self.cells[t] = None;
@@ -524,7 +625,7 @@ impl Board {
       let h = self.hash;
       self.hash_board();
       if h != self.hash {
-        eprintln!("* Error incremental hash: move = {} *", m);
+        eprintln!("* unmake_move(): Error incremental hash: move = {} *", m);
       }
     }
     abzu::MoveResult::OtherSideMoves
@@ -756,7 +857,23 @@ impl abzu::Move for Move {
 impl abzu::Board<Move> for Board {
   #[inline] fn new() -> Self { Board::new() }
   #[inline] fn init(&mut self) { *self = Board::new() }
+  #[inline] fn to_fen(&self) -> String { self.to_fen() }
+  #[inline] fn from_fen(fen:&str) -> Result<Self,String> { Board::from_fen(fen) }
   #[inline] fn terminal(&self) -> bool { self.play != State::Playing }
+  #[inline] fn to_move(&self) -> abzu::Side {
+    match self.side {
+      Color::Black => abzu::Side::First,
+      Color::White => abzu::Side::Second,
+    }
+  }
+  #[inline] fn game_result(&self) -> abzu::GameResult {
+    match self.play {
+      State::Playing => abzu::GameResult::NoResult,
+      State::BlackWin => abzu::GameResult::FirstWin,
+      State::WhiteWin => abzu::GameResult::SecondWin,
+      State::Draw => abzu::GameResult::Draw,
+    }
+  }
   #[inline] fn hash(&self) -> H { self.hash }
   #[inline] fn gen_moves(&self) -> Vec<Move> { self.generate_moves::<false>() }
   #[inline] fn gen_q_moves(&self) -> Vec<Move> { self.generate_moves::<true>() }
@@ -766,17 +883,19 @@ impl abzu::Board<Move> for Board {
 
 ////////////////////////////////////////
 
-use abzu::value::{Value,IValue};
-const MAT_VALUE : [i32;10] = [
-  100, 300, 200, 400, 500, 1000, 150, 250, 500, 600
+use abzu::value::{FValue,Value};
+const MAT_VALUE : [f32;10] = [
+  100.0, 300.0, 200.0, 400.0, 500.0, 1000.0, 150.0, 250.0, 500.0, 600.0,
 ];
-const MAT_VALUE_HAND : [i32;5] = [
-  100*11/12, 300*11/12, 200*11/12, 400*11/12, 500*11/12,
+const MAT_VALUE_HAND : [f32;5] = [
+  //100.0*11.0/12.0, 300.0*11.0/12.0, 200.0*11.0/12.0, 400.0*11.0/12.0, 500.0*11.0/12.0,
+  100.0/2.0, 300.0/2.0, 200.0/2.0, 400.0/2.0, 500.0/2.0,
 ];
 pub struct MatEval {
   random:bool,
-  mat_value: [i32;10],
-  mat_value_hand: [i32;5],
+  mat_value: [f32;10],
+  mat_value_hand: [f32;5],
+  piece_square: [[f32;10];25]
 }
 
 impl MatEval {
@@ -785,19 +904,20 @@ impl MatEval {
       random,
       mat_value: MAT_VALUE.clone(),
       mat_value_hand: MAT_VALUE_HAND.clone(),
+      piece_square: [[0.0; 10]; 25],
     }
   }
 }
 
-impl abzu::Evaluator<Board,Move,IValue> for MatEval {
-  fn evaluate_absolute(&self, b:&Board, ply:usize) -> IValue {
+impl abzu::Evaluator<Board,Move,FValue> for MatEval {
+  fn evaluate_absolute(&self, b:&Board, ply:usize) -> FValue {
     match b.play {
-      State::Draw => {return IValue::DRAW; }
-      State::BlackWin => {return IValue::mate_in_n(ply); }
-      State::WhiteWin => {return -IValue::mate_in_n(ply); }
+      State::Draw => {return FValue::DRAW; }
+      State::BlackWin => {return FValue::mate_in_n(ply); }
+      State::WhiteWin => {return -FValue::mate_in_n(ply); }
       State::Playing => {}
     }
-    let mut v = 0;
+    let mut v = 0.0;
     for &c in b.cells.iter() {
       match c {
         Some((p,Color::Black)) => { v += self.mat_value[p as usize]; }
@@ -805,24 +925,37 @@ impl abzu::Evaluator<Board,Move,IValue> for MatEval {
         _ => {}
       }
     }
-    for i in 0..5 { v += (b.hand[0][i] as i32)*self.mat_value_hand[i]; }
-    for i in 0..5 { v -= (b.hand[1][i] as i32)*self.mat_value_hand[i]; }
-    if self.random { v += ((b.hash%7) as i32)-3; }
-    IValue(v)
+    for i in 0..5 { v += (b.hand[0][i] as f32)*self.mat_value_hand[i]; }
+    for i in 0..5 { v -= (b.hand[1][i] as f32)*self.mat_value_hand[i]; }
+    if false {
+    for i in 0..25 {
+      match b.cells[i] {
+        Some((p,c)) if c==Color::Black => {
+          v += self.piece_square[i][p as usize];
+        }
+        Some((p,c)) if c==Color::White => {
+          v -= self.piece_square[i][p as usize];
+        }
+        _ => {}
+      }
+    }
+    }
+    if self.random { v += (((b.hash%15) as f32)-7.0)/15.0; }
+    FValue(v)
   }
-  fn evaluate_relative(&self, b:&Board, ply:usize) -> IValue {
+  fn evaluate_relative(&self, b:&Board, ply:usize) -> FValue {
     match b.side {
       Color::Black => self.evaluate_absolute(b, ply),
       Color::White => -self.evaluate_absolute(b, ply),
     }
   }
-  fn stalemate_absolute(&self, b:&Board, ply:usize) -> IValue {
+  fn stalemate_absolute(&self, b:&Board, ply:usize) -> FValue {
     match b.side {
-      Color::Black => -IValue::mate_in_n(ply),
-      Color::White => IValue::mate_in_n(ply),
+      Color::Black => -FValue::mate_in_n(ply),
+      Color::White => FValue::mate_in_n(ply),
     }
   }
-  fn stalemate_relative(&self, b:&Board, ply:usize) -> IValue {
+  fn stalemate_relative(&self, b:&Board, ply:usize) -> FValue {
     match b.side {
       Color::Black => self.stalemate_absolute(b, ply),
       Color::White => -self.stalemate_absolute(b, ply),
@@ -830,104 +963,151 @@ impl abzu::Evaluator<Board,Move,IValue> for MatEval {
   }
 
   fn num_weights(&self) -> usize {
-    0
+    10+5 + 25*10
   }
   fn get_weight_f32(&self, j:usize) -> f32 {
     if j<10 {
-      self.mat_value[j] as f32
+      self.mat_value[j]
+    } else if j<15 {
+      self.mat_value_hand[j-10]
     } else {
-      self.mat_value_hand[j-10] as f32
+      self.piece_square[(j-15)/10][(j-15)%10]
     }
   }
   fn set_weight_f32(&mut self, j:usize, wj:f32) {
     if j<10 {
-      self.mat_value[j] = wj as i32;
+      self.mat_value[j] = wj;
+    } else if j<15 {
+      self.mat_value_hand[j-10] = wj;
     } else {
-      self.mat_value_hand[j-10] = wj as i32;
+      self.piece_square[(j-15)/10][(j-15)%10] = wj;
     }
   }
   fn get_all_weights_f32(&self) -> Vec<f32> {
-    let mut v = vec![0.0; 15];
+    let mut v = vec![0.0; 10+5+25*10];
     for j in 0..10 {
-      v[j] = self.mat_value[j] as f32;
+      v[j] = self.mat_value[j];
     }
     for j in 0..5 {
-      v[10+j] = self.mat_value_hand[j] as f32;
+      v[10+j] = self.mat_value_hand[j];
+    }
+    for j in 0..25 {
+      for k in 0..10 {
+        v[15+j*10+k] = self.piece_square[j][k];
+      }
     }
     v
+  }
+  fn normalize_weights(&mut self) {
+    // force Pawn value == 100
+    self.mat_value[Piece::Pawn as usize] = 100.0;
+    for k in 0..10 {
+      let mut sum = 0.0;
+      for j in 0..25 { sum += self.piece_square[j][k]; }
+      sum /= 25.0;
+      for j in 0..25 { self.piece_square[j][k] -= sum; }
+    }
   }
 }
 
 ////////////////////////////////////////
 
-struct GameIMat;
-impl abzu::Game for GameIMat {
+impl abzu::Color for Color { }
+
+////////////////////////////////////////
+
+#[derive(Clone,Copy,Debug,Default)]
+struct GameMat;
+
+impl abzu::Game for GameMat {
   type M = Move;
   type B = Board;
-  type V = IValue;
+  type V = FValue;
   type E = MatEval;
+  type C = Color;
+  const FIRST : Color = Color::Black;
+  const SECOND : Color = Color::White;
 }
 
+use abzu::Evaluator;
 fn main() {
+
   let mut hg = abzu::hash::HashGen::new(1);
   unsafe{gen_hash(&mut hg)};
-  let mut b = Board::new();
 
+  let b = Board::new();
   println!("{}", b);
   for m in b.generate_moves::<true>() { print!("{} ", m); } println!("");
   println!("**********");
 
-  let eval = MatEval::new(true);
-  let mut pv = abzu::pv::PV::new(16);
+  let mut eval = MatEval::new(true);
   let mut tt = abzu::tt::Table::new(1024*3-1);
   let mut stats = abzu::search::Stats::new();
-  let mut settings =
-    abzu::search::Settings {
-      depth: 400,
-      hh: None,
-      tt: Some(abzu::search::TT{}),
-      //tt: None,
-      id: None,
-      iid: None,
-      mws: None,
-      asp: None,
-      qs: None,
-      nmp: None,
-    };
 
-  println!("----- -----");
-  let (v,mpv) = abzu::search::negamax::search_negamax::<GameIMat>(
-    &mut b, &eval,
-    &mut pv, &mut tt,
-    &settings, &mut stats);
-  print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
-  println!("{:?}", stats);
-  println!("{:?}", tt.s);
-
-  println!("----- -----");
-  let (v,mpv) = abzu::search::alphabeta::search_alphabeta::<GameIMat>(
-    &mut b, &eval,
-    &mut pv, &mut tt,
-    &settings, &mut stats);
-  print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
-  println!("{:?}", stats);
-  println!("{:?}", tt.s);
-
-/*
-  while !abzu::Board::<Move>::terminal(&b) {
-    println!("\n{}", b);
-    //println!("{:?}", &b.drawhash[0..b.ply]);
-    settings.depth = if b.side==Color::Black {400} else {300};
-    let (v,mpv) = abzu::search::negamax::search_negamax::<GameIMat>(
-      &mut b, &eval,
-      &mut pv, &mut tt,
-      &settings, &mut stats);
-    print!("M={} ( ", v.0); for &m in mpv.iter() { print!("{} ", m); } println!(")");
-    println!("{:?}", stats);
-    println!("{:?}", tt.s);
-    b.make_move(mpv[0]);
+  print!("[");
+  for (i,w) in eval.get_all_weights_f32().iter().enumerate() {
+    if i == 10 { print!(" |\n "); }
+    if i == 15 { print!(" |\n "); break; }
+    print!(" {:.2}", w);
   }
-  println!("\n{}", b);
-*/
+  println!(" ]");
+  for n in 0..1000 {
+    unsafe{gen_hash(&mut hg)};
+    let mut b = Board::new();
+    tt.init();
+    stats.init();
+    let mut pv = abzu::pv::PV::new(16);
+    let mut settings =
+      abzu::search::Settings {
+        depth: 400,
+        hh: None,
+        tt: Some(abzu::search::TT{}),
+        //tt: None,
+        id: None,
+        iid: None,
+        mws: None,
+        asp: None,
+        qs: None,
+        nmp: None,
+      };
+
+    let mut gr = abzu::record::GameRecord::new("αβ".into(),"αβ".into());
+
+    while !abzu::Board::<Move>::terminal(&b) {
+      //println!("\n{}", b);
+      settings.depth = if (b.side==Color::Black) ^ (n%2==0) {400} else {300};
+      let ply = abzu::search::alphabeta::search_alphabeta::<GameMat>(
+        &mut b, &eval,
+        &mut pv, &mut tt,
+        &settings, &mut stats);
+      //print!("{}", abzu::ansi::CLEAR_SCREEN);
+      //print!("M={} ( ", ply.evaluation.0);
+      //for &m in ply.pv.iter() { print!("{} ", m); }
+      //println!(")");
+      //println!("{:?}", ply);
+      b.make_move(ply.m);
+      gr.add_ply(ply);
+    }
+    //println!("\n{}", b);
+    //println!("{}", gr);
+    let mut tdl = abzu::td_lambda::TDLambda::new(eval.num_weights(),
+      0.9, 1.0, 0.5/100.0, 5.0, false);
+    //println!("{:?}", eval.get_all_weights_f32());
+    for _ in 0..10 {
+      tdl.process_game(&mut eval, &gr);
+    }
+    //println!("{:?}", &eval.get_all_weights_f32()[0..15]);
+
+    if (n+1)%100 == 0 {
+      print!("[");
+      for (i,w) in eval.get_all_weights_f32().iter().enumerate() {
+        if i == 10 { print!(" |\n "); }
+        if i == 15 { print!(" |\n "); break; }
+        print!(" {:.2}", w);
+      }
+      println!("]");
+    }
+  }
 }
+
 

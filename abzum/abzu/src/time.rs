@@ -1,4 +1,13 @@
 
+pub fn now() -> std::time::Instant {
+  std::time::Instant::now()
+}
+
+pub fn since_cs(t0:std::time::Instant) -> u64 {
+  (t0.elapsed().as_millis()/10) as u64
+}
+
+
 #[derive(Clone,Copy,Debug,PartialEq)]
 pub struct TimeControl {
   pub active: bool,

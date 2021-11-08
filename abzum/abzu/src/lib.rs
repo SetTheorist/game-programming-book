@@ -1,14 +1,24 @@
 #![allow(mixed_script_confusables)]
 
+pub mod ansi;
 pub mod hash;
 pub mod pv;
+pub mod record;
 pub mod search;
 pub mod td_lambda;
 pub mod time;
 pub mod tt;
 pub mod value;
 
+use std::fmt::{Debug,Display};
+
 use crate::value::{Value};
+
+#[cfg(debug_assertions)]
+pub(crate) const DEBUG_MODE : bool = true;
+#[cfg(not(debug_assertions))]
+pub(crate) const DEBUG_MODE : bool = false;
+
 
 pub enum MoveResult {
   InvalidMove,
@@ -16,7 +26,7 @@ pub enum MoveResult {
   SameSideMovesAgain
 }
 
-pub trait Move : Clone+Copy+Default+Sized+PartialEq {
+pub trait Move : Clone+Copy+Default+Debug+Display+Sized+PartialEq {
   fn to_i(self) -> u32;
   fn from_i(i:u32) -> Self;
   fn is_valid(&self) -> bool;
@@ -24,10 +34,24 @@ pub trait Move : Clone+Copy+Default+Sized+PartialEq {
   fn null_move() -> Self;
 }
 
-pub trait Board<M:Move> : Clone {
+pub trait Color : Clone+Copy+Debug+Display+Eq+PartialEq { }
+
+#[derive(Clone,Copy,Debug,Eq,PartialEq)]
+pub enum Side {
+  First,
+  Second,
+}
+
+pub trait Board<M:Move> : Clone+Debug+Display {
   fn new() -> Self;
   fn init(&mut self);
+  fn to_fen(&self) -> String;
+  fn from_fen(fen:&str) -> Result<Self,String>;
+
+  fn to_move(&self) -> Side;
+
   fn terminal(&self) -> bool;
+  fn game_result(&self) -> GameResult;
 
   fn hash(&self) -> hash::H;
 
@@ -49,6 +73,15 @@ pub trait Evaluator<B:Board<M>,M:Move,V:Value> {
   fn get_weight_f32(&self, j:usize) -> f32;
   fn set_weight_f32(&mut self, j:usize, wj:f32);
   fn get_all_weights_f32(&self) -> Vec<f32>;
+  fn normalize_weights(&mut self);
+}
+
+#[derive(Clone,Copy,Debug,Eq,PartialEq)]
+pub enum GameResult {
+  FirstWin,
+  SecondWin,
+  Draw,
+  NoResult,
 }
 
 pub trait Game {
@@ -56,6 +89,9 @@ pub trait Game {
   type B : Board<Self::M>;
   type V : Value;
   type E : Evaluator<Self::B,Self::M,Self::V>;
+  type C : Color;
+  const FIRST : Self::C;
+  const SECOND : Self::C;
 }
 
 

@@ -1,5 +1,3 @@
-use crate::tt;
-
 pub mod alphabeta;
 pub mod negamax;
 
@@ -56,13 +54,19 @@ pub struct Settings<E:Clone+Copy+Sized> {
 #[derive(Clone,Copy,Debug,Default)]
 pub struct Stats {
   pub nodes_searched: u64,
+  pub qnodes_searched: u64,
 }
 
 impl Stats {
   pub fn new() -> Self {
     Stats {
       nodes_searched: 0,
+      qnodes_searched: 0,
     }
+  }
+  pub fn init(&mut self) {
+    self.nodes_searched = 0;
+    self.qnodes_searched = 0;
   }
 }
 

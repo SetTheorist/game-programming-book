@@ -2,6 +2,24 @@ use super::*;
 use crate::{*};
 use crate::tt;
 use crate::pv::PV;
+use crate::record::Ply;
+use crate::time;
+
+/*
+pub struct Ply<G:Game> {
+  pub side: G::B::C,
+  pub evaluation: G::V,
+  pub m: G::M,
+  pub pv: Vec<G::M>,
+  pub time_spent_cs: u64,
+  pub nodes_searched: u64,
+  pub qnodes_searched: u64,
+  pub nodes_evaluated: u64,
+  pub qnodes_evaluated: u64,
+  // pub sm: special_move,
+  pub annotation: String,
+  }
+*/
 
 pub fn search_negamax<G:Game>(
   b:&mut G::B, e:&G::E,
@@ -10,12 +28,28 @@ pub fn search_negamax<G:Game>(
   settings:&Settings<G::V>,
   stats:&mut Stats
   )
-  -> (G::V, Vec<G::M>)
+  -> Ply<G>
 {
+  pv.init();
+  stats.init();
   tt.init();
-  stats.nodes_searched = 1;
+
+  let t0 = time::now();
   let val = search_negamax_general::<G>(b, e, settings.depth, 0, pv, tt, settings, stats);
-  (val, pv.pv[0][0..pv.length[0]].to_vec())
+  let since = time::since_cs(t0);
+
+  Ply {
+    side: b.to_move(),
+    evaluation: val,
+    m: pv.pv[0][0],
+    pv: pv.pv[0][0..pv.length[0]].to_vec(),
+    time_spent_cs: since,
+    nodes_searched: stats.nodes_searched,
+    qnodes_searched: stats.qnodes_searched,
+    nodes_evaluated: 0,
+    qnodes_evaluated: 0,
+    annotation:"negamax".into(),
+  }
 }
 
 fn search_negamax_general<G:Game>(
