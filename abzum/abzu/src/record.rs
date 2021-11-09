@@ -78,7 +78,7 @@ impl<G:Game> std::fmt::Display for GameRecord<G> {
     let mut b = self.initial_board.clone();
     writeln!(f, "#####========================================#####")?;
     for ply in self.move_list.iter() {
-      writeln!(f, "{}", b)?;
+      //writeln!(f, "{}", b)?;
       b.make_move(ply.m);
       writeln!(f, "{}", ply)?;
     }

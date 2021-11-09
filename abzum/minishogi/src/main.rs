@@ -20,6 +20,7 @@ bitfield::bitfield! {
   u8,p,_    : 17,12; // captured/dropped piece
   u8,into Piece, piece,_    : 17,12; // captured/dropped piece
   u8,m,_    : 23,18; // moved piece
+  u8,into Piece, moved,_    : 23,18; // moved piece
   cap,_       : 24;
   pro,_       : 25;
   nonpro,_    : 26;
@@ -49,6 +50,31 @@ impl Move {
   fn null() -> Self {
     Move((MF_NULLMOVE as u32) << 24)
   }
+}
+
+fn mpv(p:Piece) -> isize {
+  use Piece::*;
+  match p {
+    Pawn => 1,
+    Tokin => 2,
+    Silver => 3,
+    Nari => 4,
+    Gold => 5,
+    Bishop => 6,
+    Rook => 7,
+    Horse => 8,
+    Dragon => 9,
+    King => 50,
+  }
+}
+
+fn move_sort_key(m:&Move) -> isize {
+  -(
+  (if m.cap() {1000} else {0})
+  + (if m.pro() {100} else if m.nonpro() {-10} else {0})
+  + (if m.drop() {-5} else {0})
+  + (if m.cap() {mpv(m.piece())*100 - mpv(m.moved())} else {0})
+  )
 }
 
 impl std::fmt::Debug for Move {
@@ -326,7 +352,7 @@ impl std::fmt::Display for Board {
         }
         4 => {
           let eval = <MatEval as abzu::Evaluator<Board,Move,FValue>>
-            ::evaluate_absolute(&MatEval::new(false),self, 0).0;
+            ::evaluate_absolute(&MatEval::new(false,true),self, 0).0;
           write!(f, " {:?} {}{{{}}}\n",
             self.play, if self.in_check() {"!"} else {""}, eval)?;
         }
@@ -592,6 +618,9 @@ impl Board {
         self.play = State::Draw;
       }
     }
+    if self.ply == MAX_GAME_LENGTH-1 {
+      self.play = State::Draw;
+    }
     abzu::MoveResult::OtherSideMoves
   }
 
@@ -720,6 +749,7 @@ impl Board {
         }
       }
     }
+    ml.sort_unstable_by_key(move_sort_key);
     return ml;
   }
 
@@ -887,21 +917,26 @@ use abzu::value::{FValue,Value};
 const MAT_VALUE : [f32;10] = [
   100.0, 300.0, 200.0, 400.0, 500.0, 1000.0, 150.0, 250.0, 500.0, 600.0,
 ];
-const MAT_VALUE_HAND : [f32;5] = [
-  //100.0*11.0/12.0, 300.0*11.0/12.0, 200.0*11.0/12.0, 400.0*11.0/12.0, 500.0*11.0/12.0,
-  100.0/2.0, 300.0/2.0, 200.0/2.0, 400.0/2.0, 500.0/2.0,
+const MAT_VALUE_HAND : [[f32;3];5] = [
+  [0.0, 100.0/2.0, 100.0],
+  [0.0, 300.0/2.0, 300.0],
+  [0.0, 200.0/2.0, 200.0],
+  [0.0, 400.0/2.0, 400.0],
+  [0.0, 500.0/2.0, 500.0],
 ];
 pub struct MatEval {
   random:bool,
+  use_piece_square:bool,
   mat_value: [f32;10],
-  mat_value_hand: [f32;5],
+  mat_value_hand: [[f32;3];5],
   piece_square: [[f32;10];25]
 }
 
 impl MatEval {
-  pub fn new(random:bool) -> Self {
+  pub fn new(random:bool, use_piece_square:bool) -> Self {
     MatEval {
       random,
+      use_piece_square,
       mat_value: MAT_VALUE.clone(),
       mat_value_hand: MAT_VALUE_HAND.clone(),
       piece_square: [[0.0; 10]; 25],
@@ -925,20 +960,20 @@ impl abzu::Evaluator<Board,Move,FValue> for MatEval {
         _ => {}
       }
     }
-    for i in 0..5 { v += (b.hand[0][i] as f32)*self.mat_value_hand[i]; }
-    for i in 0..5 { v -= (b.hand[1][i] as f32)*self.mat_value_hand[i]; }
-    if false {
-    for i in 0..25 {
-      match b.cells[i] {
-        Some((p,c)) if c==Color::Black => {
-          v += self.piece_square[i][p as usize];
+    for i in 0..5 { v += self.mat_value_hand[i][b.hand[0][i]]; }
+    for i in 0..5 { v -= self.mat_value_hand[i][b.hand[1][i]]; }
+    if self.use_piece_square {
+      for i in 0..25 {
+        match b.cells[i] {
+          Some((p,c)) if c==Color::Black => {
+            v += self.piece_square[i][p as usize];
+          }
+          Some((p,c)) if c==Color::White => {
+            v -= self.piece_square[i][p as usize];
+          }
+          _ => {}
         }
-        Some((p,c)) if c==Color::White => {
-          v -= self.piece_square[i][p as usize];
-        }
-        _ => {}
       }
-    }
     }
     if self.random { v += (((b.hash%15) as f32)-7.0)/15.0; }
     FValue(v)
@@ -963,44 +998,39 @@ impl abzu::Evaluator<Board,Move,FValue> for MatEval {
   }
 
   fn num_weights(&self) -> usize {
-    10+5 + 25*10
+    10 + 5*3 + 25*10
   }
   fn get_weight_f32(&self, j:usize) -> f32 {
     if j<10 {
       self.mat_value[j]
-    } else if j<15 {
-      self.mat_value_hand[j-10]
+    } else if j<25 {
+      self.mat_value_hand[(j-10)/3][(j-10)%3]
     } else {
-      self.piece_square[(j-15)/10][(j-15)%10]
+      self.piece_square[(j-25)/10][(j-25)%10]
     }
   }
   fn set_weight_f32(&mut self, j:usize, wj:f32) {
     if j<10 {
       self.mat_value[j] = wj;
-    } else if j<15 {
-      self.mat_value_hand[j-10] = wj;
+    } else if j<25 {
+      self.mat_value_hand[(j-10)/3][(j-10)%3] = wj;
     } else {
-      self.piece_square[(j-15)/10][(j-15)%10] = wj;
+      self.piece_square[(j-25)/10][(j-25)%10] = wj;
     }
   }
   fn get_all_weights_f32(&self) -> Vec<f32> {
-    let mut v = vec![0.0; 10+5+25*10];
-    for j in 0..10 {
-      v[j] = self.mat_value[j];
-    }
-    for j in 0..5 {
-      v[10+j] = self.mat_value_hand[j];
-    }
-    for j in 0..25 {
-      for k in 0..10 {
-        v[15+j*10+k] = self.piece_square[j][k];
-      }
+    let mut v = vec![0.0; 10+5*3+25*10];
+    for j in 0..(10+5*3+25*10) {
+      v[j] = self.get_weight_f32(j);
     }
     v
   }
   fn normalize_weights(&mut self) {
     // force Pawn value == 100
-    self.mat_value[Piece::Pawn as usize] = 100.0;
+    //self.mat_value[Piece::Pawn as usize] = 100.0;
+    for k in 0..5 {
+      self.mat_value_hand[k][0] = 0.0;
+    }
     for k in 0..10 {
       let mut sum = 0.0;
       for j in 0..25 { sum += self.piece_square[j][k]; }
@@ -1029,83 +1059,64 @@ impl abzu::Game for GameMat {
   const SECOND : Color = Color::White;
 }
 
+
+fn play_game(eval:&mut MatEval,
+  bsettings:&abzu::search::Settings<FValue>, wsettings:&abzu::search::Settings<FValue>)
+  -> abzu::record::GameRecord<GameMat>
+{
+  let mut tt = abzu::tt::Table::new(1024*7-1);
+  let mut stats = abzu::search::Stats::new();
+  let mut pv = abzu::pv::PV::new(16);
+
+  let mut b = Board::new();
+  let mut gr = abzu::record::GameRecord::new("αβ".into(),"αβ".into());
+  while !abzu::Board::<Move>::terminal(&b) {
+    let settings = if b.side==Color::Black {bsettings} else {wsettings};
+    let ply = abzu::search::alphabeta::search_alphabeta::<GameMat>(
+      &mut b, &eval,
+      &mut pv, &mut tt,
+      &settings, &mut stats);
+    b.make_move(ply.m);
+    gr.add_ply(ply);
+  }
+  gr
+}
+
+fn show_weights(eval:&MatEval) {
+  print!("[");
+  for (i,w) in eval.get_all_weights_f32().iter().enumerate() {
+    if i == 10 { print!(" |\n "); }
+    if i == 25 { print!(" |\n "); break; }
+    print!(" {:.2}", w);
+  }
+  println!(" ]");
+}
+
 use abzu::Evaluator;
 fn main() {
 
   let mut hg = abzu::hash::HashGen::new(1);
   unsafe{gen_hash(&mut hg)};
 
-  let b = Board::new();
-  println!("{}", b);
-  for m in b.generate_moves::<true>() { print!("{} ", m); } println!("");
-  println!("**********");
+  let bsettings = abzu::search::Settings::new(500).tt(Some(abzu::search::TT{}));
+  let wsettings = abzu::search::Settings::new(400).tt(Some(abzu::search::TT{}));
+  let mut eval = MatEval::new(true,false);
 
-  let mut eval = MatEval::new(true);
-  let mut tt = abzu::tt::Table::new(1024*3-1);
-  let mut stats = abzu::search::Stats::new();
+  //println!("{}", play_game(&mut eval, &bsettings, &wsettings));
+  //return;
 
-  print!("[");
-  for (i,w) in eval.get_all_weights_f32().iter().enumerate() {
-    if i == 10 { print!(" |\n "); }
-    if i == 15 { print!(" |\n "); break; }
-    print!(" {:.2}", w);
-  }
-  println!(" ]");
+  let mut tdl = abzu::td_lambda::TDLambda::new(eval.num_weights(),
+    0.9, 10.0, 0.5/100.0, 1.0, true);
+  show_weights(&eval);
   for n in 0..1000 {
     unsafe{gen_hash(&mut hg)};
-    let mut b = Board::new();
-    tt.init();
-    stats.init();
-    let mut pv = abzu::pv::PV::new(16);
-    let mut settings =
-      abzu::search::Settings {
-        depth: 400,
-        hh: None,
-        tt: Some(abzu::search::TT{}),
-        //tt: None,
-        id: None,
-        iid: None,
-        mws: None,
-        asp: None,
-        qs: None,
-        nmp: None,
-      };
-
-    let mut gr = abzu::record::GameRecord::new("αβ".into(),"αβ".into());
-
-    while !abzu::Board::<Move>::terminal(&b) {
-      //println!("\n{}", b);
-      settings.depth = if (b.side==Color::Black) ^ (n%2==0) {400} else {300};
-      let ply = abzu::search::alphabeta::search_alphabeta::<GameMat>(
-        &mut b, &eval,
-        &mut pv, &mut tt,
-        &settings, &mut stats);
-      //print!("{}", abzu::ansi::CLEAR_SCREEN);
-      //print!("M={} ( ", ply.evaluation.0);
-      //for &m in ply.pv.iter() { print!("{} ", m); }
-      //println!(")");
-      //println!("{:?}", ply);
-      b.make_move(ply.m);
-      gr.add_ply(ply);
+    let gs : Vec<_> =
+      (0..10).map(|_|play_game(&mut eval, &bsettings, &wsettings)).collect();
+    for g in gs.iter() {
+      tdl.process_game(&mut eval, &g);
     }
-    //println!("\n{}", b);
-    //println!("{}", gr);
-    let mut tdl = abzu::td_lambda::TDLambda::new(eval.num_weights(),
-      0.9, 1.0, 0.5/100.0, 5.0, false);
-    //println!("{:?}", eval.get_all_weights_f32());
-    for _ in 0..10 {
-      tdl.process_game(&mut eval, &gr);
-    }
-    //println!("{:?}", &eval.get_all_weights_f32()[0..15]);
-
-    if (n+1)%100 == 0 {
-      print!("[");
-      for (i,w) in eval.get_all_weights_f32().iter().enumerate() {
-        if i == 10 { print!(" |\n "); }
-        if i == 15 { print!(" |\n "); break; }
-        print!(" {:.2}", w);
-      }
-      println!("]");
+    if (n+1)%1 == 0 {
+      show_weights(&eval);
     }
   }
 }

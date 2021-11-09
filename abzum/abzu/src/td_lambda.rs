@@ -37,11 +37,11 @@ impl TDLambda {
       let wj = weights[j];
 
       e.set_weight_f32(j, wj + self.h);
-      let pev = e.evaluate_absolute(b, 0);
+      let pev = e.evaluate_absolute(b, 1);
       let pv = self.eval_transform(pev.into());
 
       e.set_weight_f32(j, wj - self.h);
-      let mev = e.evaluate_absolute(b, 0);
+      let mev = e.evaluate_absolute(b, 1);
       let mv = self.eval_transform(mev.into());
 
       e.set_weight_f32(j, wj);
@@ -70,15 +70,17 @@ impl TDLambda {
     for i in 0..(ns-2) {
       // get board at end of pv
       for &m in gr.move_list[i].pv.iter() {
-        // validate move
-        let ml = b.gen_moves();
-        let mut has = false;
-        for &mm in ml.iter() {if m==mm {has=true;break;}}
-        if !has {
-          eprintln!("*** MOVE {} ON PV NOT IN MOVELIST {}", m, gr.move_list[i]);
-          eprintln!("{}", b);
-          eprintln!("{}", gr);
-          panic!("");
+        if super::DEBUG_MODE {
+          // validate move
+          let ml = b.gen_moves();
+          let mut has = false;
+          for &mm in ml.iter() {if m==mm {has=true;break;}}
+          if !has {
+            eprintln!("*** MOVE {} ON PV NOT IN MOVELIST {}", m, gr.move_list[i]);
+            eprintln!("{}", b);
+            eprintln!("{}", gr);
+            panic!("");
+          }
         }
         b.make_move(m);
       }
@@ -100,7 +102,7 @@ impl TDLambda {
     //println!("{:?}", evals_xform);
     //println!("{:?}", diffs);
 
-    // TODO: optimizer lambda-powers/tail-sums (cf chu-shogi)
+    // TODO: optimize lambda-powers/tail-sums (cf chu-shogi)
     for j in 0..nw {
       let αj = self.alpha*(if self.tc {self.alpha_tc[j]} else {1.0});
       let mut sum = 0.0;
