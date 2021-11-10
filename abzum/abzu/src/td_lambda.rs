@@ -1,4 +1,5 @@
 use crate::{Board,Evaluator,Game,GameResult};
+use crate::record;
 
 #[derive(Clone,Debug)]
 pub struct TDLambda {
@@ -49,7 +50,7 @@ impl TDLambda {
     }
   }
 
-  pub fn process_game<G:Game>(&mut self, e:&mut G::E, gr:&crate::record::GameRecord<G>) {
+  pub fn process_game<G:Game>(&mut self, e:&mut G::E, gr:&record::GameRecord<G>) {
     let ns = gr.move_list.len() + 2;
     let nw = e.num_weights();
     let weights = e.get_all_weights_f32();

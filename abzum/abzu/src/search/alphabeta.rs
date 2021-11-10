@@ -73,7 +73,6 @@ fn search_alphabeta_general<G:Game>(
         skip = false;
       }
       if !skip {
-        let mut has = false;
         // validate "best move" from tt
         for &mm in &ml {
           if mm==ttv.best_move {

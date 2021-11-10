@@ -82,18 +82,16 @@ impl<V:value::Value> Settings<V> {
 pub struct Stats {
   pub nodes_searched: u64,
   pub qnodes_searched: u64,
+  pub fail_high_first: u64,
+  pub fail_high: u64,
 }
 
 impl Stats {
   pub fn new() -> Self {
-    Stats {
-      nodes_searched: 0,
-      qnodes_searched: 0,
-    }
+    Self::default()
   }
   pub fn init(&mut self) {
-    self.nodes_searched = 0;
-    self.qnodes_searched = 0;
+    *self = Self::default();
   }
 }
 

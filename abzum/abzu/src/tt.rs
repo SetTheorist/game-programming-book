@@ -29,16 +29,7 @@ pub struct Stats {
 
 impl Stats {
   pub fn new() -> Self {
-    Stats {
-      hit: 0,
-      miss: 0,
-      deep: 0,
-      shallow: 0,
-      used: 0,
-      used_exact: 0,
-      used_lower: 0,
-      used_upper: 0,
-    }
+    Self::default()
   }
 }
 
