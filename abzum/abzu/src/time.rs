@@ -4,7 +4,7 @@ pub fn now() -> std::time::Instant {
 }
 
 pub fn since_cs(t0:std::time::Instant) -> u64 {
-  (t0.elapsed().as_millis()/10) as u64
+  (t0.elapsed().as_millis()*10) as u64
 }
 
 

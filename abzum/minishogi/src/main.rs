@@ -929,6 +929,7 @@ const MAT_VALUE_HAND : [[f32;3];5] = [
   [0.0, 400.0/2.0, 400.0],
   [0.0, 500.0/2.0, 500.0],
 ];
+#[derive(Clone,Debug)]
 pub struct MatEval {
   random:bool,
   use_piece_square:bool,
@@ -1066,7 +1067,7 @@ impl abzu::Game for GameMat {
 }
 
 
-fn play_game(eval:&mut MatEval,
+fn play_game(beval:&MatEval, weval:&MatEval,
   bsettings:&abzu::search::Settings<FValue>, wsettings:&abzu::search::Settings<FValue>)
   -> abzu::record::GameRecord<GameMat>
 {
@@ -1078,6 +1079,7 @@ fn play_game(eval:&mut MatEval,
   let mut gr = abzu::record::GameRecord::new("αβ".into(),"αβ".into());
   while !abzu::Board::<Move>::terminal(&b) {
     let settings = if b.side==Color::Black {bsettings} else {wsettings};
+    let eval = if b.side==Color::Black {beval} else {weval};
     let ply = abzu::search::alphabeta::search_alphabeta::<GameMat>(
       &mut b, &eval,
       &mut pv, &mut tt,
@@ -1116,6 +1118,31 @@ fn show_weights(eval:&MatEval) {
   println!("");
 }
 
+fn play_match(n:usize, xeval:&MatEval, yeval:&MatEval,
+  xsettings:&abzu::search::Settings<FValue>, ysettings:&abzu::search::Settings<FValue>)
+  -> ((usize,usize,usize),(usize,usize,usize))
+{
+  let (mut bw, mut bd, mut bl) = (0,0,0);
+  let (mut ww, mut wd, mut wl) = (0,0,0);
+  for _ in 0..n {
+    let g = play_game(xeval,yeval,xsettings,ysettings);
+    match g.result {
+      Some(abzu::GameResult::FirstWin) => {bw+=1;}
+      Some(abzu::GameResult::SecondWin) => {bl+=1;}
+      _ => {bd+=1;}
+    }
+    print!(" {:?}", g.result);
+    let g = play_game(yeval,xeval,ysettings,xsettings);
+    match g.result {
+      Some(abzu::GameResult::FirstWin) => {ww+=1;}
+      Some(abzu::GameResult::SecondWin) => {wl+=1;}
+      _ => {wd+=1;}
+    }
+    println!(" {:?}", g.result);
+  }
+  return ((bw,bd,bl),(ww,wd,wl));
+}
+
 use abzu::Evaluator;
 fn main() {
 
@@ -1124,8 +1151,9 @@ fn main() {
 
   //for i in (0..255).step_by(10) { println!("\x1b[38;2;{};177;249mHELLO",i); }
 
-  let bsettings = abzu::search::Settings::new(500).tt(Some(abzu::search::TT{}));
+  let bsettings = abzu::search::Settings::new(400).tt(Some(abzu::search::TT{}));
   let wsettings = abzu::search::Settings::new(400).tt(Some(abzu::search::TT{}));
+
   let mut eval = MatEval::new(true,true);
 
   //println!("{}", play_game(&mut eval, &bsettings, &wsettings));
@@ -1134,17 +1162,21 @@ fn main() {
   let mut tdl = abzu::td_lambda::TDLambda::new(eval.num_weights(),
     0.9, 10.0, 0.5/100.0, 1.0, true);
   show_weights(&eval);
-  for n in 0..100 {
+  for n in 0..10 {
     unsafe{gen_hash(&mut hg)};
     let gs : Vec<_> =
-      (0..100).map(|_|play_game(&mut eval, &bsettings, &wsettings)).collect();
+      (0..10).map(|_|play_game(&eval, &eval, &bsettings, &wsettings)).collect();
     for g in gs.iter() {
       tdl.process_game(&mut eval, &g);
     }
-    if (n+1)%100 == 0 {
+    if (n+1)%1 == 0 {
       show_weights(&eval);
     }
   }
+  let eval0 = MatEval::new(true,false);
+  let settings = abzu::search::Settings::new(800).tt(Some(abzu::search::TT{}));
+  println!("{:?}", play_match(10, &eval, &eval0, &settings, &settings));
+  println!("{}", play_game(&eval0, &eval, &bsettings, &wsettings));
 }
 
 
