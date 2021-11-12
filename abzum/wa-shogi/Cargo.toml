@@ -1,0 +1,10 @@
+[package]
+name = "wa-shogi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitfield = "*"
+
+[dependencies.abzu]
+path = "../abzu"

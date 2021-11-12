@@ -109,6 +109,7 @@ VM: Vertical Mover  VS: Vertical Soldier  WB: Water Buffalo
 
 */
 
+/*
 #[derive(Clone,Copy,Debug,Eq,PartialEq)]
 pub enum Piece {
   Bishop, BishopGeneral, BlindTiger , ChariotSoldier, CopperGeneral,
@@ -121,94 +122,106 @@ pub enum Piece {
   SideMover, SideSoldier, SilverGeneral, SoaringEagle, VerticalMover,
   VerticalSoldier, ViceGeneral, WaterBuffalo, Whale, WhiteHorse,
 }
+*/
 
-const PIECE_INFO
-  : [( Piece, &'static str, &'static str, &'static str, char, Option<Piece>);45] =
-[
-(Piece::Bishop,"角行","kakugyō","B",'角',Some(Piece::DragonHorse)),
-(Piece::BishopGeneral,"角将","kakushō","BG",'用',Some(Piece::ViceGeneral)),
-(Piece::BlindTiger,"盲虎","mōko","BT",'虎',Some(Piece::FlyingStag)),
-(Piece::ChariotSoldier,"車兵","shahei","CS",'車',Some(Piece::HeavenlyTetrarch)),
-(Piece::CopperGeneral,"銅将","dōshō","C",'銅',Some(Piece::SideMover)),
-(Piece::Dog,"犬","inu","D",'犬',Some(Piece::MultiGeneral)),
-(Piece::DragonHorse,"龍馬","ryūme","DH",'馬',Some(Piece::HornedFalcon)),
-(Piece::DragonKing,"龍王","ryūō","DK",'龍',Some(Piece::SoaringEagle)),
-(Piece::DrunkElephant,"酔象","suizō","DE",'象',Some(Piece::Prince)),
-(Piece::FerociousLeopard,"猛豹","mōhyō","FL",'豹',Some(Piece::Bishop)),
-(Piece::FireDemon,"火鬼","kaki","FD",'火',None),
-(Piece::FlyingOx,"飛牛","higyū","FO",'牛',None),
-(Piece::FlyingStag,"飛鹿","hiroku","FS",'鹿',None),
-(Piece::FreeBoar,"奔猪","honcho","FB",'猪',None),
-(Piece::FreeEagle,"奔鷲","honjū","FE",'就',None),
-(Piece::GoldGeneral,"金将","kinshō","G",'金',Some(Piece::Rook)),
-(Piece::GreatGeneral,"大将","taishō","GG",'大',None),
-(Piece::HeavenlyTetrarch,"四天王","shitennō","HT",'天',None),
-(Piece::HornedFalcon,"角鷹","kakuō","HF",'鷹',Some(Piece::BishopGeneral)),
-(Piece::IronGeneral,"鉄将","tesshō","I",'鉄',Some(Piece::VerticalSoldier)),
-(Piece::KingInferior,"玉将","gyokushō","K",'玉',None),
-(Piece::KingSuperior,"王将","ōshō","K",'王',None),
-(Piece::Kirin,"麒麟","kirin","Kr",'麒',Some(Piece::Lion)),
-(Piece::Knight,"桂馬","keima","N",'桂',Some(Piece::SideSoldier)),
-(Piece::Lance,"香車","kyōsha","L",'香',Some(Piece::WhiteHorse)),
-(Piece::Lion,"獅子","shishi","Ln",'獅',Some(Piece::LionHawk)),
-(Piece::LionHawk,"獅鷹","shiō","LH",'師',None),
-(Piece::MultiGeneral,"雜将","suishō","MG",'雜',None),
-(Piece::Pawn,"歩兵","fuhyō","P",'歩',Some(Piece::GoldGeneral)),
-(Piece::Phoenix,"鳳凰","hōō","Ph",'鳳',Some(Piece::Queen)),
-(Piece::Prince,"太子","taishi","CP",'子',None),
-(Piece::Queen,"奔王","honnō","Q",'奔',Some(Piece::FreeEagle)),
-(Piece::ReverseChariot,"反車","hensha","RC",'反',Some(Piece::Whale)),
-(Piece::Rook,"飛車","hisha","R",'飛',Some(Piece::DragonKing)),
-(Piece::RookGeneral,"飛将","hishō","RG",'升',Some(Piece::GreatGeneral)),
-(Piece::SideMover,"横行","ōgyō","SM",'横',Some(Piece::FreeBoar)),
-(Piece::SideSoldier,"横兵","ōhei","SS",'黄',Some(Piece::WaterBuffalo)),
-(Piece::SilverGeneral,"銀将","ginshō","S",'銀',Some(Piece::VerticalMover)),
-(Piece::SoaringEagle,"飛鷲","hijū","SE",'鷲',Some(Piece::RookGeneral)),
-(Piece::VerticalMover,"竪行","shugyō","VM",'竪',Some(Piece::FlyingOx)),
-(Piece::VerticalSoldier,"竪兵","shuhei","VS",'立',Some(Piece::ChariotSoldier)),
-(Piece::ViceGeneral,"副将","fukushō","VG",'副',None),
-(Piece::WaterBuffalo,"水牛","suigyū","WB",'水',Some(Piece::FireDemon)),
-(Piece::Whale,"鯨鯢","keigei","W",'鯨',None),
-(Piece::WhiteHorse,"白駒","hakku","WH",'駒',None),
-];
+macro_rules! declare {
+  ($(($p:ident,$a:expr,$b:expr,$c:expr,$d:expr,$e:expr)),+$(,)*) => {
+    #[derive(Clone,Copy,Debug,Eq,PartialEq)]
+    pub enum Piece {
+      $($p),+
+    }
 
-////////////////////////////////////////
+    impl Piece {
+      pub fn kanji(self) -> &'static str {
+        use Piece::*;
+        match self { $($p => $a),+ }
+      }
+      pub fn kanji1(self) -> char {
+        use Piece::*;
+        match self { $($p => $d),+ }
+      }
+      pub fn name(self) -> &'static str {
+        use Piece::*;
+        match self { $($p => $b),+ }
+      }
+      pub fn abbrev(self) -> &'static str {
+        use Piece::*;
+        match self { $($p => $c),+ }
+      }
+      pub fn promotes(self) -> Option<Piece> {
+        use Piece::*;
+        match self { $($p => $e),+ }
+      }
+    }
+  }
+}
 
-impl Piece {
-  pub fn kanji(self) -> &'static str {
-    PIECE_INFO[self as usize].1
-  }
-  pub fn name(self) -> &'static str {
-    PIECE_INFO[self as usize].2
-  }
-  pub fn abbrev(self) -> &'static str {
-    PIECE_INFO[self as usize].3
-  }
-  pub fn kanji1(self) -> char {
-    PIECE_INFO[self as usize].4
-  }
-  pub fn promotes(self) -> Option<Piece> {
-    PIECE_INFO[self as usize].5
-  }
+declare!{
+(Bishop,"角行","kakugyō","B",'角',Some(Piece::DragonHorse)),
+(BishopGeneral,"角将","kakushō","BG",'用',Some(Piece::ViceGeneral)),
+(BlindTiger,"盲虎","mōko","BT",'虎',Some(Piece::FlyingStag)),
+(ChariotSoldier,"車兵","shahei","CS",'車',Some(Piece::HeavenlyTetrarch)),
+(CopperGeneral,"銅将","dōshō","C",'銅',Some(Piece::SideMover)),
+(Dog,"犬","inu","D",'犬',Some(Piece::MultiGeneral)),
+(DragonHorse,"龍馬","ryūme","DH",'馬',Some(Piece::HornedFalcon)),
+(DragonKing,"龍王","ryūō","DK",'龍',Some(Piece::SoaringEagle)),
+(DrunkElephant,"酔象","suizō","DE",'象',Some(Piece::Prince)),
+(FerociousLeopard,"猛豹","mōhyō","FL",'豹',Some(Piece::Bishop)),
+(FireDemon,"火鬼","kaki","FD",'火',None),
+(FlyingOx,"飛牛","higyū","FO",'牛',None),
+(FlyingStag,"飛鹿","hiroku","FS",'鹿',None),
+(FreeBoar,"奔猪","honcho","FB",'猪',None),
+(FreeEagle,"奔鷲","honjū","FE",'就',None),
+(GoldGeneral,"金将","kinshō","G",'金',Some(Piece::Rook)),
+(GreatGeneral,"大将","taishō","GG",'大',None),
+(HeavenlyTetrarch,"四天王","shitennō","HT",'天',None),
+(HornedFalcon,"角鷹","kakuō","HF",'鷹',Some(Piece::BishopGeneral)),
+(IronGeneral,"鉄将","tesshō","I",'鉄',Some(Piece::VerticalSoldier)),
+(KingInferior,"玉将","gyokushō","K",'玉',None),
+(KingSuperior,"王将","ōshō","K",'王',None),
+(Kirin,"麒麟","kirin","Kr",'麒',Some(Piece::Lion)),
+(Knight,"桂馬","keima","N",'桂',Some(Piece::SideSoldier)),
+(Lance,"香車","kyōsha","L",'香',Some(Piece::WhiteHorse)),
+(Lion,"獅子","shishi","Ln",'獅',Some(Piece::LionHawk)),
+(LionHawk,"獅鷹","shiō","LH",'師',None),
+(MultiGeneral,"雜将","suishō","MG",'雜',None),
+(Pawn,"歩兵","fuhyō","P",'歩',Some(Piece::GoldGeneral)),
+(Phoenix,"鳳凰","hōō","Ph",'鳳',Some(Piece::Queen)),
+(Prince,"太子","taishi","CP",'子',None),
+(Queen,"奔王","honnō","Q",'奔',Some(Piece::FreeEagle)),
+(ReverseChariot,"反車","hensha","RC",'反',Some(Piece::Whale)),
+(Rook,"飛車","hisha","R",'飛',Some(Piece::DragonKing)),
+(RookGeneral,"飛将","hishō","RG",'升',Some(Piece::GreatGeneral)),
+(SideMover,"横行","ōgyō","SM",'横',Some(Piece::FreeBoar)),
+(SideSoldier,"横兵","ōhei","SS",'黄',Some(Piece::WaterBuffalo)),
+(SilverGeneral,"銀将","ginshō","S",'銀',Some(Piece::VerticalMover)),
+(SoaringEagle,"飛鷲","hijū","SE",'鷲',Some(Piece::RookGeneral)),
+(VerticalMover,"竪行","shugyō","VM",'竪',Some(Piece::FlyingOx)),
+(VerticalSoldier,"竪兵","shuhei","VS",'立',Some(Piece::ChariotSoldier)),
+(ViceGeneral,"副将","fukushō","VG",'副',None),
+(WaterBuffalo,"水牛","suigyū","WB",'水',Some(Piece::FireDemon)),
+(Whale,"鯨鯢","keigei","W",'鯨',None),
+(WhiteHorse,"白駒","hakku","WH",'駒',None),
 }
 
 ////////////////////////////////////////
 
-/*
-L   N   FL  I   C   S   G   DE  K   G   S   C   I   FL  N   L/
-RC  1   CS  CS  1   BT  Ph  FK  Ln  Kr  BT  1   CS  CS  1   RC/
-SS  VS  B   DH  DK  WB  FD  FE  LH  FD  WB  DK  DH  B   VS  SS/
-SM  VM  R   HF  SE  BG  RG  VG  GG  RG  BG  SE  HF  R   VM  SM/
-p   p   p   p   p   p   p   p   p   p   p   p   p   p   p   p/
-        4       D             6             D       4         /
-16/16/16/16/
-        4       D             6             D       4         /
-p   p   p   p   p   p   p   p   p   p   p   p   p   p   p   p/
-SM  VM  R   HF  SE  BG  RG  GG  VG  RG  BG  SE  HF  R   VM  SM/
-SS  VS  B   DH  DK  WB  FD  LH  FE  FD  WB  DK  DH  B   VS  SS/
-RC  1   CS  CS  1   BT  Kr  Ln  FK  Ph  BT  1   CS  CS  1   RC/
-L   N   FL  I   C   S   G   K   DE  G   S   C   I   FL  N   L
-*/
+
+////////////////////////////////////////
+
+const INITIAL_BOARD : &'static str = "\
+L,N,FL,I,C,S,G,DE,K,G,S,C,I,FL,N,L/\
+RC,1,CS,CS,1,BT,Ph,FK,Ln,Kr,BT,1,CS,CS,1,RC/\
+SS,VS,B,DH,DK,WB,FD,FE,LH,FD,WB,DK,DH,B,VS,SS/\
+SM,VM,R,HF,SE,BG,RG,VG,GG,RG,BG,SE,HF,R,VM,SM/\
+p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p/\
+,4,D,6,D,4,/16/16/16/16/,4,D,6,D,4,/\
+p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p/\
+SM,VM,R,HF,SE,BG,RG,GG,VG,RG,BG,SE,HF,R,VM,SM/\
+SS,VS,B,DH,DK,WB,FD,LH,FE,FD,WB,DK,DH,B,VS,SS/\
+RC,1,CS,CS,1,BT,Kr,Ln,FK,Ph,BT,1,CS,CS,1,RC/\
+L,N,FL,I,C,S,G,K,DE,G,S,C,I,FL,N,L\
+ - - w";
 
 ////////////////////////////////////////
 
@@ -220,5 +233,5 @@ fn main() {
     println!("{}", Piece::FireDemon.kanji1());
     println!("{}", Piece::FireDemon.name());
     println!("{}", Piece::FireDemon.abbrev());
-    println!("{:?}", Piece::FireDemon.promotes());
+    //println!("{:?}", Piece::FireDemon.promotes());
 }
